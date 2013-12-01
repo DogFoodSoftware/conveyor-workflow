@@ -1,0 +1,104 @@
+#!/bin/sh
+# /**
+#  * <div class="p">
+#  * 'Controller' script for the <a
+#  *   href="http://dogfoodsoftware.com/documentation/conveyor/ref/Branching-Strategy">Conveyor
+#  *   branch strategy</a> extensions. Please refer to the branch strategy
+#  *   documentation for details on usage.
+#  * </div>
+#  * <div class="p">
+#  *   This code is licensed under the <a href="TODO">Apache v2 License</a>
+#  *   and is copyrighted by <a href="http://dogfoodsoftware.com">Dog Food
+#  *   Software</a>.
+#  * </div>
+#  * <div id="Implementation" data-perspective="implementation" class="grid_12 blurbSummary">
+#  *   <div class="p">
+#  *     This script essentially reads the first argument&mdash;which is
+#  *     understood as the task name&mdash;and then looks for the
+#  *     <code>git-convey-*</code> script matching the task.
+#  *   </div>
+#  *   <div class="subHeader"><span>Platform Workarounds</span></div>
+#  *   <div class="p">
+#  *     Thanks to <a href=""></a> <a
+#  *     href="https://github.com/nvie/gitflow">GitFlow</a> for these
+#  *     workarounds. If you don't like our approach to branch management,
+#  *     GitFlow offers a great alternative.
+#  *   </div>
+
+# If in future versions, we want to use shFlags for commandline option
+# processing, we will want to set this variable, used by shFlags for
+# compatibility purposes. As we don't currently do any option processing, it
+# is not necessary.
+# if uname -s | egrep -iq 'bsd'; then export EXPR_COMPAT=1; fi
+
+# For Windows, we need to change '\' to '/'.
+export GIT_CONVEY_DIR=$(dirname "$(echo "$0" | sed -e 's|\\|/|g')")
+
+# Regularize getopt parsing across Linux platforms.
+export POSIXLY_CORRECT=1
+
+#  *   <div class="subHeader">Helper Functions and Usage Check</div>
+#  *   <div class="p">
+#  *     It's bash, so helper funtctions have to come first.
+#  *   </div>
+
+usage() {
+    if [ x"$1" != x"" ]; then
+	echo $1 >&2
+	echo
+    fi
+
+    echo "usage: git convey <task command>"
+    echo
+    echo "Available task commands are:"
+    echo "   init      Initialize an existing git repo with permanent branches."
+    echo "   sync      Synchronizes the local repo with origin."
+    echo "   start     Starts a topic branch."
+    echo "   commit    Commits changes on a topic branch."
+    echo "   done      Prepares topic branch for merge back to source branch and generates"
+    echo "             pull request."
+    echo "   promote   Promotes changes to a new permanent branch."
+    echo
+    echo "Use 'git convey <task command> help' for details and refer to "
+    echo "http://dogfoodsoftware.com/documentatione/conveyor/ref/Branching-Strategy for"
+    echo "more on the underlying branch strategy which git-convey implements."
+    echo
+}
+
+if [ $# -lt 1 ]; then
+    usage "Please indicate task."
+    exit 1
+fi
+
+#  * <div class="subHeader"><span>Options Parsing</span></div>
+
+. "$GIT_CONVEY_DIR/lib/shflags"
+FLAGS_PARENT="git convey"
+
+DEFINE_boolean verbose false 'be verbose => show git commands' v
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+#  * <div class="subHeader"><span>Main Logic</span></div>
+
+TASK_COMMAND="$1"; shift
+
+if [ ! -e "$GIT_CONVEY_DIR/git-convey-$TASK_COMMAND" ]; then
+    usage "Unknown task: '$TASK_COMMAND'."
+    exit 1
+fi
+
+
+. "$GIT_CONVEY_DIR/git-flow-$TASK_COMMAND"
+# We process any task options here so that we can fire off the task's main
+# logic without further ado.
+if type "task_opts" >/dev/null 2>&1; then
+    FLAGS_PARENT="git flow $TASK_COMMAND"
+    task_opts
+    FLAGS "$@" || exit $?
+    eval set -- "${FLAGS_ARGV}"
+fi
+
+task_do
+#  * </div><!-- #Implementation.blurbSummary -->

@@ -1,0 +1,12 @@
+BRANCH_LIST="git for-each-ref --shell --format='%(refname:short)' refs/heads"
+
+# Grab list of open task branches and update.
+for i in `$BRANCH_LIST/task-*`; do # Match both at once?
+    git checkout $i
+    git pull origin $i
+done
+# Grab list of open release branches and update.
+for i in `$BRANCH_LIST/release-'`; do
+    git checkout $i
+    git pull origin $i
+done

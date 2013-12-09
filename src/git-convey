@@ -51,10 +51,9 @@ usage() {
     echo "usage: git convey <task command>"
     echo
     echo "Available task commands are:"
-    echo "   init      Initialize an existing git repo with permanent branches."
     echo "   sync      Synchronizes the local repo with origin."
-    echo "   topic     Manage topics (branches)."
-    echo "   release   Manage releases."
+    echo "   topics    Manage topics / topic branches."
+    echo "   releases  Manage releases."
     echo
     echo "Use 'git convey <task command> help' for details and refer to "
     echo "http://dogfoodsoftware.com/documentatione/conveyor/ref/Branching-Strategy for"

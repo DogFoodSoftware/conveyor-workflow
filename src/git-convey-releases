@@ -11,7 +11,7 @@
 resource_usage() {
     if [ x"$1" != x"" ]; then
 	echo $1 >&2
-	echo
+	echo >&2
     fi
 
     echo "usage: git convey releases [list [<pattern>]|[start|checkout|update|promote <branch>]]"
@@ -56,7 +56,7 @@ resource_help() {
 	    help)
 		resource_usage;;
 	    *)
-		resource_usage "Unknown task '$TASK'."
+		resource_usage "Unknown task: '$TASK'."
 		exit 1;
 	esac
     fi
@@ -94,7 +94,7 @@ resource_do() {
 	    fi
 	    ;;
 	*)
-	    resource_usage "Unknown task '$TASK'."
+	    resource_usage "Unknown task: '$TASK'."
 	    exit 1;
     esac
 }

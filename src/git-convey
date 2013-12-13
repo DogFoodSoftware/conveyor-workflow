@@ -44,15 +44,15 @@ global_help() {
     echo
 }
 
-/**
- * <div class="subHeader"><span>usage()</span></div>
- * <div class="p">
- *   Prints usage information for the <code>git-convey</code> script. Takes a
- *   single optional argument, which is interpretted as a string containing
- *   additional information about whyt he usage is being displayed. The error
- *   is printed to <code>stderr</code>.
- * </div>
- */
+# /**
+#  * <div class="subHeader"><span>usage()</span></div>
+#  * <div class="p">
+#  *   Prints usage information for the <code>git-convey</code> script. Takes a
+#  *   single optional argument, which is interpretted as a string containing
+#  *   additional information about whyt he usage is being displayed. The error
+#  *   is printed to <code>stderr</code>.
+#  * </div>
+#  */
 usage() {
     if [ x"$1" != x"" ]; then
 	echo $1 >&2
@@ -93,8 +93,7 @@ if [ ! -e "$GIT_CONVEY_DIR/git-convey-$TASK_COMMAND" ]; then
     exit 1
 fi
 
-
-. "$GIT_CONVEY_DIR/git-flow-$TASK_COMMAND"
+. "$GIT_CONVEY_DIR/git-convey-$TASK_COMMAND"
 # We process any task options here so that we can fire off the task's main
 # logic without further ado.
 if type "task_opts" >/dev/null 2>&1; then

@@ -10,14 +10,6 @@
 #  * </div>
 #  * <div id="Implementation" data-perspective="implementation" class="grid_12 blurbSummary">
 
-. "$GIT_CONVEY_DIR/lib/shflags"
-FLAGS_PARENT="git convey topics"
-
-DEFNIE_boolean 'no-submit' 'false' "used with 'done'"
-
-FLAGS "$@" || exit $?
-eval set -- "${FLAGS_ARGV}"
-
 topics_usage() {
     if [ x"$1" != x"" ]; then
 	echo $1 >&2
@@ -35,9 +27,36 @@ topics_usage() {
     global_help
 }
 
-if [$# -lt 1 ]; then
-    usage "Please indiciate topics task'."
-    exit 1
+. "$GIT_CONVEY_DIR/lib/shflags"
+FLAGS_PARENT="git convey topics"
+
+# shFlags does not allow '-' in the option names... which forces us to
+# break convention... grr...
+DEFINE_boolean 'no_submit' 'false' "used with 'done'"
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+if [ $# -lt 1 ]; then
+    TASK="list"
+else
+    TASK="$1"
 fi
+
+task_do() {
+    case "$TASK" in
+	list)
+	    echo list;;
+	start)
+	    echo start;;
+	commit)
+	    echo commit;;
+	done)
+	    echo done;;
+	*)
+	    topics_usage "Unknown task '$TASK'."
+	    exit 1;
+    esac
+}
 
 #  * </div><!-- #Implementation.blurbSummary -->

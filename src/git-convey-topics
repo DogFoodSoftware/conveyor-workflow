@@ -33,6 +33,9 @@ resource_usage() {
 }
 
 resource_opts() {
+    # Going against bash standards, shFlags requires 'nomark' as the long
+    # default value.
+    DEFINE_boolean 'mark' true "Controls whether the current topics branch is marked with a '*' in the 'list' task"
 }
 
 resource_help() {

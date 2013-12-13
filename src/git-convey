@@ -56,7 +56,7 @@ global_help() {
 usage() {
     if [ x"$1" != x"" ]; then
 	echo $1 >&2
-	echo
+	echo >&2
     fi
 
     echo "usage: git convey <resource|global task>"

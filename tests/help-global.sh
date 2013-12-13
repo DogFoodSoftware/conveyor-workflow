@@ -11,3 +11,5 @@
 #* And the script exits with exit code 0.
 #* </pre>
 #*/
+
+echo "ERROR: $0 not implemented"

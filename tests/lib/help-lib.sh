@@ -19,7 +19,8 @@ test_help() {
     if [ -f $TMP_FILE ] && [ -s $TMP_FILE ]; then
 	# Tested this detects failure by echoing to stderr in usage,
 	# resource_usage, and resource_help.
-	echo "ERROR: '$COMMAND' resulted in output to stderr."
+	echo -e "ERROR: '$COMMAND' resulted in output to stderr:\n"
+	cat $TMP_FILE
     fi
 
     rm $TMP_FILE

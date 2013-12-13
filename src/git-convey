@@ -59,13 +59,13 @@ usage() {
 	echo
     fi
 
-    echo "usage: git convey <task command>"
+    echo "usage: git convey <resource|global task>"
     echo
     echo "Available resources commands are:"
     echo "   topics    Manage topics / topic branches."
     echo "   releases  Manage releases."
     echo
-    echo "In addition, the following special commands:"
+    echo "Available global tasks are:"
     echo "   sync      Synchronizes the local repo with origin."
     echo "   help      Prints this help."
     echo

@@ -42,7 +42,7 @@ resource_help() {
 	TASK="$1"; shift
 	case "$TASK" in
 	    list)
-		echo list;;
+		echo "Lists the release branches active in the current repository.";;
 	    start)
 		echo start;;
 	    checkout)
@@ -68,9 +68,7 @@ resource_do() {
     else
 	TASK="$1"; shift
     fi
-    if [ $# -lt 1 ]; then
-	BRANCH_NAME=bar
-    else
+    if [ $# -ge 1 ]; then
 	BRANCH_NAME="$1"; shift
     fi
 
@@ -88,7 +86,13 @@ resource_do() {
 	sunset)
 	    echo sunset;;
 	help)
-	    resource_usage;;
+	    TASK="$BRANCH_NAME"
+	    if [ x"$TASK" == x"" ]; then
+		resource_usage
+	    else
+		resource_help "$TASK"
+	    fi
+	    ;;
 	*)
 	    resource_usage "Unknown task '$TASK'."
 	    exit 1;

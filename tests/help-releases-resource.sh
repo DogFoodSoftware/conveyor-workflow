@@ -20,7 +20,7 @@
 #* </pre>
 #*/
 
-source `dirname $0`/lib/help-lib.sh
+source `dirname $0`/lib/cli-lib.sh
 
 test_help "git convey help releases" "usage: git convey releases"
 test_help "git convey releases help" "usage: git convey releases"

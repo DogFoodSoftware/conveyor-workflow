@@ -18,7 +18,7 @@
 #* </pre>
 #*/
 
-source `dirname $0`/lib/help-lib.sh
+source `dirname $0`/lib/cli-lib.sh
 
 test_help "git convey help topics list" 'Lists the topic branches'
 test_help "git convey topics help list" 'Lists the topic branches'

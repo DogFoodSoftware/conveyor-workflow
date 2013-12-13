@@ -20,6 +20,7 @@ resource_usage() {
     echo "   list      Lists open topics. This is the default action."
     echo "   start     Starts/opens a topic branch."
     echo "   commit    Commits changes to a topic branch."
+    echo "   delete    Deletes the local topic branch."
     echo "   done      Submits a topic branch; with '-no-submit', deletes the topic branch."
     echo "   help      Print this help."
     echo
@@ -32,8 +33,6 @@ resource_usage() {
 }
 
 resource_opts() {
-    # say samething...
-    DEFINE_boolean 'submit' true "used with 'done'"
 }
 
 resource_help() {
@@ -43,13 +42,15 @@ resource_help() {
 	TASK="$1"; shift
 	case "$TASK" in
 	    list)
-		echo list;;
+		echo "help list";;
 	    start)
-		echo start;;
+		echo "help start";;
 	    commit)
-		echo commit;;
+		echo "help commit";;
+	    delete)
+		echo "help delete";;
 	    done)
-		echo done;;
+		echo "help done";;
 	    *)
 		resource_usage "Unknown task '$TASK'."
 		exit 1;
@@ -76,6 +77,8 @@ resource_do() {
 	    echo start;;
 	commit)
 	    echo commit;;
+	delete)
+	    echo delete;;
 	done)
 	    echo done;;
 	help)

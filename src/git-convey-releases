@@ -23,24 +23,15 @@ releases_usage() {
 # --update update default current | branch name
 # --undo release|tag|update (?)
 
-    echo "usage: git convey releases [list [<pattern>]|[start|checkout|update|rc|gold <branch>]]"
+    echo "usage: git convey releases [list [<pattern>]|[start|checkout|update|promote <branch>]]"
     echo "   list      List release branches in this repo. This is the default action."
     echo "   start     Start a new release."
     echo "   checkout  Checkout / switch to an existing release."
-    echo "   rc        Create 
-    echo "   commit    Commits changes to a topic branch."
-    echo "   done      Submits a topic branch; with '-no-submit', deletes the topic branch."
+    echo "   delete    Removes the local release branch."
+    echo "   promote   Move a release from 'testing' to 'production'."
+    echo "   sunset    Archives a release."
     echo
-    echo "   --[no]submit may be comibned with 'done' to indicate whether the branch should"
-    echo "   be submitted (default) or just deleted (--nosubmit)."
-    # TODO : 'no-submit' would be the more standard option, but we are limited
-    # by shFlags here... good contrib opportunity.
     global_help
-}
-
-resource_opts() {
-    # say samething...
-    DEFINE_boolean 'submit' true "used with 'done'"
 }
 
 resource_do() {
@@ -58,14 +49,16 @@ resource_do() {
     case "$TASK" in
 	list)
 	    echo list;;
-	start)
-	    echo start;;
-	commit)
-	    echo commit;;
-	done)
-	    echo done;;
+	checkout)
+	    echo checkout;;
+	delete)
+	    echo delete;;
+	promote)
+	    echo promote;;
+	sunset)
+	    echo sunset;;
 	*)
-	    topics_usage "Unknown task '$TASK'."
+	    releases_usage "Unknown task '$TASK'."
 	    exit 1;
     esac
 }

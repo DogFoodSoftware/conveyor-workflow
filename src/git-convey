@@ -79,8 +79,8 @@ fi
 
 #  * <div class="subHeader"><span>Options Parsing</span></div>
 
-source "$GIT_CONVEY_DIR/common-lib.sh"
 source "$GIT_CONVEY_DIR/lib/shflags"
+source "$GIT_CONVEY_DIR/common-lib.sh"
 FLAGS_PARENT="git convey"
 
 DEFINE_boolean verbose false 'be verbose => show git commands' 'v'
@@ -118,7 +118,7 @@ if [ x"$HELP_MODE" != x"$FLAGS_TRUE" ]; then
 	eval set -- "${FLAGS_ARGV}"
     fi
 
-    resource_do $@
+    resource_do "$@"
 else # we are in help mode
     if [ $# -lt 1 ]; then # it's general resource help
 	resource_usage

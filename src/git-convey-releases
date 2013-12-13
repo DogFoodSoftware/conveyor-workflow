@@ -76,7 +76,7 @@ resource_do() {
 	list)
 	    list_resources release;;
 	start)
-	    echo start;;
+	    start_branch 'release' "$BRANCH_NAME";;
 	checkout)
 	    echo checkout;;
 	delete)

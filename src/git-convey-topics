@@ -75,7 +75,7 @@ resource_do() {
 	list)
 	    list_resources topic;;
 	start)
-	    echo start;;
+	    start_branch 'topic' "$BRANCH_NAME";;
 	commit)
 	    echo commit;;
 	delete)

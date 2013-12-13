@@ -85,8 +85,7 @@ resource_do() {
 
     case "$TASK" in
 	list)
-	    list_resources releases
-	    ;;
+	    list_resources release;;
 	start)
 	    echo start;;
 	checkout)

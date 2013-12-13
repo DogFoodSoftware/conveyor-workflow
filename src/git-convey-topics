@@ -4,9 +4,7 @@
 #  *   Script to implement 'topics' management within git. This is an
 #  *   extension defined by <a
 #  *   href="http://dogfoodsoftware.com/documentation/git-convey">Git
-#  *   Convey</a>. Notice that there is no 'force' option on any of the
-#  *   commands. You may create your own branches or do anything else you like
-#  *   with the underlying git repo, and Git Convey itself need not be forced.
+#  *   Convey</a>.
 #  * </div>
 #  * <div id="Implementation" data-perspective="implementation" class="grid_12 blurbSummary">
 
@@ -16,7 +14,7 @@ topics_usage() {
 	echo
     fi
 
-    echo "usage: git convey topics [list [<pattern>]|[start|commit|done [--no-submit]] [<pattern>]]]"
+    echo "usage: git convey topics [list [<pattern>]|[start|commit|done [--no-submit]] [<branch>]]]"
     echo
     echo "Available task commands are:"
     echo "   list      Lists open topics. This is the default action."

@@ -1,3 +1,19 @@
+#!/bin/sh
+# /**
+#  * <div class="p">
+#  *   Script to implement 'releases' management within git. This is an
+#  *   extension defined by <a
+#  *   href="http://dogfoodsoftware.com/documentation/git-convey">Git
+#  *   Convey</a>.
+#  * </div>
+#  * <div id="Implementation" data-perspective="implementation" class="grid_12 blurbSummary">
+
+releases_usage() {
+    if [ x"$1" != x"" ]; then
+	echo $1 >&2
+	echo
+    fi
+
 # no args, list; -l pattern
 # note all state changing actions are only long form
 # default | -s release branch name: checkout (and create if necessary); warn if
@@ -6,3 +22,52 @@
 # --tag
 # --update update default current | branch name
 # --undo release|tag|update (?)
+
+    echo "usage: git convey releases [list [<pattern>]|[start|checkout|update|rc|gold <branch>]]"
+    echo "   list      List release branches in this repo. This is the default action."
+    echo "   start     Start a new release."
+    echo "   checkout  Checkout / switch to an existing release."
+    echo "   rc        Create 
+    echo "   commit    Commits changes to a topic branch."
+    echo "   done      Submits a topic branch; with '-no-submit', deletes the topic branch."
+    echo
+    echo "   --[no]submit may be comibned with 'done' to indicate whether the branch should"
+    echo "   be submitted (default) or just deleted (--nosubmit)."
+    # TODO : 'no-submit' would be the more standard option, but we are limited
+    # by shFlags here... good contrib opportunity.
+    global_help
+}
+
+resource_opts() {
+    # say samething...
+    DEFINE_boolean 'submit' true "used with 'done'"
+}
+
+resource_do() {
+    if [ $# -lt 1 ]; then
+	TASK="list"
+    else
+	TASK="$1"; shift
+    fi
+    if [ $# -lt 1 ]; then
+	BRANCH_NAME=bar
+    else
+	BRANCH_NAME="$1"; shift
+    fi
+
+    case "$TASK" in
+	list)
+	    echo list;;
+	start)
+	    echo start;;
+	commit)
+	    echo commit;;
+	done)
+	    echo done;;
+	*)
+	    topics_usage "Unknown task '$TASK'."
+	    exit 1;
+    esac
+}
+
+#  * </div><!-- #Implementation.blurbSummary -->

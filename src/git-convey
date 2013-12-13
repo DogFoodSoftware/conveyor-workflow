@@ -38,7 +38,7 @@ export POSIXLY_CORRECT=1
 #  *   </div>
 
 global_help() {
-    echo "Use 'git convey [<resource> [<task>]] help' for details and refer to "
+    echo "Use 'git convey help [<resource> [<task>]]' for details and refer to "
     echo "http://dogfoodsoftware.com/documentatione/conveyor/ref/Branching-Strategy for"
     echo "more on the underlying branch strategy which git-convey implements."
     echo
@@ -92,22 +92,38 @@ eval set -- "${FLAGS_ARGV}"
 RESOURCE="$1"; shift
 
 if [ x"$RESOURCE" == x"help" ]; then
-   usage
-   exit 0
-elif [ ! -e "$GIT_CONVEY_DIR/git-convey-$RESOURCE" ]; then
+    if [ $# -lt 1 ]; then
+	usage
+	exit 0
+    else
+	HELP_MODE=${FLAGS_TRUE}
+	RESOURCE="$1"; shift
+    fi
+fi
+
+if [ ! -e "$GIT_CONVEY_DIR/git-convey-$RESOURCE" ]; then
     usage "Unknown resource: '$RESOURCE'."
     exit 1
 fi
-
 . "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
-# We process any task options here so that we can fire off the task's main
-# logic without further ado.
-if type "resource_opts" >/dev/null 2>&1; then
-    FLAGS_PARENT=""
-    resource_opts
-    FLAGS "$@" || exit $?
-    eval set -- "${FLAGS_ARGV}"
-fi
 
-resource_do $@
+if [ x"$HELP_MODE" != x"$FLAGS_TRUE" ]; then
+    # We process any task options here so that we can fire off the task's main
+    # logic without further ado.
+    if type "resource_opts" >/dev/null 2>&1; then
+	FLAGS_PARENT=""
+	resource_opts
+	FLAGS "$@" || exit $?
+	eval set -- "${FLAGS_ARGV}"
+    fi
+
+    resource_do $@
+else # we are in help mode
+    if [ $# -lt 1 ]; then # it's general resource help
+	resource_usage
+    else
+	TASK="$1"; shift
+	resource_help $TASK
+    fi
+fi
 #  * </div><!-- #Implementation.blurbSummary -->

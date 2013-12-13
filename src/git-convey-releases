@@ -8,7 +8,7 @@
 #  * </div>
 #  * <div id="Implementation" data-perspective="implementation" class="grid_12 blurbSummary">
 
-releases_usage() {
+resource_usage() {
     if [ x"$1" != x"" ]; then
 	echo $1 >&2
 	echo
@@ -35,6 +35,33 @@ releases_usage() {
     global_help
 }
 
+resource_help() {
+    if [ $# -lt 1 ]; then
+	resource_usage
+    else
+	TASK="$1"; shift
+	case "$TASK" in
+	    list)
+		echo list;;
+	    start)
+		echo start;;
+	    checkout)
+		echo checkout;;
+	    delete)
+		echo delete;;
+	    promote)
+		echo promote;;
+	    sunset)
+		echo sunset;;
+	    help)
+		resource_usage;;
+	    *)
+		resource_usage "Unknown task '$TASK'."
+		exit 1;
+	esac
+    fi
+}
+
 resource_do() {
     if [ $# -lt 1 ]; then
 	TASK="list"
@@ -50,6 +77,8 @@ resource_do() {
     case "$TASK" in
 	list)
 	    echo list;;
+	start)
+	    echo start;;
 	checkout)
 	    echo checkout;;
 	delete)
@@ -59,9 +88,9 @@ resource_do() {
 	sunset)
 	    echo sunset;;
 	help)
-	    releases_usage;;
+	    resource_usage;;
 	*)
-	    releases_usage "Unknown task '$TASK'."
+	    resource_usage "Unknown task '$TASK'."
 	    exit 1;
     esac
 }

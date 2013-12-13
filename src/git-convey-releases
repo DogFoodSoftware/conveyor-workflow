@@ -30,6 +30,7 @@ releases_usage() {
     echo "   delete    Removes the local release branch."
     echo "   promote   Move a release from 'testing' to 'production'."
     echo "   sunset    Archives a release."
+    echo "   help      Print this help."
     echo
     global_help
 }
@@ -57,6 +58,8 @@ resource_do() {
 	    echo promote;;
 	sunset)
 	    echo sunset;;
+	help)
+	    releases_usage;;
 	*)
 	    releases_usage "Unknown task '$TASK'."
 	    exit 1;

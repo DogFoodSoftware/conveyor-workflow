@@ -21,11 +21,13 @@ topics_usage() {
     echo "   start     Starts/opens a topic branch."
     echo "   commit    Commits changes to a topic branch."
     echo "   done      Submits a topic branch; with '-no-submit', deletes the topic branch."
+    echo "   help      Print this help."
     echo
     echo "   --[no]submit may be comibned with 'done' to indicate whether the branch should"
     echo "   be submitted (default) or just deleted (--nosubmit)."
     # TODO : 'no-submit' would be the more standard option, but we are limited
     # by shFlags here... good contrib opportunity.
+    echo
     global_help
 }
 
@@ -55,6 +57,8 @@ resource_do() {
 	    echo commit;;
 	done)
 	    echo done;;
+	help)
+	    topics_usage;;
 	*)
 	    topics_usage "Unknown task '$TASK'."
 	    exit 1;

@@ -1,0 +1,45 @@
+#!/bin/sh
+# /**
+#  * <div class="p">
+#  *   Script to implement 'topics' management within git. This is an
+#  *   extension defined by <a
+#  *   href="http://dogfoodsoftware.com/documentation/git-convey">Git
+#  *   Convey</a>. Notice that there is no 'force' option on any of the
+#  *   commands. You may create your own branches or do anything else you like
+#  *   with the underlying git repo, and Git Convey itself need not be forced.
+#  * </div>
+#  * <div id="Implementation" data-perspective="implementation" class="grid_12 blurbSummary">
+
+. "$GIT_CONVEY_DIR/lib/shflags"
+FLAGS_PARENT="git convey topics"
+
+DEFINE_string 'list' '*' 'list current/open topics in the repo' 'l'
+DEFINE_string 'start' '' 'start a topic branch' 's'
+DEFINE_string 'commit' '' 'commit a topic branch' 'c'
+DEFINE_string 'done' '' 'close/submit a topic branch' 'd'
+DEFNIE_boolean 'no-submit' 'false' 'used with --done/-d to delete a topic without submitting the changes'
+DEFINE_string 'update' '' 'update a topic branch' 'u'
+
+FLAGS "$@" || exit $?
+eval set -- "${FLAGS_ARGV}"
+
+usage() {
+    if [ x"$1" != x"" ]; then
+	echo $1 >&2
+	echo
+    fi
+
+    echo "usage: git convey topics [-l|-s|-c|-d [ <pattern>]] [-s [<topic ID>]] [-c [<topic ID>]] [-c [<topic ID>]] [-d [<topic ID>]]"
+    echo
+    echo "Available task commands are:"
+    echo "   sync      Synchronizes the local repo with origin."
+    echo "   topics    Manage topics / topic branches."
+    echo "   releases  Manage releases."
+    echo
+    echo "Use 'git convey <task command> help' for details and refer to "
+    echo "http://dogfoodsoftware.com/documentatione/conveyor/ref/Branching-Strategy for"
+    echo "more on the underlying branch strategy which git-convey implements."
+    echo
+}
+
+#  * </div><!-- #Implementation.blurbSummary -->

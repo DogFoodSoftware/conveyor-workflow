@@ -1,0 +1,8 @@
+# no args, list; -l pattern
+# note all state changing actions are only long form
+# default | -s release branch name: checkout (and create if necessary); warn if
+# no '--force' and not on master
+# --release
+# --tag
+# --update update default current | branch name
+# --undo release|tag|update (?)

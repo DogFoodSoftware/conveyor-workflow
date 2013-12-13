@@ -86,22 +86,22 @@ eval set -- "${FLAGS_ARGV}"
 
 #  * <div class="subHeader"><span>Main Logic</span></div>
 
-TASK_COMMAND="$1"; shift
+RESOURCE="$1"; shift
 
-if [ ! -e "$GIT_CONVEY_DIR/git-convey-$TASK_COMMAND" ]; then
-    usage "Unknown task: '$TASK_COMMAND'."
+if [ ! -e "$GIT_CONVEY_DIR/git-convey-$RESOURCE" ]; then
+    usage "Unknown task: '$RESOURCE'."
     exit 1
 fi
 
-. "$GIT_CONVEY_DIR/git-convey-$TASK_COMMAND"
+. "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
 # We process any task options here so that we can fire off the task's main
 # logic without further ado.
-if type "task_opts" >/dev/null 2>&1; then
-    FLAGS_PARENT="git flow $TASK_COMMAND"
-    task_opts
+if type "resource_opts" >/dev/null 2>&1; then
+    FLAGS_PARENT=""
+    resource_opts
     FLAGS "$@" || exit $?
     eval set -- "${FLAGS_ARGV}"
 fi
 
-task_do
+resource_do $@
 #  * </div><!-- #Implementation.blurbSummary -->

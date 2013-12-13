@@ -27,23 +27,23 @@ topics_usage() {
     global_help
 }
 
-. "$GIT_CONVEY_DIR/lib/shflags"
-FLAGS_PARENT="git convey topics"
+resource_opts() {
+    # say samething...
+    DEFINE_boolean 'submit' true "used with 'done'" 's'
+}
 
-# shFlags does not allow '-' in the option names... which forces us to
-# break convention... grr...
-DEFINE_boolean 'no_submit' 'false' "used with 'done'"
+resource_do() {
+    if [ $# -lt 1 ]; then
+	TASK="list"
+    else
+	TASK="$1"; shift
+    fi
+    if [ $# -lt 1 ]; then
+	BRANCH_NAME=bar
+    else
+	BRANCH_NAME="$1"; shift
+    fi
 
-FLAGS "$@" || exit $?
-eval set -- "${FLAGS_ARGV}"
-
-if [ $# -lt 1 ]; then
-    TASK="list"
-else
-    TASK="$1"
-fi
-
-task_do() {
     case "$TASK" in
 	list)
 	    echo list;;

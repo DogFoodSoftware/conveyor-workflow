@@ -19,7 +19,7 @@ topics_usage() {
     echo "usage: git convey topics [list [<pattern>]|[start|commit|done [--no-submit]] [<pattern>]]]"
     echo
     echo "Available task commands are:"
-    echo "   list      Lists open topics."
+    echo "   list      Lists open topics. This is the default action."
     echo "   start     Starts/opens a topic branch."
     echo "   commit    Commits changes to a topic branch."
     echo "   done      Submits a topic branch; with '-no-submit', deletes the topic branch."

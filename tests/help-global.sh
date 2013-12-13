@@ -12,4 +12,7 @@
 #* </pre>
 #*/
 
-echo "ERROR: $0 not implemented"
+source `dirname $0`/lib/help-lib.sh
+
+test_help "git convey help" "usage: git convey releases"
+

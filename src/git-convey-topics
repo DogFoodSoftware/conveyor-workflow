@@ -13,12 +13,7 @@
 . "$GIT_CONVEY_DIR/lib/shflags"
 FLAGS_PARENT="git convey topics"
 
-DEFINE_string 'list' '*' 'list current/open topics in the repo' 'l'
-DEFINE_string 'start' '' 'start a topic branch' 's'
-DEFINE_string 'commit' '' 'commit a topic branch' 'c'
-DEFINE_string 'done' '' 'close/submit a topic branch' 'd'
-DEFNIE_boolean 'no-submit' 'false' 'used with --done/-d to delete a topic without submitting the changes'
-DEFINE_string 'update' '' 'update a topic branch' 'u'
+DEFNIE_boolean 'no-submit' 'false' "used with 'done'"
 
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
@@ -29,17 +24,17 @@ usage() {
 	echo
     fi
 
-    echo "usage: git convey topics [-l|-s|-c|-d [ <pattern>]] [-s [<topic ID>]] [-c [<topic ID>]] [-c [<topic ID>]] [-d [<topic ID>]]"
+    echo "usage: git convey topics [list [<pattern>]|[start|commit|done [--no-submit]] [<pattern>]]]"
     echo
     echo "Available task commands are:"
-    echo "   sync      Synchronizes the local repo with origin."
-    echo "   topics    Manage topics / topic branches."
-    echo "   releases  Manage releases."
+    echo "   list      Lists open topics."
+    echo "   start     Starts/opens a topic branch."
+    echo "   commit    Commits changes to a topic branch."
+    echo "   done      Submits a topic branch; with '-no-submit', deletes the topic branch."
     echo
-    echo "Use 'git convey <task command> help' for details and refer to "
-    echo "http://dogfoodsoftware.com/documentatione/conveyor/ref/Branching-Strategy for"
-    echo "more on the underlying branch strategy which git-convey implements."
-    echo
+    global_help
 }
+
+
 
 #  * </div><!-- #Implementation.blurbSummary -->

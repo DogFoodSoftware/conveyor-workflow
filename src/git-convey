@@ -37,6 +37,13 @@ export POSIXLY_CORRECT=1
 #  *     It's bash, so helper funtctions have to come first.
 #  *   </div>
 
+global_help() {
+    echo "Use 'git convey <task command> help' for details and refer to "
+    echo "http://dogfoodsoftware.com/documentatione/conveyor/ref/Branching-Strategy for"
+    echo "more on the underlying branch strategy which git-convey implements."
+    echo
+}
+
 usage() {
     if [ x"$1" != x"" ]; then
 	echo $1 >&2
@@ -50,10 +57,7 @@ usage() {
     echo "   topics    Manage topics / topic branches."
     echo "   releases  Manage releases."
     echo
-    echo "Use 'git convey <task command> help' for details and refer to "
-    echo "http://dogfoodsoftware.com/documentatione/conveyor/ref/Branching-Strategy for"
-    echo "more on the underlying branch strategy which git-convey implements."
-    echo
+    global_help
 }
 
 if [ $# -lt 1 ]; then

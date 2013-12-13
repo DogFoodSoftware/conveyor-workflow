@@ -18,7 +18,7 @@ DEFNIE_boolean 'no-submit' 'false' "used with 'done'"
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
 
-usage() {
+topics_usage() {
     if [ x"$1" != x"" ]; then
 	echo $1 >&2
 	echo
@@ -35,6 +35,9 @@ usage() {
     global_help
 }
 
-
+if [$# -lt 1 ]; then
+    usage "Please indiciate topics task'."
+    exit 1
+fi
 
 #  * </div><!-- #Implementation.blurbSummary -->

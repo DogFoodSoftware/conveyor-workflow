@@ -79,7 +79,8 @@ fi
 
 #  * <div class="subHeader"><span>Options Parsing</span></div>
 
-. "$GIT_CONVEY_DIR/lib/shflags"
+source "$GIT_CONVEY_DIR/common-lib.sh"
+source "$GIT_CONVEY_DIR/lib/shflags"
 FLAGS_PARENT="git convey"
 
 DEFINE_boolean verbose false 'be verbose => show git commands' 'v'

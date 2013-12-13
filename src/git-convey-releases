@@ -85,13 +85,7 @@ resource_do() {
 
     case "$TASK" in
 	list)
-	    if [ x"${FLAGS_mark}" == x"${FLAGS_FALSE}" ]; then
-		FORMAT='echo -n " "; echo "  %(refname:short)";'
-	    else
-		FORMAT='if [ `git branch | grep "^*" | cut -d" " -f2 ` == %(refname:short) ]; then echo -n "*"; else echo -n " "; fi; echo " %(refname:short)";'
-	    fi
-	    EVAL=`git for-each-ref --shell --format="$FORMAT" refs/heads/release-*`
-	    eval $EVAL
+	    list_resources releases
 	    ;;
 	start)
 	    echo start;;

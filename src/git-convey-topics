@@ -75,7 +75,7 @@ resource_do() {
 
     case "$TASK" in
 	list)
-	    echo list;;
+	    list_resources releases
 	start)
 	    echo start;;
 	commit)

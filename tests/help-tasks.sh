@@ -46,8 +46,8 @@
 source `dirname $0`/lib/cli-lib.sh
 
 test_significant_output "git convey help topics list"
-# test_significant_output "git convey topics help list"
-# test_significant_output "git convey help topics start"
+test_significant_output "git convey topics help list"
+test_significant_output "git convey help topics start"
 # test_significant_output "git convey topics help start"
 # test_significant_output "git convey help topics join"
 # test_significant_output "git convey topics help join"

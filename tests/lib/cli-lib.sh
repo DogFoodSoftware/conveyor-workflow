@@ -1,32 +1,37 @@
+# Sourced to define FLAGS_TRUE and FLAGS_FALSE.
+source `dirname $0`/../runnable/lib/shflags
+
 test_output() {
-    source `dirname $0`/../runnable/lib/shflags
-    FLAGS_PARENT=""
-
-    # We really want 'min-words' but shFlags doesn't like it. Patch?
-    DEFINE_integer min_words '' 'minimum number of words' 'm'
-
-    FLAGS "$@" || exit $?
-    eval set -- "${FLAGS_ARGV}"
-
-
+    # Mandatory args
     COMMAND="$1"; shift
     EXPECTED_STDOUT_START="$1"; shift
+    EXPECTED_STDERR_START="$1"; shift
+
+    # Optional args.
+    if [ $# -ge 1 ]; then
+	EXPECTED_EXIT_CODE="$1"; shift
+    else
+	EXPECTED_EXIT_CODE=0
+    fi
+    if [ $# -ge 1 ]; then
+	MIN_WORDS="$1"; shift
+    else
+	MIN_WORDS=''
+    fi
+
+    # Evaluate whether or not we expect output for stdout and stderr.
     if [[ ( x"$EXPECTED_STDOUT_START" == x"") && 
-	  ( x"$FLAGS_min_words" == x"" || $FLAGS_min_words -eq 0 ) ]] ; then
+	  ( x"$MIN_WORDS" == x"" || $MIN_WORDS -eq 0 ) ]] ; then
 	NO_EXPECTED_STDOUT=${FLAGS_TRUE}
     else
 	NO_EXPECTED_STDOUT=${FLAGS_FALSE}
     fi
-    EXPECTED_STDERR_START="$1"; shift
     if [ x"$EXPECTED_STDERR_START" == x"" ]; then
 	NO_EXPECTED_STDERR=${FLAGS_TRUE}
     else
 	NO_EXPECTED_STDERR=${FLAGS_FALSE}
     fi
-    EXPECTED_EXIT_CODE="$1"; shift
-    if [ x"$EXPECTED_EXIT_CODE" == x"" ]; then
-	EXPECTED_EXIT_CODE=0
-    fi
+
     TMP_FILE="/tmp/$RANDOM"
 
     if ! eval 'OUTPUT=`$COMMAND 2>$TMP_FILE | sed -n 1p`'; then
@@ -49,8 +54,8 @@ test_output() {
 	echo -e "ERROR: '$COMMAND' output did not start with expected:\n'$EXPECTED_STDOUT_START'; got:\n'$OUTPUT'"
     fi
 
-    if [[ ( x"$FLAGS_min_words" -ne x"" ) && ( ${#OUTPUT} -lt $FLAGS_min_words ) ]]; then
-	echo "ERROR: '$COMMAND' output was expected to output at least $FLAGS_min_words, but instead got ${#OUTPUT}." >&2
+    if [[ ( x"$MIN_WORDS" -ne x"" ) && ( ${#OUTPUT} -lt $MIN_WORDS ) ]]; then
+	echo "ERROR: '$COMMAND' output was expected to output at least ${MIN_WORDS}, but instead got ${#OUTPUT}." >&2
     fi
 
     if [ x"$ERROUT" == x"" ] &&
@@ -74,5 +79,5 @@ test_help() {
 
 test_significant_output() {
     COMMAND="$1"; shift
-    test_output -m 5 "$COMMAND"
+    test_output "$COMMAND" "" "" 0 5
 }

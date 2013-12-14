@@ -18,7 +18,7 @@ start_branch() {
     BRANCH_NAME="$1"; shift
 
     if [ x"$RESOURCE" == x"" ]; then
-	echo "Internal error; no 'branch prefix' supplied to test branch name." >&2
+	echo "Internal error; no resource given." >&2
 	exit 2
     fi
     case "$RESOURCE" in

@@ -48,4 +48,10 @@ start_branch() {
 	echo "Internal error: resource handler does not define 'check_new_branch_name'." >&2
 	exit 2
     fi
+    echo "TODO: need to check that the branch name does not already exist 1) locally and then 2) on the origin server." >&2
+    exit 2
+
+    # The name is acceptable; create the branch.
+    git checkout -b "$BRANCH_NAME"
+    git push origin "$BRANCH_NAME"
 }

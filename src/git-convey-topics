@@ -19,6 +19,7 @@ resource_usage() {
     echo "Available task commands are:"
     echo "   list      Lists open topics. This is the default action."
     echo "   start     Starts/opens a topic branch."
+    echo "   join      Joins an existing topic branch."
     echo "   commit    Commits changes to a topic branch."
     echo "   delete    Deletes the local topic branch."
     echo "   done      Submits a topic branch; with '-no-submit', deletes the topic branch."
@@ -48,6 +49,8 @@ resource_help() {
 		echo "Lists the topic branches active in the current repository.";;
 	    start)
 		echo "help start";;
+	    join)
+		echo "help join";;
 	    commit)
 		echo "help commit";;
 	    delete)
@@ -76,6 +79,8 @@ resource_do() {
 	    list_resources topic;;
 	start)
 	    start_branch 'topic' "$BRANCH_NAME";;
+	join)
+	    echo join;;
 	commit)
 	    echo commit;;
 	delete)

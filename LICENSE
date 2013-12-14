@@ -1,6 +1,6 @@
 		   Grant of License for use of 'git-convey'
 				  under the
-		   Liquid Labs Sustainable Software License
+		Dog Food Software Sustainable Software License
 
 I) DEFINITIONS
 
@@ -19,96 +19,47 @@ II) NON-COMMERCIAL USE
 
    5) Entirely non-commercial use of the work is free of change.
 
-   6) You may distribute a derived work under the GPL2 or GPL3 licenses.
+   6) You may distribute a derived work containing your own significant
+      contributions under the GPL2 or GPL3 licenses.
 
 III) COMMERCIAL USE
 
-   6) The first year of commercial use is free of charge.
+   7) The first year of commercial use is free of charge.
 
-   7) To continue commercial use of the Work, you are required to pay
-      $0.10 per week per user or $6 per year per user.
+   8) To continue commercial use of the Work, you are required to pay $0.10
+      per week per user or $5.20 per year per user. You may choose to defer
+      payment until you owe a total of $1,000.
 
-  10) For a one time fee of $10,000, you may make a verbatim copy of the work
+   9) For a one time fee of $10,000, you may make a verbatim copy of the work
       and take fee simple ownership of the copy.
 
-  11) Fees are paid on a weekly basis through gittip.com to
-      https://www.gittip.com/dogfoodsoftware. Yearly and one time fees are
-      paid through paypal to payments@dogfoodsoftware.com.
+  10) Acceptable payment methods are posted at
+      http://dogfoodsoftware.com/Payment-Methods. The method of payment may be
+      updated by the Company with 60 days notice posted on the site.
 
-  12) You may distribute commercial derivatives under a license entirely
-      compatible with this License.
+  11) You may distribute commercial derivatives under compatible co-licenses.
 
 IV) GENERAL TERMS
 
-  13) Any action under this License shall be settled by binding
-      arbitration. The place and terms of the arbitration shall--in order
-      of preference--be set by:
-
-      * agreement by both parties,
-      * the Better Business Bureau, or
-      * a court of competent jurisdiction.
+  12) Any action under this License shall be settled by binding
+      arbitration. The place and terms of the arbitration shall--in order of
+      preference--be set by: 1) agreement by both parties, 2) the Better
+      Business Bureau, or 3) a court of competent jurisdiction.
 
       Both parties agree that proceedings will be held in the city of the
       Company's home office or as near as possible.
 
-  14) If found liable for non-payment, you shall be liable for all
+  13) If found liable for non-payment, you shall be liable for all
       recovery costs.
 
-  15) The Company may transfer her interest in this License.
+  14) The Company may transfer her interest in this License.
 
-  16) The work is provided AS IS with no warranty or guarantee of any kind.
+  15) The work is provided AS IS with no warranty or guarantee of any kind.
 
-  17) This is a plain language contract. It is intended to be understood as is
+  16) This is a plain language contract. It is intended to be understood as is
       without reference to technical terms or legal precedent.
 
+This License conforms to the Dog Food Software Sustainable Software License
+Template at: http://dogfoodsoftware.com/Sustainable-Software-License
 
-This License is copyright 2013, Liquid Labs L.L.C. The License template is
-available at:
-
-http://liquid-labs.com/files/sustainable-software/Sustainable-Software-license
-
-APPENDIX: How to Apply this License to Your Work
-
-You are permitted to copy this License verbatim with the following
-modifications:
-
-* You must change the fields enclosed in '[...]'.
-* You may modify the method or denomination of all payments.
-
-Place a copy of the license in the root direcotry of the project home or other
-natural location. Add a notice at the top of each file referencing the license
-and giving the Work title and copyright information. E.g.:
-
-This file is a component of 'Some Work' distributed under a Liquid Labs
-Sustainable Software License and copyright 2013 by Acme Co. Refer to the
-'LICENSE' file in the project home directory for specific terms.
-
-APPENDIX: Plain Language Analysis
-
-Plain Language Info
-
-Analyzing the license text between and including 'Summary' through the final
-section (vanilla.txt):
-
-* contains 339 (3), 369 (1), and 340 (2) words, 
-* 125 'difficult words' (1); 90% of the total words appear on the
-  Oxford 3000(c) common word list (3)
-* has an average sentence length of 7.1 (1) and 12.1 (2).
-
-The highest grade level equivalent score is 11-12th grade--based on the
-Dale-Chali Readability score of 8.9 (1). The mean of the other scoring
-mechanisms gives a mean grade level score of 7.8 (2).
-
-1) http://wordcounttools.com/
-2) http://www.readability-score.com/
-3) http://oald8.oxfordlearnersdictionaries.com/oxford3000/oxford_3000_profiler.html
-
-Our arbitrary targets for this document where maximum grade level of '12th'
-from any source and less than 500 words total. We removed each section from
-the final version to determine the impact of each part, and have determined
-the text is near it's natural limit. Any significant further simplification
-would likely require a radically different approach.
-
-The printed license should fit easily on a single page. This was true when
-printing the vanilla license with Chrome version 31.0.1650.63 as well as OSX
-10.9 'TextEdit' using 10 pt fonts.
+The template is copyright 2013, Dog Food Software L.L.C.

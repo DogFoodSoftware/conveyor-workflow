@@ -42,17 +42,30 @@ resource_help() {
 	TASK="$1"; shift
 	case "$TASK" in
 	    list)
-		echo "Lists the release branches active in the current repository.";;
+		echo "Lists the release branches active in the current repository."
+		;;
 	    start)
-		echo start;;
+		echo "Creates a new release branch and checks it out. The current branch must be"
+		echo "'master', which will be updated and used as the source of the new branch."
+		echo "The branch must not already exist and the branch name must start with"
+		echo "'release-'."
+		;;
 	    checkout)
-		echo checkout;;
+		echo "Checks out and updates an existing release branch."
+		;;
 	    delete)
-		echo delete;;
+		echo "Deletes the named release branch from the local repository. To archive"
+		echo "a release branch in the shared repository, use 'sunset'. If no branch name is"
+		echo "given, then the operation will delete the current branch and reset the local"
+		echo "checkout to the 'master' branch if the current branch is a release branch."
+		echo "Otherwise, it will raise a user error."
+		;;
 	    promote)
-		echo promote;;
+		echo "Promotes the release branch to production status by tagging it."
+		;;
 	    sunset)
-		echo sunset;;
+		echo "Deletes the named release branch locally and moves it to the archives on the"
+		echo "shared repository."
 	    help)
 		resource_usage;;
 	    *)

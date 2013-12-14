@@ -55,10 +55,7 @@ resource_help() {
 		;;
 	    delete)
 		echo "Deletes the named release branch from the local repository. To archive"
-		echo "a release branch in the shared repository, use 'sunset'. If no branch name is"
-		echo "given, then the operation will delete the current branch and reset the local"
-		echo "checkout to the 'master' branch if the current branch is a release branch."
-		echo "Otherwise, it will raise a user error."
+		echo "a release branch in the shared repository, use 'sunset'."
 		;;
 	    promote)
 		echo "Promotes the release branch to production status by tagging it."
@@ -66,7 +63,10 @@ resource_help() {
 	    sunset)
 		echo "Deletes the named release branch locally and moves it to the archives on the"
 		echo "shared repository."
+		;;
 	    help)
+		echo "Meta-help... you're blowing my mind."
+		echo
 		resource_usage;;
 	    *)
 		resource_usage "Unknown task: '$TASK'."

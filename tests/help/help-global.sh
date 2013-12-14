@@ -13,7 +13,7 @@
 #* </pre>
 #*/
 
-source `dirname $0`/lib/cli-lib.sh
+source `dirname $0`/../lib/cli-lib.sh
 
 test_help "git convey help" "usage: git convey <resource|global task>"
 

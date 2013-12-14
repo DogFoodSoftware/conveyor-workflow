@@ -1,5 +1,7 @@
-# Sourced to define FLAGS_TRUE and FLAGS_FALSE.
-source `dirname $0`/../runnable/lib/shflags
+# Here we follow shflags. Without reliable packaging, we find it easier to
+# just make the library self sufficient.
+FLAGS_TRUE=0
+FLAGS_FALSE=1
 
 test_output() {
     # Mandatory args

@@ -43,7 +43,7 @@
 #* </pre>
 #*/
 
-source `dirname $0`/lib/cli-lib.sh
+source `dirname $0`/../lib/cli-lib.sh
 
 test_significant_output "git convey help topics list"
 test_significant_output "git convey topics help list"

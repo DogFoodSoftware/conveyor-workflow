@@ -54,8 +54,10 @@ test_output() {
 	echo -e "ERROR: '$COMMAND' output did not start with expected:\n'$EXPECTED_STDOUT_START'; got:\n'$OUTPUT'"
     fi
 
-    if [[ ( x"$MIN_WORDS" -ne x"" ) && ( ${#OUTPUT} -lt $MIN_WORDS ) ]]; then
-	echo "ERROR: '$COMMAND' output was expected to output at least ${MIN_WORDS}, but instead got ${#OUTPUT}." >&2
+    OUTPUT_ARRAY=( $OUTPUT )
+    WORD_COUNT=${#OUTPUT_ARRAY[@]}
+    if [[ ( x"$MIN_WORDS" != x"" ) && ( $WORD_COUNT -lt $MIN_WORDS ) ]]; then
+	echo "ERROR: '$COMMAND' output was expected to output at least ${MIN_WORDS}, but instead got $WORD_COUNT." >&2
     fi
 
     if [ x"$ERROUT" == x"" ] &&

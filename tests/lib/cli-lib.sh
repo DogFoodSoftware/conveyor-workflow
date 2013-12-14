@@ -1,11 +1,18 @@
-# shflags does not export the FLAGS_TRUE/FLAGS_FALSE. Maybe should, but till
-# then...
-source `dirname $0`/../runnable/lib/shflags
-
 test_output() {
+    source `dirname $0`/../runnable/lib/shflags
+    FLAGS_PARENT=""
+
+    # We really want 'min-words' but shFlags doesn't like it. Patch?
+    DEFINE_integer min_words '' 'minimum number of words' 'm'
+
+    FLAGS "$@" || exit $?
+    eval set -- "${FLAGS_ARGV}"
+
+
     COMMAND="$1"; shift
     EXPECTED_STDOUT_START="$1"; shift
-    if [ x"$EXPECTED_STDOUT_START" == x"" ]; then
+    if [[ ( x"$EXPECTED_STDOUT_START" == x"") && 
+	  ( x"$FLAGS_min_words" == x"" || $FLAGS_min_words -eq 0 ) ]] ; then
 	NO_EXPECTED_STDOUT=${FLAGS_TRUE}
     else
 	NO_EXPECTED_STDOUT=${FLAGS_FALSE}
@@ -42,6 +49,10 @@ test_output() {
 	echo -e "ERROR: '$COMMAND' output did not start with expected:\n'$EXPECTED_STDOUT_START'; got:\n'$OUTPUT'"
     fi
 
+    if [[ ( x"$FLAGS_min_words" -ne x"" ) && ( ${#OUTPUT} -lt $FLAGS_min_words ) ]]; then
+	echo "ERROR: '$COMMAND' output was expected to output at least $FLAGS_min_words, but instead got ${#OUTPUT}." >&2
+    fi
+
     if [ x"$ERROUT" == x"" ] &&
 	[ x"$NO_EXPECTED_STDERR" != x"$FLAGS_TRUE" ]; then
 	echo "ERROR: '$COMMAND' did not produce any text on stderr as expected."
@@ -59,4 +70,9 @@ test_help() {
     COMMAND="$1"; shift
     EXPECTED_STDOUT_START="$1"; shift
     test_output "$COMMAND" "$EXPECTED_STDOUT_START" "" 0
+}
+
+test_significant_output() {
+    COMMAND="$1"; shift
+    test_output -m 5 "$COMMAND"
 }

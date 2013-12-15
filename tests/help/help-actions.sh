@@ -2,16 +2,16 @@
 
 #/**
 #* <pre>
-#* Feature: Commandline help for the git-convey topics tasks.
+#* Feature: Commandline help for the git-convey topics actions.
 #*
-#* Scenario Outline: git-convey task help
+#* Scenario Outline: git-convey action help
 #* Given 'git-convey' is installed
-#* When I type 'git convey <task help>'
+#* When I type 'git convey <action help>'
 #* Then significant text is printed to stdout 
 #* And the script exits with exit code 0.
 #*
 #* Example:
-#* | task help              |
+#* | action help            |
 #* | topics help list       |
 #* | help topics list       |
 #* | topics help start      |

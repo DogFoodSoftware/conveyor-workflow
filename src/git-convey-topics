@@ -16,7 +16,7 @@ resource_usage() {
 
     echo "usage: git convey topics [list [<pattern>]|[start|commit|done [--no-submit]] [<branch>]]]"
     echo
-    echo "Available task commands are:"
+    echo "Available actions:"
     echo "   list      Lists open topics. This is the default action."
     echo "   start     Starts/opens a topic branch."
     echo "   join      Joins an existing topic branch."
@@ -36,15 +36,15 @@ resource_usage() {
 resource_opts() {
     # Going against bash standards, shFlags requires 'nomark' as the long
     # default value.
-    DEFINE_boolean 'mark' true "Controls whether the current topics branch is marked with a '*' in the 'list' task"
+    DEFINE_boolean 'mark' true "Controls whether the current topics branch is marked with a '*' in the 'list' action"
 }
 
 resource_help() {
     if [ $# -lt 1 ]; then
 	resource_usage
     else
-	TASK="$1"; shift
-	case "$TASK" in
+	ACTION="$1"; shift
+	case "$ACTION" in
 	    list)
 		echo "Lists the topic branches active in the current repository."
 		;;
@@ -73,7 +73,7 @@ resource_help() {
 		echo
 		resource_usage;;
 	    *)
-		resource_usage "Unknown task: '$TASK'."
+		resource_usage "Unknown action: '$ACTION'."
 		exit 1;
 	esac
     fi
@@ -81,15 +81,15 @@ resource_help() {
 
 resource_do() {
     if [ $# -lt 1 ]; then
-	TASK="list"
+	ACTION="list"
     else
-	TASK="$1"; shift
+	ACTION="$1"; shift
     fi
     if [ $# -ge 1 ]; then
 	BRANCH_NAME="$1"; shift
     fi
 
-    case "$TASK" in
+    case "$ACTION" in
 	list)
 	    list_resources topic;;
 	start)
@@ -103,15 +103,15 @@ resource_do() {
 	done)
 	    echo done;;
 	help)
-	    TASK="$BRANCH_NAME"
-	    if [ x"$TASK" == x"" ]; then
+	    ACTION="$BRANCH_NAME"
+	    if [ x"$ACTION" == x"" ]; then
 		resource_usage
 	    else
-		resource_help "$TASK"
+		resource_help "$ACTION"
 	    fi
 	    ;;
 	*)
-	    resource_usage "Unknown task: '$TASK'."
+	    resource_usage "Unknown action: '$ACTION'."
 	    exit 1;
     esac
 }

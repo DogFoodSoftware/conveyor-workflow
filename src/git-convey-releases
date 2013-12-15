@@ -15,6 +15,8 @@ resource_usage() {
     fi
 
     echo "usage: git convey releases [list [<pattern>]|[start|checkout|update|promote <branch>]]"
+    echo
+    echo "Available actions:"
     echo "   list      List release branches in this repo. This is the default action."
     echo "   start     Start a new release."
     echo "   checkout  Checkout / switch to an existing release."
@@ -24,7 +26,7 @@ resource_usage() {
     echo "   help      Print this help."
     echo
     echo "   '--mark (default)/--nomark' are used to toggle the '*' for the current"
-    echo "release branch in the 'list' task."
+    echo "release branch in the 'list' action."
     echo
     global_help
 }
@@ -32,15 +34,15 @@ resource_usage() {
 resource_opts() {
     # Going against bash standards, shFlags requires 'nomark' as the long
     # default value.
-    DEFINE_boolean 'mark' true "Controls whether the current release branch is marked with a '*' in the 'list' task"
+    DEFINE_boolean 'mark' true "Controls whether the current release branch is marked with a '*' in the 'list' action"
 }
 
 resource_help() {
     if [ $# -lt 1 ]; then
 	resource_usage
     else
-	TASK="$1"; shift
-	case "$TASK" in
+	ACTION="$1"; shift
+	case "$ACTION" in
 	    list)
 		echo "Lists the release branches active in the current repository."
 		;;
@@ -69,7 +71,7 @@ resource_help() {
 		echo
 		resource_usage;;
 	    *)
-		resource_usage "Unknown task: '$TASK'."
+		resource_usage "Unknown action: '$ACTION'."
 		exit 1;
 	esac
     fi
@@ -77,15 +79,15 @@ resource_help() {
 
 resource_do() {
     if [ $# -lt 1 ]; then
-	TASK="list"
+	ACTION="list"
     else
-	TASK="$1"; shift
+	ACTION="$1"; shift
     fi
     if [ $# -ge 1 ]; then
 	BRANCH_NAME="$1"; shift
     fi
 
-    case "$TASK" in
+    case "$ACTION" in
 	list)
 	    list_resources release;;
 	start)
@@ -99,15 +101,15 @@ resource_do() {
 	sunset)
 	    echo sunset;;
 	help)
-	    TASK="$BRANCH_NAME"
-	    if [ x"$TASK" == x"" ]; then
+	    ACTION="$BRANCH_NAME"
+	    if [ x"$ACTION" == x"" ]; then
 		resource_usage
 	    else
-		resource_help "$TASK"
+		resource_help "$ACTION"
 	    fi
 	    ;;
 	*)
-	    resource_usage "Unknown task: '$TASK'."
+	    resource_usage "Unknown action: '$ACTION'."
 	    exit 1;
     esac
 }

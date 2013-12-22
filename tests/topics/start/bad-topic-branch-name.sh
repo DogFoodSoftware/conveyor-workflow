@@ -9,7 +9,7 @@
 #* When I type 'git convey topics start "foo bar"'
 #* Then no text is printed to stdout
 #* And text is printed to stderr starting with "Branch name 'foo bar' cannot contain spaces."
-#* And the script exits with exit code 1.
+#* And the script exits with exit code 1. 
 #* </pre>
 #*/
 

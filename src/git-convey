@@ -1,5 +1,5 @@
 #!/bin/sh
-# /**
+#/**
 #  * <div class="p">
 #  * 'Controller' script for the <a
 #  *   href="http://dogfoodsoftware.com/documentation/conveyor/ref/Branching-Strategy">Conveyor
@@ -7,6 +7,7 @@
 #  *   documentation for details on usage.
 #  * </div>
 #  * <div id="Implementation" data-perspective="implementation" class="grid_12 blurbSummary">
+#  *   <div class="blurbTitle">Implementation</div>
 #  *   <div class="p">
 #  *     This script essentially reads the first argument&mdash;which is
 #  *     understood as the resource name&mdash;and then looks for the matching
@@ -19,6 +20,7 @@
 #  *     workarounds. If you don't like our approach to branch management,
 #  *     GitFlow offers a great alternative.
 #  *   </div>
+#  */
 
 # If in future versions, we want to use shFlags for commandline option
 # processing, we will want to set this variable, used by shFlags for
@@ -32,10 +34,12 @@ export GIT_CONVEY_DIR=$(dirname "$(echo "$0" | sed -e 's|\\|/|g')")
 # Regularize getopt parsing across Linux platforms.
 export POSIXLY_CORRECT=1
 
+#/**
 #  *   <div class="subHeader">Helper Functions and Usage Check</div>
 #  *   <div class="p">
 #  *     It's bash, so helper funtctions have to come first.
 #  *   </div>
+#  */
 
 global_help() {
     echo "Use 'git convey help [<resource> [<action>]]' for details and refer to "
@@ -77,7 +81,9 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+#/**
 #  * <div class="subHeader"><span>Options Parsing</span></div>
+#  */
 
 source "$GIT_CONVEY_DIR/lib/shflags"
 source "$GIT_CONVEY_DIR/common-lib.sh"
@@ -88,8 +94,9 @@ DEFINE_boolean verbose false 'be verbose => show git commands' 'v'
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
 
+#/**
 #  * <div class="subHeader"><span>Main Logic</span></div>
-
+#  */
 RESOURCE="$1"; shift
 
 if [ x"$RESOURCE" == x"help" ]; then
@@ -127,4 +134,6 @@ else # we are in help mode
 	resource_help $ACTION
     fi
 fi
+#/**
 #  * </div><!-- #Implementation.blurbSummary -->
+#  */

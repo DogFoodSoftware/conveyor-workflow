@@ -13,6 +13,6 @@
 #* </pre>
 #*/
 
-source `dirname $0`/lib/cli-lib.sh
+source `dirname $0`/../../lib/cli-lib.sh
 
 test_output "git convey topics start 'foo bar'" '' "Branch name 'foo bar' cannot contain spaces." 1

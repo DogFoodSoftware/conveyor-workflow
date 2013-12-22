@@ -13,6 +13,6 @@
 #* </pre>
 #*/
 
-source `dirname $0`/lib/cli-lib.sh
+source `dirname $0`/../lib/cli-lib.sh
 
 test_output "git convey topics foo" "usage: git convey topics" "Unknown action: 'foo'." 1

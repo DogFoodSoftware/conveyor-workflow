@@ -11,7 +11,7 @@
 #* Then text "Switched to branch 'task-foo'" is printed to stdout
 #* And branch 'task-foo' is created in the local repository
 #* And branch 'task-foo' is created in the origin repository
-#* And the script exits with exit code 0. 
+#* And the script exits with exit code 0.
 #* </pre>
 #*/
 

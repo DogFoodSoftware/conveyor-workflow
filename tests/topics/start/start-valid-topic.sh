@@ -9,7 +9,8 @@
 #* And I am on the 'master' branch'
 #* When I type 'git convey topics start task-foo'
 #* Then text "Switched to branch 'task-foo'" is printed to stdout
-#* And branch 'task-foo' is created in the local and origin repository.
+#* And branch 'task-foo' is created in the local repository
+#* And branch 'task-foo' is created in the origin repository
 #* And the script exits with exit code 0. 
 #* </pre>
 #*/

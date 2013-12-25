@@ -16,7 +16,7 @@ function populate_test_environment() {
     cd staging
     # Notice we don't use the git-convey porcelain here as we don't want to
     # use what we're trying to test. I guess ideally we wouldn't use git
-    # porcelain either, but that's tedious.
+    # porcelain either, but git plumbing is tedious.
     git checkout --quiet -b task-add-foo
     echo "foo" > foo
     git add foo

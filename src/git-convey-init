@@ -30,11 +30,11 @@ resource_do() {
     # Create the repo.
     mkdir ${REPO_NAME}.git
     cd ${REPO_NAME}.git
-    git init --bare . > /dev/null
+    git init --bare --quiet .
 
     # Create clone into staging and initialize for git-convey.
     cd ..
-    git clone file://$PWD/${REPO_NAME}.git "$STAGING_DIR" >/dev/null 2>&1
+    git clone --quiet file://$PWD/${REPO_NAME}.git "$STAGING_DIR" 2>/dev/null
     cd "$STAGING_DIR"
     cat <<EOF > README.repo
 This is a git-convey repository and is intended for use with git-convey
@@ -42,10 +42,10 @@ porcelain. For further information, please refer to:
 
 http://dogfoodsoftware.com/documentation/git-convey
 EOF
-    git add README.repo > /dev/null
-    git commit -m "Initialized git-convey repo with README.repo file." > /dev/null
+    git add README.repo
+    git commit --quiet -m "Initialized git-convey repo with README.repo file."
     # For some reason, the 'push' output comes out ot stderr...
-    git push origin master > /dev/null 2>&1
+    git push --quiet origin master
     cd ..
     rm -rf "$STAGING_DIR"
 

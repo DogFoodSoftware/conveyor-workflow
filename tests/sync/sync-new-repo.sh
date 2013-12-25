@@ -14,10 +14,12 @@
 #* </pre>
 #*/
 
-source `dirname $0`/../../lib/cli-lib.sh
-source `dirname $0`/../../lib/environment-lib.sh
-source `dirname $0`/../../lib/start-lib.sh
+source `dirname $0`/../lib/cli-lib.sh
+source `dirname $0`/../lib/environment-lib.sh
+source `dirname $0`/../lib/start-lib.sh
+
+export TEST_MODE=0 # that's bash for true
 
 init_test_environment
 populate_test_environment
-test_output "git convey sync file:///$GIT_CONVEY_HOME/data/test/origin.git" "Sync completed." '' 0
+test_output "git convey sync file:///$GIT_CONVEY_HOME/data/test/origin.git" "Sync complete." '' 0

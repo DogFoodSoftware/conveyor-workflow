@@ -13,6 +13,8 @@ function test_start() {
 
     test_output "$COMMAND" "$EXPECTED_STDOUT_START" "$EXPECTED_STDERR_START" $EXPECTED_EXIT_CODE
 
+    # Check local branch created.
+    
     echo "ERROR: check local branch created" >&2
     echo "ERROR: check origin branch created" >&2
 }

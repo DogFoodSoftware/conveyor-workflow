@@ -33,9 +33,9 @@ resource_do() {
 
 	# Else, let's attempt the clone.
 	if [ x"$LOCAL_DIR" == x"" ];then
-	    git clone $REMOTE_URL
+	    git clone --quiet $REMOTE_URL
 	else
-	    git clone $REMOTE_URL $LOCAL_DIR
+	    git clone --quiet $REMOTE_URL $LOCAL_DIR
 	fi
     elif [ $# -eq 0 ]; then
 	# With no arguments, we are updating the current repository. Make sure

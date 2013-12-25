@@ -1,4 +1,5 @@
 export GIT_CONVEY_HOME=/home/user/playground/git-convey
+export GIT_CONVEY_TEST_DIR=/home/user/playground/git-convey/data/test
 
 function init_test_environment() {
     cd $GIT_CONVEY_HOME 2>/dev/null || (echo "Did not find standard git-convey install." >&2; exit 2)
@@ -11,8 +12,8 @@ function init_test_environment() {
 }
 
 function populate_test_environment() {
-    cd $GIT_CONVEY_HOME/data 2>/dev/null || (echo "Did not find standard git-convey data dir." >&2; exit 2)
-    git clone file:///$GIT_CONVEY_HOME/origin.git staging > /dev/null
+    cd $GIT_CONVEY_TEST_DIR 2>/dev/null || (echo "Did not find standard git-convey data dir." >&2; exit 2)
+    git clone --quiet file:///$GIT_CONVEY_TEST_DIR/origin.git staging
     cd staging
     # Notice we don't use the git-convey porcelain here as we don't want to
     # use what we're trying to test. I guess ideally we wouldn't use git

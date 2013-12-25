@@ -38,10 +38,7 @@ start_branch() {
     # Now we check that the branch name conforms. There's one generic test,
     # then we hand it off to the callback defined in the resource handler
     # script.
-    if [[ x"$BRANCH_NAME" == *" "* ]]; then
-	echo "Branch name '$BRANCH_NAME' cannot contain spaces." >&2
-	exit 1
-    fi
+    generic_name_tests "$BRANCH_NAME"
     if type "check_new_branch_name" >/dev/null 2>&1; then
 	check_new_branch_name "$BRANCH_NAME"
     else
@@ -54,4 +51,20 @@ start_branch() {
     # The name is acceptable; create the branch.
     git checkout -b "$BRANCH_NAME"
     git push origin "$BRANCH_NAME"
+}
+
+function generic_name_tests() {
+    NAME="$1"; shift
+
+    EXIT=0
+    if [[ x"$NAME" == *" "* ]]; then
+	echo "Names cannot contain spaces; got '$NAME'." >&2
+	EXIT=1
+    fi
+    if [[ x"$NAME" == *"_"* ]]; then
+	echo "Names should use '-' rather than '_'; got '$NAME'" >&2
+	EXIT=1
+    fi
+    
+    if [ $EXIT -ne 0 ]; then exit $EXIT; fi
 }

@@ -1,0 +1,46 @@
+resource_usage() {
+    if [ x"$1" != x"" ]; then
+	echo $1 >&2
+	echo >&2
+    fi
+
+    echo "usage: git convey init <source repo name> [<staging dir>]"
+    echo
+    echo "Used to initialize a new repository for git-convey. This is a"
+    echo "standard git repository with the 'master' branch pre-populated with"
+    echo "a README file."
+    echo
+}
+
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+    resource_usage "Unknown usage for 'git convey init'."
+    exit 1
+fi
+
+REPO_NAME="$1"; shift
+if [ $# -ge 1 ]; then
+    STAGING_DIR="$1"; shift
+else
+    STAGING_DIR="staging"
+fi
+
+generic_name_tests "$REPO_NAME"
+
+# Create the repo.
+mkdir ${REPO_NAME}.git
+cd ${REPO_NAME}.git
+git init --bare .
+
+# Create clone into staging and initialize for git-convey.
+cd ..
+git clone file://${REPO_NAME}.git "$STAGING_DIR"
+cd "$STAGING_DIR"
+cat <<EOF > README.repo
+This is a git-convey repository and is intended for use with git-convey
+porcelain. For further information, please refer to:
+
+http://dogfoodsoftware.com/documentation/git-convey
+EOF
+git add README.repo
+git commit -m "Initialized git-convey repo with README.repo file."
+git push origin master

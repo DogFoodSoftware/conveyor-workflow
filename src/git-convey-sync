@@ -1,12 +1,61 @@
-BRANCH_LIST="git for-each-ref --shell --format='%(refname:short)' refs/heads"
+# First, let's determine whether we're in clone or update mode.
+if [ $# -eq 1 ] || [ $# -eq 2 ]; then
+    REMOTE_URL="$1"; shift
+    if [ $# -eq 1 ]; then
+	LOCAL_DIR="$1"; shift
+    fi
 
-# Grab list of open task branches and update.
-for i in `$BRANCH_LIST/task-*`; do # Match both at once?
-    git checkout $i
-    git pull origin $i
-done
-# Grab list of open release branches and update.
-for i in `$BRANCH_LIST/release-'`; do
-    git checkout $i
-    git pull origin $i
-done
+    # We don't support clones within repos, so let's make sure we're not
+    # already in a repo.
+    GIT_DIR=`git rev-parse --git-dir`
+    # There is one exception: if we're running tests, then we will be working
+    # under the git-convey repo, and that's okay.
+    if [ x"$TEST_MODE" != x"0" ] || [[ x"$GIT_DIR" != x*git-convey/.git ]]; then
+	echo "Cannot clone a git-convey repo within an existing repo" >&1
+	exit 1
+    fi
+    # Else, let's attempt the clone.
+    if [ x"$LOCAL_DIR" == x"" ];then
+	git clone $REMOTE_URL
+    else
+	git clone $REMOTE_URL $LOCAL_DIR
+    fi
+elif [ $# -eq 0 ]; then
+    # With no arguments, we are updating the current repository. Make sure
+    # we're in a repository.
+    GIT_DIR=`git rev-parse --git-dir`
+    if [ x"$GIT_DIR" == x"" ]; then
+	echo "Attempted update outside of git directory." >&2
+	exit 1
+    fi
+    # Now make sure that there are no uncommitted changes...
+    git update-index -q --refresh
+    EXIT=0
+    if ! git diff-files --quiet --; then
+	echo "Found unstaged files in repo." >&2
+	EXIT=1
+    fi
+    if ! git diff-index --cached --quite HEAD --; then
+	echo "Found uncommitted changes in the repo." >&2
+	EXIT=1
+    fi
+    if [ $EXIT -ne 0 ]; then
+	echo "Sync aborted." >&2
+	exit $EXIT
+    fi
+    
+    # Okay, we are clean, time to move ahead.
+
+    BRANCH_LIST="git for-each-ref --shell --format='%(refname:short)' refs/heads"
+    BRANCH_PREFIXES="task- bugfix- hotfix- release-"
+    for PREFIX in $BRANCH_PREFIXES; do
+	for BRANCH in `$BRANCH_LIST/${PREFIX}*`; do
+	    # TODO: do this with plumbing
+	    git checkout $i
+	    git pull origin $i
+	done
+    done
+else
+    echo "Unknown usage... TODO: usage" >&1;
+    exit 1
+fi # Top level clone / update check.

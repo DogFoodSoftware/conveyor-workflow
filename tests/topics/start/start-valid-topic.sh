@@ -16,6 +16,8 @@
 #*/
 
 source `dirname $0`/../../lib/cli-lib.sh
+source `dirname $0`/../../lib/environment-lib.sh
 source `dirname $0`/../../lib/start-lib.sh
 
+init_test_environment
 test_start 'git convey topics start task-foo' "Switched to branch 'task-foo'" '' 0

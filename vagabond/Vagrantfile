@@ -1,0 +1,118 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# /**
+#  * <div id="Overview" class="blurbSummary grid_12">
+#  * <div class="p">
+#  *   Sets up a Vagrant VM as a minimal Conveyor workstation with git-convey
+#  *   project checked out.
+#  * </div>
+#  * </div><!-- #Overview.blurbSummary -->
+#  * <div id="Implementation" class="blurbSummary grid_12">
+#  * <div class="blurbTitle">Implementation</div>
+#  */
+
+VAGRANTFILE_API_VERSION_2 = "2"
+OUR_DIR=File.dirname(File.expand_path(__FILE__))
+# Once we standardize on ruby 1.9, we prefer:
+# KEYS_DIR="#{Dir.home}/.conveyor/keys"
+KEYS_DIR="#{File.expand_path('~')}/.conveyor/keys"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION_2) do |config|
+  # Set up base box parameters.
+  config.vm.box = "opensuse-13.1-64bit-20GB-server"
+  config.vm.box_url = "http://dogfoodsoftware.com/bitbucket/opensuse-13.1-64bit-20GB-server.box"
+
+  config.vm.hostname = 'git-convey-wkst'
+
+  # Expose the (naughty) HTTP port on the host.
+  config.vm.network :forwarded_port, guest: 42069, host: 42069, auto_correct: true
+
+  config.vm.provider :virtualbox do |vb|
+    # If you'd like more memory, override default 1GB memory for the base box.
+    # vb.customize ["modifyvm", :id, "--memory", "2048"]
+  end
+
+  # Configure SSH.
+  config.ssh.username = 'user'
+  config.ssh.forward_x11 = true
+
+  setup_keys config
+
+  $INSTALL_WORKSTATION_DISTRO_PACKAGES = <<SCRIPT
+zypper --non-interactive in --auto-agree-with-licenses man MozillaFirefox ImageMagick exiftool gimp gimp-help gimp-help-browser gimp-plugins-python graphviz graphviz-gd graphviz-gnome icoutils inkscape autoconf make emacs git git-web gitk git-email git-daemon -patterns-openSUSE-minimal_base-conflicts
+SCRIPT
+  config.vm.provision "shell", :inline => $INSTALL_WORKSTATION_DISTRO_PACKAGES
+  
+  $SETUP_MINIMAL_CONVEYOR = <<SCRIPT
+# TODO: Update to latest installed file after production release. DFS site
+# should always be running of the latest release, so grab their copy.
+wget https://raw.github.com/DogFoodSoftware/conveyor-core/master/install
+sudo -u user bash install 2>&1 | tee conveyor-install-log
+rm install
+SCRIPT
+  config.vm.provision "shell", :inline => $SETUP_MINIMAL_CONVEYOR
+
+  $INSTALL_CONVEYOR_PROJECTS = <<SCRIPT
+sudo -u user /home/user/playground/dogfoodsoftware.com/conveyor/core/bin/conveyor-project-install https://github.com/DogFoodSoftware/git-convey.git
+SCRIPT
+  config.vm.provision "shell", :inline => $INSTALL_CONVEYOR_PROJECTS
+
+end # close anonymous config block
+
+# /**
+#  * <div class="subHeader"><span><code>setup_keys()</code></span></div>
+#  * <div class="p">
+#  *   The key setup is the only really clever bit. <span
+#  *   data-perspective="detailed">Indeed, it's a bit to clever and we'd like
+#  *   to simplify, but as far as we know, Vagrant lacks the necessary hooks
+#  *   to do this right. </span>First we check for a 'workstation' key, and
+#  *   generate one if necessary. We then do some magic to determine whether
+#  *   this is a new machine, and if it is, to copy the workstation public key
+#  *   into the <code>Vagrantfile</code>'s directory, which we assume is
+#  *   mapped to <code>/vagrant</code> in the guest. If there is a workstation
+#  *   public key in the <code>/vagrant</code> directory, it will be picked up
+#  *   by host run configuration and the <code>authorized_keys</code> file
+#  *   will be updated.
+#  * </div>
+#  * <div class="p">
+#  *   Note keys may be copied manually or by some other process, and the
+#  *   <code>authorized_keys</code> will be refreshed. This may not be the
+#  *   desired behavior on high security hosts. For most users, the automated
+#  *   hardening enabled by this automatic key set up far outweighs the
+#  *   relatively slight negative effect on the hosts security. <span
+#  *   data-perspective="detailed">If an attacker has access to your admin
+#  *   account, you're hosed anyway. Vulnerabilities in the file system that
+#  *   would allow a non-admin user to write to the admin's protected
+#  *   directory, or unprotect the directory, could be exploited for an
+#  *   escelation attack.</span>
+#  * </div>
+#  */
+def setup_keys(config)
+  if ! File.exists?("#{KEYS_DIR}/workstation")
+    # Then we generate a key.
+    system "mkdir -p #{KEYS_DIR}"
+    system "ssh-keygen -t rsa -C 'Vagabond/Vagrant workstation key.' -b 2048 -f #{KEYS_DIR}/workstation -N ''"
+  end
+
+  # This test makes me a little nervous because there could be a race
+  # condition involved and even if it works in the current versison, we're
+  # relying on (AFAIK) undocumented and non-guaranteed behavior.
+  if ! File.exists?(".vagrant/machines/default/virtualbox/id")
+    # Then this machine is brannd new.
+    system "cp #{KEYS_DIR}/workstation.pub #{OUR_DIR}"
+  end
+
+  if File.exists?("#{OUR_DIR}/workstation.pub")
+    $SETUP_SSH_KEY_ON_GUEST = <<SCRIPT
+cat /vagrant/workstation.pub >/home/user/.ssh/authorized_keys
+rm /vagrant/workstation.pub
+SCRIPT
+    config.vm.provision "shell", :inline => $SETUP_SSH_KEY_ON_GUEST
+  else
+    config.ssh.private_key_path = "#{KEYS_DIR}/workstation"
+  end
+end # setup_keys()
+
+# /**
+#  * </div><!-- #Implementation.blurbSummary -->
+#  */

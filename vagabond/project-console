@@ -1,0 +1,97 @@
+#!/bin/bash
+
+# 'realpath' is nice, but not as standard so we figure the absolute path the old way
+cd `dirname $0`
+MY_PATH=`pwd`
+DEFAULT_PORT=42069
+
+# TODO: would be nice to check for vagrant... maybe version as well.
+
+VAGRANT_PORT_INSTALLED=`vagrant plugin list | grep vagrant-port`
+if [[ x"$VAGRANT_PORT_INSTALLED" == x"" ]]; then
+    GEM_FILE=vagrant-port-0.0.2.gem
+    echo "'vagrant-port' plugin not found; installing..."
+    curl -o $GEM_FILE https://github.com/DogFoodSoftware/_third-party-vagrant-port/blob/master/${GEM_FILE}?raw=true
+    vagrant plugin install vagrant-port --plugin-source ./$GEM_FILE
+    rm $GEM_FILE
+    VAGRANT_PORT_INSTALLED=`vagrant plugin list | grep vagrant-port`
+fi
+
+if [[ x"$VAGRANT_PORT_INSTALLED" == x"" ]]; then
+    echo "Port plugin failed; will continue with default port..." >&2
+    PORT=$DEFAULT_PORT
+else
+    PORT=`vagrant port 42069`
+    if [[ x"$PORT" == x"" ]]; then
+	PORT=$DEFAULT_PORT
+    fi
+fi
+
+PROJECT_URL="http://127.0.0.1:$PORT"
+
+function check_exec() {
+    EXEC="$1"
+    if [ -x "$EXEC" ]; then
+	return 0 # That's bash for true.
+    else
+	if [ -f "$EXEC" ]; then
+	    echo "Found browser file '$EXEC', but it is not executable." >&2
+	    return 2
+	else
+	    return 1
+	fi
+    fi
+}
+
+function run_browser() {
+    EXEC="$1"
+    URL="$2"
+    ERROR_MSG="$3"
+
+    "$EXEC" "$URL" || (echo "$ERROR_MSG"; echo; echo -e "Could not open browser; manually navigate to:\n\n$URL"; exit 1)
+}
+
+# OK, now try to determine the host so we know how to launch. There
+# might be a 'best practices' method for this, and we will also
+# eventually support flags to specify browser, but for now, we're
+# going to barrel our way through.
+OS=`uname`
+
+case "$OS" in
+    'Darwin')
+	CHROME_DIR=`find /Applications -name "Google Chrome.app" -not -path "*.app/" | head -1`
+	if check_exec "$CHROME_DIR/Contents/MacOS/Google Chrome"; then
+	    ERROR='Could not launch Chrome. This is probably because Chrome is already running
+and MacOS Chrome inexplicably will not allow you to open a new window from
+the command line. Please visit:
+
+https://code.google.com/p/chromium/issues/detail?id=113152
+
+and voice your displeasure. If they'"'"'ve closed the bug as "won'"'"'t fix", open
+a new one explaining that the command line should *really* be useful, even
+on a Mac.
+
+In the meantime...'
+	    run_browser "$CHROME_DIR/Contents/MacOS/Google Chrome" $PROJECT_URL "$ERROR"
+	else
+	    echo "Could not locate Chrome; bailing out." >&2
+	    exit 1
+	fi
+	;;
+    # Options gleaned from https://en.wikipedia.org/wiki/Uname
+    'Linux' | *BSD | GNU* | CYGWIN* | 'HP-UX' | 'AIX' | 'SunOS' | 'UnixWare')
+	CHROME_EXEC=`which google-chrome`
+	if check_exec $CHROME_EXEC; then
+	    run_browser "$CHROME_EXEC" $PROJECT_URL "Could not invoke Chrome."
+	else
+	    echo "Could not find Chrome; falling back to Firefox..."
+	    FF_EXEC=`which firefox`
+	    if check_exec $FF_EXEC; then
+		run_browser "$FF_EXEC" $PROJECT_URL "Could not invoke Firefox."
+	    else
+		echo "Could not find a browser; giving up." >&2
+		exit 1
+	    fi
+	fi
+	;;
+esac

@@ -1,5 +1,15 @@
 #!/bin/bash
+# /**
+#  * <div id="Overview" class="blurbSummary">
 
+#  * Script to determine and report the <a
+#  * href="http://dogfoodsoftware.com/documentation/git-convey">git-convey</a>
+#  * project. Based on the  the <a href="http://dogfoodsoftware.com/documentation/vagabond/">Vagabond</a> <a
+#  * href="http://dogfoodsoftware.com/documentation/vagabond/src/get-project-console-url-template">template
+#  * script for the general purpose</a>
+
+#  * </div>
+#  */
 # 'realpath' is nice, but not as standard so we figure the absolute path the old way
 cd `dirname $0`
 MY_PATH=`pwd`

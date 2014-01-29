@@ -29,10 +29,10 @@
 <div id="Basic-Model" class="blurbSummary grid_12">
   <div class="blurbTitle">Basic Model</div>
   <div class="p">
-    The Conveyor release management model makes use of two
+    The git-convey release management model makes use of two
     resources: <code>topics</code>
     and <code>releases</code>. <code>Topics</code> isolate changes to all
-    project artifacts. <code>Releases</code> manage public runtime versions. 
+    project artifacts. <code>Releases</code> manage public runtime versions.
   </div>
   <div class="p">
     Every change on the system begins with

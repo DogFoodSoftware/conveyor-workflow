@@ -1,0 +1,36 @@
+<div id="Overview" class="blurbSummary grid_12">
+  <div class="p">
+    Generally any branch may be designated as supported. The most common
+    purpose is for a release, and these may be referred to as release
+    branches. In any case, the supported branch has been isolated from all
+    other development and only receieves bug fix updates. The release notes /
+    documentation should provide a description of 'level' of support provided
+    on a branch by branch basise.
+  </div>
+</div><!-- #Overview -->
+<div id="Supported-Branch-Lifecycle" class="blurbSummary grid_12">
+  <div class="subHeader"><span>Supported Branch Lifecycle</span></div>
+  <div class="p">
+    Supported branches are most commonly cut from <code>master</code> or
+    another supported branch. The branch is initially considered and generally
+    designated as being a 'testing' branch. The testing phase proceeds until
+    all tests and other designated release requirements have been met. At that
+    point, the branch is designated as 'production', indicating it is ready
+    for public consumption.
+  </div>
+  <div class="p">
+    The distinction between 'testing' and 'production' is 
+  </div>
+
+    <div class="p">
+      In addition, all branches beginning with <code>production-</code> are
+      reserved and should be taken to mean a supported branch. In general, the
+      words following the <code>production-</code> prefix should describe the
+      term or terms of support. Suffixing a date, such
+      as <code>production-2013-12-31-thru-2016-12-31</code> is used in all the
+      projects managed by Dog Food Software to indicate support for the code
+      base branched from <code>production</code> on December 31, 2013 thru
+      December 31, 2016. In other words, a 3 year support window.
+    </div>
+  </div>
+</div>

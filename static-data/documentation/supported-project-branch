@@ -1,0 +1,44 @@
+<div class="lexicon-entry">
+  <div class="term">supported project branch</div>
+  <div class="definition">
+    <div class="p">
+      A 'supported project branch' is a git branch specifically designated by
+      the project. Designation as supported project branch (or just 'supported
+      branch' in the Conveyor context) indicates that the branch will persist
+      indefinitely and receive periodic updates appropriates as appropriate to
+      the branch.
+    </div>
+    <div class="p">
+      In general, a supported branch may be created for any purpose. There are
+      likewise no restrictions on the naming of such branches other than those
+      imposed by git itself, though all names <em>should</em> avoid conflict
+      with the standard normative conventions.
+    </div>
+    <div class="p">
+      The standard convention is that every project should at a minimum
+      maintain three fundamental supported
+      branches: <code>master</code>, <code>test</code>,
+      and <code>production</code>. The <code>master</code> branch maintains
+      the most up to date implementation work. It has the most features, but
+      also the most bugs and may not be relied upon for
+      operations. The <code>test</code> branch is for stabilization. Feature
+      work has been frozen and only bug fixes are allowed on the
+      branch. The <code>production</code> branch is a best effort, bug free
+      version. I.e., the lust fully stabalized code. In an ideal
+      system, <code>production</code> is only patched when receiving updates
+      fom <code>test</code>. TODO: this section is good, but probably should
+      go under a branch management discussion. We could do a nice graph with
+      the code cuts through time.
+    </div>
+    <div class="p">
+      In addition, all branches beginning with <code>production-</code> are
+      reserved and should be taken to mean a supported branch. In general, the
+      words following the <code>production-</code> prefix should describe the
+      term or terms of support. Suffixing a date, such
+      as <code>production-2013-12-31-thru-2016-12-31</code> is used in all the
+      projects managed by Dog Food Software to indicate support for the code
+      base branched from <code>production</code> on December 31, 2013 thru
+      December 31, 2016. In other words, a 3 year support window.
+    </div>
+  </div>
+</div>

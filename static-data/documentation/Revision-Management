@@ -1,0 +1,182 @@
+<div id="Overview" class="blurbSummary grid_12">
+  <div class="p">
+    <div class="grid_4 alpha">    
+      <div class="subHeader"><span>Developers</span></div>
+      <ol style="text-indent: -2em">
+	<li>Checkout a topic.</li>
+	<li>Commit changes to the topic.</li>
+	<li>Submit the changes to the topic.</li>
+      </ol>
+    </div><!-- developers blurb -->
+    <div class="grid_4">
+      <div class="subHeader"><span>Merge Masters</span></div>
+      <ol style="text-indent: -2em">
+	<li>Review topic changes.</li>
+	<li>Accept or decline the changes.</li>
+      </ol>
+    </div><!-- merge masters blurb -->
+    <div class="grid_4 omega">
+      <div class="subHeader"><span>Operations</span></div>
+      <ol style="text-indent: -2em">
+	<li>Start a release cycle.</li>
+	<li>Publish a release candidate.</li>
+	<li>Select release for production.</li>
+      </ol>
+    </div><!-- operations blurb --> 
+    <div class="clear"></div>
+  </div>
+</div><!-- #Overview.blurbSummary -->
+<div id="Basic-Model" class="blurbSummary grid_12">
+  <div class="blurbTitle">Basic Model</div>
+  <div class="p">
+    The Conveyor release management model makes use of two
+    resources: <code>topics</code>
+    and <code>releases</code>. <code>Topics</code> isolate changes to all
+    project artifacts. <code>Releases</code> manage public runtime versions. 
+  </div>
+  <div class="p">
+    Every change on the system begins with
+    a <code>task</code>. <code>Tasks</code> manage changes from a high level,
+    planning point of view. <code>Topics</code> isolate changes at the lower
+    level of bits and files. <code>Topics</code> (and <code>releases</code>)
+    can be used independently as part
+    of <a href="/documentation/git-convey/">Git-Convey</a>.
+  </div>
+  <div class="p">
+    When a <code>task</code> is accepted, a topic branch is cut from
+    the <code>task</code>'s source branch. This also creates
+    the <code>topic</code> resource, and the topic branch is managed by
+    the <code>topic</code> resource. Changes are made within
+    the <code>topic</code>, and then submitted for acceptance.
+  </div>
+  <div class="p">
+    When a submitted <code>topic</code> is accepted, the changes are merged
+    back to the original source branch. If the source branch was already part
+    of a <code>release</code>, then the changes are (more or less) instantly
+    published. In most cases, the changes migrate back to
+    the <code>master</code> branch.
+  </div>
+  <div class="p">
+    A <code>release</code> is cut from a source branch in order to identify
+    and manage versions destined for public consumption. Again,
+    the <code>release</code> is generally, but not necessarily, created
+    from <code>master</code> branch. These release versions generally move
+    through a testing phase before finally being promoted to a production
+    runtime environment.
+  </div>
+</div><!-- #Basic-Model.blurbSummary -->
+<div id="Release-Cycle" class="blurbSummary grid_12">
+  <div class="blurbTitle">Release Cycle</div>
+  <div class="p">
+    A release cycle begins with the creation of a <code>release</code>
+    resource, associated to a <code>release-&lt;id&gt;[-&lt;release
+    name&gt;]</code> branch. The <code>release</code> is generally destined
+    for a testing period, and the initial cut point is tagged
+    with <code>release-&lt;id&gt;-RC1</code>, where 'RC' stands for 'release
+    candidate'.
+  </div>
+  <div class="p">
+    Further changes to the <code>release</code>&mdash;called
+    bugfixes&mdash;result in incremental release canditates: RC2, RC3,
+    etc. When the <code>release</code> is ready for promotion to a production
+    environment, it is tagged <code>release-&lt;id&gt;-GA1</code>, where 'GA'
+    stands for 'general availability'. The last RC tag always matches the GA1
+    tag. From this point on, changes to the branch&mdash;called
+    hotfixes&mdash;result in incremental GA releases.
+  </div>
+  <div class="p">
+    When a release is no longer supported, the branch and all tags are
+    archived. Archived references are not visible by default, but are retained
+    for historical purposes.
+  </div>
+  <div class="p">
+    This model easily supports projects with a single active release, as well
+    as those with multiple active releases, demos, and custom versions.
+  </div>
+</div><!-- #Release-Cycle.blurbSummary -->
+<div id="Topics" class="blurbSummary grid_12">
+  <div class="blurbTitle">Topics</div>
+  <div class="p">
+    A <code>topic</code> is created to isolate changes to project
+    artifacts. A <code>topic</code> is always associated to a single topic
+    branch. Topic branches may be cut from any branch in the underlying
+    project repository. We give special names to the topic branch to indicate
+    the source branch type:
+    <ul>
+      <li><code>task-*</code> branches are cut from <code>master</code> or
+      other <code>task-*</code> branches.</li>
+      <li><code>bugfix-*</code> branches are cut from
+      non-GA <code>release-*</code> and other <code>bugfix-*</code>
+      branches.</li>
+      <li><code>hotfix-*</code> branches are cut from a
+      GA <code>release-*</code> and other <code>hotfix-*</code> branches.</li>
+    </ul>    
+  </div>
+  <div class="p">
+    Simple tasks may result in a single topic branch cut from
+    the <code>master</code> or a release branch. More complex tasks may result
+    in the creation of sub-tasks and associated sub-topic branches.
+  </div>
+</div><!-- #Topics.blurbSummary -->
+<div id="Actions" class="blurbSummary grid_12">
+  <div class="blurbTitle">Actions</div>
+  <div class="p">
+    Every action which would introduce a new commit can be isolated to one of
+    six actions:
+    <ul>
+      <li><code>git convey update</code>: brings the local repository
+      up-to-date with the remote <code>origin</code>.</li>
+      <li><code>git convey start &lt;task|bugfix|hotfix&gt; &lt;task
+      ID&gt;</code>: used to create a new branch where changes can be
+      isoloted.</li>
+      <li><code>git convey commit ...</code>: used to commit changes to a topic
+      branch.<span class="note">This is essentially a synonym
+      for <code>git commit</code>. Developers should prefer <code>git convey
+      commit</code> anyway in order to keep the habit of consistently using
+      the Git-Convey tool and because future versions may want to do some
+      custom house keeping at commit time.</span></li>
+      <li><code>git convey finish [[&lt;task|bugfix|hotfix&gt;] &lt;task
+      ID&gt;]</code>: marks the current or indicated topic branch for
+      integration back into the original source branch from which it was
+      cut. Note that 'finished' branches may receive further commits, such as
+      may be requested by the merge master, and be re-finished any number of
+      times.</li>
+      <li><code>git convey promote-testing</code>: archives the
+      current <code>testing</code> <code>HEAD</code> and then forces
+      the <code>testing</code> <code>HEAD</code> to the
+      current <code>master</code> <code>HEAD</code>.</li>
+      <li><code>git convey promote-release &lt;release ID&gt;</code>: cuts a
+      new release branch from the
+      current <code>testing</code> <code>HEAD</code>.</li>
+    </ul>
+  </div>
+</div><!-- #Actions.blurbSummary -->
+<div id="Internal-Mechanics" class="blurbSummary grid_12" data-perspective="detailed">
+  <div class="blurbTitle">Internal-Mechanics</div>
+  <div class="p">
+    Most of the time, users will not need to concern themselves with the
+    internal mechanics of the Git-Convey extensions. Developers should
+    generally have a basic understanding of what's happenning in the repo
+    whenever Git-Convey commands are executed, and of course Git-Convey
+    developers will need to know exactly what's going on.
+  </div>
+  <div class="subHeader"><span><code>update</code></span></div>
+  <div class="p">
+    
+  </div>
+  <div class="subHeader"><span><code>start</code></span></div>
+  <div class="p">
+  </div>
+  <div class="subHeader"><span><code>commit</code></span></div>
+  <div class="p">
+  </div>
+  <div class="subHeader"><span><code>finish</code></span></div>
+  <div class="p">
+  </div>
+  <div class="subHeader"><span><code>promote-testing</code></span></div>
+  <div class="p">
+  </div>
+  <div class="subHeader"><span><code>promote-release</code></span></div>
+  <div class="p">
+  </div>
+</div><!-- #Internal-Mechanics.blurbSummary -->

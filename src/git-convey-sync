@@ -26,7 +26,7 @@ resource_do() {
 	GIT_DIR=`git rev-parse --git-dir`
 	# There is one exception: if we're running tests, then we will be
 	# working under the git-convey repo, and that's okay.
-	if [ x"$TEST_MODE" != x"0" ] || [[ x"$GIT_DIR" != x*git-convey/.git ]]; then
+	if [ x"$GIT_CONVEY_TEST_MODE" != x"0" ] || [[ x"$GIT_DIR" != x*git-convey/.git ]]; then
 	    echo "Cannot clone a git-convey repo within an existing repo" >&1
 	    exit 1
 	fi

@@ -116,4 +116,9 @@ resource_do() {
     esac
 }
 
+check_new_branch_name() {
+    TOPIC_NAME="$1"
+    # No particular tests at this time.
+}
+
 #  * </div><!-- #Implementation.blurbSummary -->

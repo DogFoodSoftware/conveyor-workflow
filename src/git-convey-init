@@ -49,5 +49,6 @@ EOF
     cd ..
     rm -rf "$STAGING_DIR"
 
+    # TODO: use 'shell-echo.sh' functions for quite output.
     echo "'$REPO_NAME' initialized."
 }

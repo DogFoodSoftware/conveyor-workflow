@@ -45,12 +45,39 @@ start_branch() {
 	echo "Internal error: resource handler does not define 'check_new_branch_name'." >&2
 	exit 2
     fi
-    echo "TODO: need to check that the branch name does not already exist 1) locally and then 2) on the origin server." >&2
-    exit 2
+    # Thanks to: 
+    # http://stackoverflow.com/questions/5167957/is-there-a-better-way-to-find-out-if-a-local-git-branch-exists
+    git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"
+    RESULT=$?
+    if [ $RESULT -eq 0 ]; then
+	echo "Local branch for topic '$BRANCH_NAME' already exists."
+    fi
+    # Thanks to: 
+    # http://stackoverflow.com/questions/8223906/how-to-check-if-remote-branch-exists-on-a-given-remote-repository
+    git ls-remote --exit-code . "origin/$BRANCH_NAME" &> /dev/null
+    RESULT=$?
+    if [ $RESULT -eq 0 ]; then
+	echo "Branch for topic '$BRANCH_NAME' already exists on origin."
+    fi
 
     # The name is acceptable; create the branch.
-    git checkout -b "$BRANCH_NAME"
-    git push origin "$BRANCH_NAME"
+    git checkout -q -b "$BRANCH_NAME"
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+	echo "Git reported an error creating topic branch '$BRANCH_NAME'. Bailing out." >&2
+	exit 3
+    fi
+    git push -q origin "$BRANCH_NAME"
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+	echo "Git reported an error pushing topic branch '$BRANCH_NAME' to origin." >&2
+	echo "Deleting local topic branch and bailing out." >&2
+	git checkout master
+	git branch -d "$BRANCH_NAME"
+	exit 3
+    fi
+
+    echo "Switched to a new topic branch '$BRANCH_NAME'."
 }
 
 function generic_name_tests() {

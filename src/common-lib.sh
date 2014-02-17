@@ -85,11 +85,11 @@ function generic_name_tests() {
 
     EXIT=0
     if [[ x"$NAME" == *" "* ]]; then
-	echo "Names cannot contain spaces; got '$NAME'." >&2
+	echo "Resource names cannot contain spaces; got '$NAME'." >&2
 	EXIT=1
     fi
     if [[ x"$NAME" == *"_"* ]]; then
-	echo "Names should use '-' rather than '_'; got '$NAME'" >&2
+	echo "Resource names should use '-' rather than '_'; got '$NAME'." >&2
 	EXIT=1
     fi
     

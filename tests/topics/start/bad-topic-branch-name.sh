@@ -13,6 +13,13 @@
 #* </pre>
 #*/
 
-source `dirname $0`/../../lib/cli-lib.sh
+set -e
 
-test_output "git convey topics start 'foo bar'" '' "Branch name 'foo bar' cannot contain spaces." 1
+source `dirname $0`/../../lib/cli-lib.sh
+setup_path `dirname $0`/../../../runnable
+source `dirname $0`/../../lib/environment-lib.sh
+source `dirname $0`/../../lib/start-lib.sh
+init_test_environment `dirname $0`/../../.. `basename $0`
+cd $WORKING_REPO_PATH
+
+test_output "git convey topics start 'foo bar'" '' "Resource names cannot contain spaces; got 'foo bar'." 1

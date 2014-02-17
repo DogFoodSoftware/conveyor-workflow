@@ -19,14 +19,15 @@ function init_test_environment() {
     mkdir test
     cd test
     # TODO: we should support '-q/--quiet' for the following two commands.
-    git convey init $ORIGIN_REPO > /dev/null
+    # Notice we use the 'working repo', without the '.git' extension because
+    # init adds the extension. Users do not generally deal with the '.git'.
+    git convey init $WORKING_REPO > /dev/null
     git convey sync "file://$ORIGIN_REPO_PATH" "$WORKING_REPO_PATH" > /dev/null
 }
 
 function populate_test_environment() {
     cd $GIT_CONVEY_TEST_DIR 2>/dev/null || (echo "Did not find standard git-convey data dir." >&2; exit 2)
-    git clone --quiet file:///$GIT_CONVEY_TEST_DIR/origin.git staging
-    cd staging
+    cd $WORKING_REPO_PATH 2>/dev/null || (echo "Did not find working repo: '$WORKING_REPO_PATH'." >&2; exit 2)
     # Notice we don't use the git-convey porcelain here as we don't want to
     # use what we're trying to test. I guess ideally we wouldn't use git
     # porcelain either, but git plumbing is tedious.
@@ -41,6 +42,4 @@ function populate_test_environment() {
     git add bar
     git commit --quiet -am "added bar"
     git push --quiet origin task-add-bar
-    cd ..
-    rm -rf staging
 }

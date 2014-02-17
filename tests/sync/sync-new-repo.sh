@@ -14,17 +14,21 @@
 #* </pre>
 #*/
 
+set -e
+export GIT_CONVEY_TEST_MODE=0 # that's bash for true
+
 source `dirname $0`/../lib/cli-lib.sh
+setup_path `dirname $0`/../../runnable
 source `dirname $0`/../lib/environment-lib.sh
 source `dirname $0`/../lib/start-lib.sh
+init_test_environment `dirname $0`/../.. `basename $0`
+cd $WORKING_REPO_PATH
 
-export TEST_MODE=0 # that's bash for true
-
-init_test_environment
 populate_test_environment
-cd $GIT_CONVEY_TEST_DIR
-test_output "git convey sync file:///$GIT_CONVEY_HOME/data/test/origin.git" "Sync complete." '' 0
-cd origin
+exit
+rm -rf $WORKING_REPO_PATH
+test_output "git convey sync file:///$ORIGIN_REPO_PATH $WORKING_REPO_PATH" "Sync complete." '' 0
+cd $WORKING_REPO_PATH
 REFERENCES=`git show-ref -d`
 ORIGIN_REF_COUNT=`echo "$REFERENCES" | grep refs/remotes | wc -l`
 if [ $ORIGIN_REF_COUNT -ne 4 ]; then
@@ -43,5 +47,3 @@ FOUND_BAR=`echo "$REFERENCES" | grep refs/remotes/origin/task-add-foo | wc -l`
 if [ $FOUND_BAR -ne 1 ]; then
     echo "ERROR: did not find 'task-add-foo' in origin branches."
 fi
-
-rm -rf $GIT_CONVEY_TEST_DIR

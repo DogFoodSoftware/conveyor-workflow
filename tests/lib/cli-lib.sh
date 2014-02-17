@@ -3,6 +3,20 @@
 FLAGS_TRUE=0
 FLAGS_FALSE=1
 
+setup_path() {
+    RUNNABLE_PATH="$1"
+
+    # Git expects to find 'git-convey' on the PATH. So we check to see if it
+    # is, and if not, we add it.
+    which git-convey > /dev/null 2> /dev/null
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+	cd $RUNNABLE_PATH
+	RUNNABLE_PATH=`realpath $RUNNABLE_PATH`
+	export PATH=$PATH:$RUNNABLE_PATH
+    fi
+}
+
 test_output() {
     # Mandatory args
     COMMAND="$1"; shift

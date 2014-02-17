@@ -14,5 +14,6 @@
 #*/
 
 source `dirname $0`/../lib/cli-lib.sh
+setup_path `dirname $0`/../../runnable
 
 test_output "git convey topics foo" "usage: git convey topics" "Unknown action: 'foo'." 1

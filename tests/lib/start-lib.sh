@@ -21,7 +21,7 @@ function test_start() {
     if [ $RESULT -ne 0 ]; then
 	echo "ERROR: Did not find expected local branch for topic '$BRANCH_NAME' in $WORKING_REPO_PATH." >2&
     fi
-    git ls-remote --exit-code . "origin/$BRANCH_NAME" &> /dev/null
+    git ls-remote --exit-code . "origin/$BRANCH_NAME" > /dev/null
     RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "ERROR: Did not find expected remote branch for topic '$BRANCH_NAME' in $WORKING_REPO_PATH." >2&

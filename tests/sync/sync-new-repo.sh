@@ -27,7 +27,8 @@ cd $WORKING_REPO_PATH
 populate_test_environment
 
 rm -rf $WORKING_REPO_PATH
-test_output "git convey sync file:///$ORIGIN_REPO_PATH $WORKING_REPO_PATH" "Sync complete." '' 0
+cd $GIT_CONVEY_TEST_DIR
+test_output "git convey --test sync file://$ORIGIN_REPO_PATH $WORKING_REPO_PATH" "Sync complete." '' 0
 cd $WORKING_REPO_PATH
 REFERENCES=`git show-ref -d`
 ORIGIN_REF_COUNT=`echo "$REFERENCES" | grep refs/remotes | wc -l`
@@ -39,11 +40,11 @@ ORIGIN_MASTER=`echo "$REFERENCES" | grep refs/remotes/origin/master | awk '{prin
 if [ x"$LOCAL_MASTER" != x"$ORIGIN_MASTER" ]; then
     echo "ERROR: Expected local and remote master HEADs to match, but they did not."
 fi
-FOUND_BAR=`echo "$REFERENCES" | grep refs/remotes/origin/task-add-bar | wc -l`
+FOUND_BAR=`echo "$REFERENCES" | grep refs/remotes/origin/topic-add-bar | wc -l`
 if [ $FOUND_BAR -ne 1 ]; then
-    echo "ERROR: did not find 'task-add-bar' in origin branches."
+    echo "ERROR: did not find 'topic-add-bar' in origin branches."
 fi
-FOUND_BAR=`echo "$REFERENCES" | grep refs/remotes/origin/task-add-foo | wc -l`
+FOUND_BAR=`echo "$REFERENCES" | grep refs/remotes/origin/topic-add-foo | wc -l`
 if [ $FOUND_BAR -ne 1 ]; then
-    echo "ERROR: did not find 'task-add-foo' in origin branches."
+    echo "ERROR: did not find 'topic-add-foo' in origin branches."
 fi

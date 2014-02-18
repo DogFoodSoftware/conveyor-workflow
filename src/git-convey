@@ -90,9 +90,14 @@ source "$GIT_CONVEY_DIR/common-lib.sh"
 FLAGS_PARENT="git convey"
 
 DEFINE_boolean verbose false 'be verbose => show git commands' 'v'
+DEFINE_boolean test false 'run in test mode'
 
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
+
+if [ $FLAGS_test -eq $FLAGS_TRUE ]; then
+    export GIT_CONVEY_TEST_MODE=$FLAGS_TRUE
+fi
 
 #/**
 #  * <div class="subHeader"><span>Main Logic</span></div>

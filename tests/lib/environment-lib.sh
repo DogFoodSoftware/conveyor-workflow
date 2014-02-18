@@ -31,15 +31,15 @@ function populate_test_environment() {
     # Notice we don't use the git-convey porcelain here as we don't want to
     # use what we're trying to test. I guess ideally we wouldn't use git
     # porcelain either, but git plumbing is tedious.
-    git checkout --quiet -b task-add-foo
+    git checkout --quiet -b topic-add-foo
     echo "foo" > foo
     git add foo
     git commit --quiet -am "added foo"
-    git push --quiet origin task-add-foo
+    git push --quiet origin topic-add-foo
     git checkout --quiet master
-    git checkout --quiet -b task-add-bar
+    git checkout --quiet -b topic-add-bar
     echo "bar" > bar
     git add bar
     git commit --quiet -am "added bar"
-    git push --quiet origin task-add-bar
+    git push --quiet origin topic-add-bar
 }

@@ -7,7 +7,7 @@ list_resources() {
     if [ x"${FLAGS_mark}" == x"${FLAGS_FALSE}" ]; then
 	FORMAT='echo -n " "; echo "  %(refname:short)";'
     else
-	FORMAT='if [ `git branch | grep "^*" | cut -d" " -f2 ` == %(refname:short) ]; then echo -n "*"; else echo -n " "; fi; echo " %(refname:short)";'
+	FORMAT='if [ `git branch | grep "^*" | cut -d" " -f2 ` == %(refname:short) ]; then echo -n "*"; else echo -n " "; fi; BRANCH=%(refname:short); TOPIC=${BRANCH:$((${#RESOURCE} + 1))}; echo " $TOPIC";'
     fi
     EVAL=`git for-each-ref --shell --format="$FORMAT" refs/heads/$RESOURCE-*`
     eval $EVAL

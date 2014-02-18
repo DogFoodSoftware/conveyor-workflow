@@ -6,8 +6,8 @@
 #*
 #* Scenario: 'git convey sync' a new repo
 #* Given 'git-convey' is installed
-#* And an existing repo at file:///$GIT_CONVEY_HOME/data/test/origin.git
-#* When I type 'git convey sync file:///$GIT_CONVEY_HOME/data/test/origin.git'
+#* And a pre-populated test repository
+#* When I type 'git convey sync $ORIGIN_REPO_PATH $WORKING_REPO_PATH'
 #* Then text "Sync complete." is printed to stdout
 #* And all remote references are created in the local repository
 #* And the script exits with exit code 0.
@@ -25,7 +25,7 @@ init_test_environment `dirname $0`/../.. `basename $0`
 cd $WORKING_REPO_PATH
 
 populate_test_environment
-exit
+
 rm -rf $WORKING_REPO_PATH
 test_output "git convey sync file:///$ORIGIN_REPO_PATH $WORKING_REPO_PATH" "Sync complete." '' 0
 cd $WORKING_REPO_PATH

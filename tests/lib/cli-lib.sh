@@ -50,7 +50,8 @@ test_output() {
 
     TMP_FILE="/tmp/$RANDOM"
 
-    if ! eval 'export GIT_CONVEY_TEST_MODE=0;OUTPUT=`$COMMAND 2>$TMP_FILE | sed -n 1p`'; then
+#    if ! eval 'export GIT_CONVEY_TEST_MODE=0;OUTPUT=`$COMMAND 2>$TMP_FILE | sed -n 1p`'; then
+    if ! eval 'export GIT_CONVEY_TEST_MODE=0;OUTPUT=`$COMMAND 2>$TMP_FILE`'; then
 	# We checked this detects failure by adding 'exit 2' to the 'usage',
 	# 'resource_usage', and 'resource_help' functions.
 	echo "ERROR: '$COMMAND' exitted with non-zero status."

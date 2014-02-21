@@ -84,7 +84,7 @@ resource_do() {
 	start)
 	    start_branch 'topic' "$BRANCH_NAME";;
 	join)
-	    echo join;;
+	    join_branch 'topic' "$BRANCH_NAME";;
 	commit)
 	    echo commit;;
 	delete)

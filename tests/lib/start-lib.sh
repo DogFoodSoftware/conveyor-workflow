@@ -1,8 +1,9 @@
 function test_start() {
     # Mandatory args
     COMMAND="$1"; shift
-    BRANCH_NAME="$1"; shift
-    COMMAND="$COMMAND $BRANCH_NAME"
+    RESOURCE="$1"; shift
+    RESOURCE_NAME="$1"; shift
+    BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
     EXPECTED_STDOUT_START="$1"; shift
     EXPECTED_STDERR_START="$1"; shift
 

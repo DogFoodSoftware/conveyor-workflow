@@ -14,7 +14,6 @@
 #* </pre>
 #*/
 
-set -e
 export GIT_CONVEY_TEST_MODE=0 # that's bash for true
 
 source `dirname $0`/../lib/cli-lib.sh

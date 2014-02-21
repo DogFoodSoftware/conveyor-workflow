@@ -14,8 +14,6 @@
 #* </pre>
 #*/
 
-set -e
-
 source `dirname $0`/../../lib/cli-lib.sh
 setup_path `dirname $0`/../../../runnable
 source `dirname $0`/../../lib/environment-lib.sh
@@ -23,4 +21,4 @@ source `dirname $0`/../../lib/start-lib.sh
 init_test_environment `dirname $0`/../../.. `basename $0`
 cd $WORKING_REPO_PATH
 
-test_output "git convey topics join bad-topic" '' "No such topic 'bad-topic'." 1
+test_output "git convey topics join bad-topic" '' "No such topic 'bad-topic' exists on origin." 1

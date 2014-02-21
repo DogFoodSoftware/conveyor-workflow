@@ -50,7 +50,7 @@ resource_help() {
 		echo "Creates a new release branch and checks it out. The current branch must be"
 		echo "'master', which will be updated and used as the source of the new branch."
 		echo "The branch must not already exist and the branch name must start with"
-		echo "'release-'."
+		echo "'releases-'."
 		;;
 	    checkout)
 		echo "Checks out and updates an existing release branch."
@@ -91,7 +91,7 @@ resource_do() {
 	list)
 	    list_resources release;;
 	start)
-	    start_branch 'release' "$BRANCH_NAME";;
+	    start_branch 'releases' "$BRANCH_NAME";;
 	checkout)
 	    echo checkout;;
 	delete)
@@ -113,10 +113,4 @@ resource_do() {
 	    exit 1;
     esac
 }
-
-check_new_branch_name() {
-    TOPIC_NAME="$1"
-    # No particular tests at this time.
-}
-
 #  * </div><!-- #Implementation.blurbSummary -->

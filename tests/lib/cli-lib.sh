@@ -47,7 +47,6 @@ test_output() {
     else
 	NO_EXPECTED_STDERR=${FLAGS_FALSE}
     fi
-
     TMP_FILE="/tmp/$RANDOM"
 
 #    if ! eval 'OUTPUT=`$COMMAND 2>$TMP_FILE | sed -n 1p`'; then

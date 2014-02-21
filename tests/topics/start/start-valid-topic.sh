@@ -15,8 +15,6 @@
 #* </pre>
 #*/
 
-set -e
-
 source `dirname $0`/../../lib/cli-lib.sh
 setup_path `dirname $0`/../../../runnable
 source `dirname $0`/../../lib/environment-lib.sh
@@ -24,4 +22,4 @@ source `dirname $0`/../../lib/start-lib.sh
 init_test_environment `dirname $0`/../../.. `basename $0`
 cd $WORKING_REPO_PATH
 
-test_start 'git convey topics start' 'task-foo' "Switched to a new topic branch 'task-foo'." '' 0
+test_start 'git convey topics start task-foo' 'topics' 'task-foo' "Switched to a new topic 'task-foo'." '' 0

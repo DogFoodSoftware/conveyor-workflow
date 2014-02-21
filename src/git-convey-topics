@@ -82,9 +82,9 @@ resource_do() {
 	list)
 	    list_resources topic;;
 	start)
-	    start_branch 'topic' "$BRANCH_NAME";;
+	    start_branch 'topics' "$BRANCH_NAME";;
 	join)
-	    join_branch 'topic' "$BRANCH_NAME";;
+	    join_branch 'topics' "$BRANCH_NAME";;
 	commit)
 	    echo commit;;
 	delete)
@@ -104,10 +104,4 @@ resource_do() {
 	    exit 1;
     esac
 }
-
-check_new_branch_name() {
-    TOPIC_NAME="$1"
-    # No particular tests at this time.
-}
-
 #  * </div><!-- #Implementation.blurbSummary -->

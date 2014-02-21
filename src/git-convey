@@ -86,6 +86,7 @@ fi
 #  */
 
 source "$GIT_CONVEY_DIR/lib/shflags"
+source "$GIT_CONVEY_DIR/common-checks.sh"
 source "$GIT_CONVEY_DIR/common-lib.sh"
 FLAGS_PARENT="git convey"
 

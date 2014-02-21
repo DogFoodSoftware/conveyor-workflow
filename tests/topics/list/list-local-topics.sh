@@ -14,8 +14,6 @@
 #* </pre>
 #*/
 
-set -e
-
 source `dirname $0`/../../lib/cli-lib.sh
 setup_path `dirname $0`/../../../runnable
 source `dirname $0`/../../lib/environment-lib.sh

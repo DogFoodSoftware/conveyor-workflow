@@ -2,14 +2,14 @@
 
 #/**
 #* <pre>
-#* Feature: Report bad topics names on join.
+#* Feature: Report bad release names on join.
 #*
-#* Scenario: 'git convey topics join bad-topic'
+#* Scenario: 'git convey releases join bad-release'
 #* Given 'git-convey' is installed
-#*   And their is no topic 'foo-bar'
-#* When I type 'git convey topics join bad-topic'
+#*   And their is no release 'foo-bar'
+#* When I type 'git convey releases checkout bad-release'
 #* Then no text is printed to stdout
-#*   And text is printed to stderr starting with "No such topic 'bad-topic'."
+#*   And text is printed to stderr starting with "No such release 'bad-release'."
 #*   And the script exits with exit code 1. 
 #* </pre>
 #*/
@@ -21,4 +21,4 @@ source `dirname $0`/../../lib/start-lib.sh
 init_test_environment `dirname $0`/../../.. `basename $0`
 cd $WORKING_REPO_PATH
 
-test_output "git convey topics join bad-topic" '' "No such topic 'bad-topic' exists on origin." 1
+test_output "git convey releases checkout bad-release" '' "No such release 'bad-release' exists on origin." 1

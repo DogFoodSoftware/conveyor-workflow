@@ -92,7 +92,7 @@ function verify_branch_inputs() {
 	    exit 2;;
     esac
     if [ x"$RESOURCE_NAME" == x"" ]; then
-	echo "You must supply a branch name when starting a '$RESOURCE' branch." >&2
+	echo "No resource name supplied." >&2
 	exit 1
     fi
 

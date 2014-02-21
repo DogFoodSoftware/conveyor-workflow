@@ -84,16 +84,16 @@ resource_do() {
 	ACTION="$1"; shift
     fi
     if [ $# -ge 1 ]; then
-	BRANCH_NAME="$1"; shift
+	RESOURCE_NAME="$1"; shift
     fi
 
     case "$ACTION" in
 	list)
 	    list_resources release;;
 	start)
-	    start_branch 'releases' "$BRANCH_NAME";;
+	    start_branch 'releases' "$RESOURCE_NAME";;
 	checkout)
-	    echo checkout;;
+	    join_branch 'releases' "$RESOURCE_NAME";;
 	delete)
 	    echo delete;;
 	promote)
@@ -101,7 +101,7 @@ resource_do() {
 	sunset)
 	    echo sunset;;
 	help)
-	    ACTION="$BRANCH_NAME"
+	    ACTION="$RESOURCE_NAME"
 	    if [ x"$ACTION" == x"" ]; then
 		resource_usage
 	    else

@@ -19,11 +19,11 @@ function test_start() {
     git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"
     RESULT=$?
     if [ $RESULT -ne 0 ]; then
-	echo "ERROR: Did not find expected local branch for topic '$BRANCH_NAME' in $WORKING_REPO_PATH." >2&
+	echo "ERROR: Did not find expected local branch for topic '$BRANCH_NAME' in $WORKING_REPO_PATH."
     fi
     git ls-remote --exit-code . "origin/$BRANCH_NAME" > /dev/null
     RESULT=$?
     if [ $RESULT -ne 0 ]; then
-	echo "ERROR: Did not find expected remote branch for topic '$BRANCH_NAME' in $WORKING_REPO_PATH." >2&
+	echo "ERROR: Did not find expected remote branch for topic '$BRANCH_NAME' in $WORKING_REPO_PATH."
     fi
 }

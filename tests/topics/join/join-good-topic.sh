@@ -4,7 +4,7 @@
 #* <pre>
 #* Feature: Create a valid topic.
 #*
-#* Scenario: 'git convey topics join task-foo' from master
+#* Scenario: 'git convey topics join existing-topic' from master
 #* Given 'git-convey' is installed
 #*   And I am on the 'master' branch
 #*   And there exists a topic 'existing-topic'

@@ -1,6 +1,13 @@
 <div id="Overview" class="blurbSummary grid_12">
   <div class="p">
-    <div class="grid_4 alpha">    
+    <div class="grid_3 alpha">
+      <div class="subHeader"><span>Project Managers</span></div>
+      <ol style="text-indent: -2em">
+	<li>Create issues / topics.</li>
+	<li>Track changes.</li>
+      </ol>
+    </div><!-- developers blurb -->
+    <div class="grid_3">
       <div class="subHeader"><span>Developers</span></div>
       <ol style="text-indent: -2em">
 	<li>Checkout a topic.</li>
@@ -8,14 +15,14 @@
 	<li>Submit the changes to the topic.</li>
       </ol>
     </div><!-- developers blurb -->
-    <div class="grid_4">
+    <div class="grid_3">
       <div class="subHeader"><span>Merge Masters</span></div>
       <ol style="text-indent: -2em">
 	<li>Review topic changes.</li>
 	<li>Accept or decline the changes.</li>
       </ol>
     </div><!-- merge masters blurb -->
-    <div class="grid_4 omega">
+    <div class="grid_3 omega">
       <div class="subHeader"><span>Operations</span></div>
       <ol style="text-indent: -2em">
 	<li>Start a release cycle.</li>
@@ -29,25 +36,35 @@
 <div id="Basic-Model" class="blurbSummary grid_12">
   <div class="blurbTitle">Basic Model</div>
   <div class="p">
-    The git-convey release management model makes use of two
-    resources: <code>topics</code>
-    and <code>releases</code>. <code>Topics</code> isolate changes to all
-    project artifacts. <code>Releases</code> manage public runtime versions.
+    The git-convey model makes use of two resources: <code>topics</code>
+    and <code>releases</code>. <code>Topics</code> isolate
+    changes. <code>Releases</code> are meant for actual internal or public
+    use.
   </div>
   <div class="p">
-    Every change on the system begins with
-    a <code>task</code>. <code>Tasks</code> manage changes from a high level,
-    planning point of view. <code>Topics</code> isolate changes at the lower
-    level of bits and files. <code>Topics</code> (and <code>releases</code>)
-    can be used independently as part
-    of <a href="/documentation/git-convey/">Git-Convey</a>.
+    The git-convey model envisions four primary roles: project managers,
+    developers, merge masters, and operations. In practice, a single
+    individual may handle multiple or all of the roles, or multiple
+    individuals may act in each role. Your own process may involve other
+    roles, such as QA and client which support and augment the basic model
+    described here.
   </div>
   <div class="p">
-    When a <code>task</code> is accepted, a topic branch is cut from
-    the <code>task</code>'s source branch. This also creates
-    the <code>topic</code> resource, and the topic branch is managed by
-    the <code>topic</code> resource. Changes are made within
-    the <code>topic</code>, and then submitted for acceptance.
+    While entirely compatible with standard git, git-convey itself treats the
+    origin server as the central repository, referred to as 'origin', and the
+    local checkout as a dependent copy.
+  </div>
+  <div class="p">
+    Activity starts with the project manager who
+    creates <code>topics</code>. Topics may, but need not be, captured in an
+    external issue DB, such as GitHub's issue tracker. <code>git convey
+    start</code> creates a topic branch in the origin repository.
+  </div>
+  <div class="p">
+    A developer may then <code>git convey checkout</code> the topic branch, do
+    work, and commit changes locally with <code>git convey
+    commit</code>. TODO: further discussion awaits experimentation with
+    flowing through git.
   </div>
   <div class="p">
     When a submitted <code>topic</code> is accepted, the changes are merged

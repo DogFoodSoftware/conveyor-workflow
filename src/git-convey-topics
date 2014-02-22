@@ -14,7 +14,7 @@ resource_usage() {
 	echo >&2
     fi
 
-    echo "usage: git convey topics [list|start|checkout|commit|publish|delete|done|help [topic or topic pattern]] "
+    echo "usage: git convey topics [list [<topic pattern>]]|[start|checkout|commit|publish|delete|done [topic]]|[help [action]]"
     echo
     echo "Available actions:"
     echo "   list      Lists open topics. This is the default action."

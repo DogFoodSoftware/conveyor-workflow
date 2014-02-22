@@ -14,7 +14,7 @@ resource_usage() {
 	echo >&2
     fi
 
-    echo "usage: git convey releases [list [<pattern>]|[start|checkout|commit|publish|delete|promote <branch>]]"
+    echo "usage: git convey releases [list [<release pattern>]]|[start|checkout|commit|delete|archive [release]]|[help [action]]"
     echo
     echo "Available actions:"
     echo "   list      List release branches. This is the default action."
@@ -22,8 +22,7 @@ resource_usage() {
     echo "   checkout  Checkout / switch to an existing release."
     echo "   commit    Commits changes to a release branch."
     echo "   delete    Removes the local release branch."
-    echo "   promote   Move a release from 'testing' to 'production'."
-    echo "   sunset    Archives a release."
+    echo "   archive   Archives a release."
     echo "   help      Print this help."
     echo
     echo "   '--mark (default)/--nomark' are used to toggle the '*' for the current"
@@ -66,10 +65,7 @@ resource_help() {
 		echo "Deletes the named release branch from the local repository. To archive"
 		echo "a release branch in the shared repository, use 'sunset'."
 		;;
-	    promote)
-		echo "Promotes the release branch to production status by tagging it."
-		;;
-	    sunset)
+	    archive)
 		echo "Deletes the named release branch locally and moves it to the archives on the"
 		echo "shared repository."
 		;;
@@ -107,10 +103,8 @@ resource_do() {
 	    echo publish;;
 	delete)
 	    echo delete;;
-	promote)
-	    echo promote;;
-	sunset)
-	    echo sunset;;
+	archive)
+	    echo archive;;
 	help)
 	    ACTION="$RESOURCE_NAME"
 	    if [ x"$ACTION" == x"" ]; then

@@ -6,10 +6,11 @@ resource_usage() {
 
     echo "usage: git convey init <source repo name> [<staging dir>]"
     echo
-    echo "Used to initialize a new repository for git-convey. This is a"
+    echo "Used to initialize a new origin repository for git-convey. This is a"
     echo "standard git repository with the 'master' branch pre-populated with"
-    echo "a README file."
+    echo "a README.repo file."
     echo
+    echo "Use 'git convey sync' to checkout a local working directory."
 }
 
 resource_do() {

@@ -14,12 +14,13 @@ resource_usage() {
 	echo >&2
     fi
 
-    echo "usage: git convey releases [list [<pattern>]|[start|checkout|update|promote <branch>]]"
+    echo "usage: git convey releases [list [<pattern>]|[start|checkout|commit|publish|delete|promote <branch>]]"
     echo
     echo "Available actions:"
     echo "   list      List release branches in this repo. This is the default action."
     echo "   start     Start a new release."
     echo "   checkout  Checkout / switch to an existing release."
+    echo "   commit    Commits changes to a release branch."
     echo "   delete    Removes the local release branch."
     echo "   promote   Move a release from 'testing' to 'production'."
     echo "   sunset    Archives a release."
@@ -54,6 +55,12 @@ resource_help() {
 		;;
 	    checkout)
 		echo "Checks out and updates an existing release branch."
+		;;
+	    commit)
+		echo "Commits local changes to the local release branch."
+		;;
+	    publish)
+		echo "Pushes changes on the local release branch to the origin repository."
 		;;
 	    delete)
 		echo "Deletes the named release branch from the local repository. To archive"
@@ -93,7 +100,11 @@ resource_do() {
 	start)
 	    start_branch 'releases' "$RESOURCE_NAME";;
 	checkout)
-	    join_branch 'releases' "$RESOURCE_NAME";;
+	    checkout_branch 'releases' "$RESOURCE_NAME";;
+	commit)
+	    commit_branch 'releases' "$RESOURCE_NAME";;
+	publish)
+	    echo publish;;
 	delete)
 	    echo delete;;
 	promote)

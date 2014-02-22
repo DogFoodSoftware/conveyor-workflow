@@ -14,13 +14,14 @@ resource_usage() {
 	echo >&2
     fi
 
-    echo "usage: git convey topics [list|start|join|commit|delete|done|help [topic or topic pattern]] "
+    echo "usage: git convey topics [list|start|checkout|commit|publish|delete|done|help [topic or topic pattern]] "
     echo
     echo "Available actions:"
     echo "   list      Lists open topics. This is the default action."
-    echo "   start     Starts/opens a topic branch."
-    echo "   join      Joins an existing topic branch."
-    echo "   commit    Commits changes to a topic branch."
+    echo "   start     Starts/opens a topic."
+    echo "   checkout  Checks out an existing topic."
+    echo "   commit    Commits changes to a topic."
+    echo "   publish   Publishes changes to a topic."
     echo "   delete    Deletes the local topic branch."
     echo "   done      Submits a topic branch."
     echo "   help      Print this help."
@@ -43,12 +44,14 @@ resource_help() {
 		echo "The branch must not already exist and the branch name must start with"
 		echo "'task-', 'bugfix-', or 'hotfix-' as appropriate."
 		;;
-	    join)
+	    checkout)
 		echo "Checks and and updates an existing topic branch."
 		;;
 	    commit)
-		echo "Commits local changes to the topic branch and publishes the changes to the"
-		echo "shared repository."
+		echo "Commits local changes to the topic branch."
+		;;
+	    publish)
+		echo "Publishes the local changes to the origin repository."
 		;;
 	    delete)
 		echo "Deletes the named topic branch from the local repository. To submit a topic"
@@ -75,24 +78,26 @@ resource_do() {
 	ACTION="$1"; shift
     fi
     if [ $# -ge 1 ]; then
-	BRANCH_NAME="$1"; shift
+	RESOURCE_NAME="$1"; shift
     fi
 
     case "$ACTION" in
 	list)
 	    list_resources topic;;
 	start)
-	    start_branch 'topics' "$BRANCH_NAME";;
-	join)
-	    join_branch 'topics' "$BRANCH_NAME";;
+	    start_branch 'topics' "$RESOURCE_NAME";;
+	checkout)
+	    checkout_branch 'topics' "$RESOURCE_NAME";;
 	commit)
-	    echo commit;;
+	    commit_branch 'topics' "$RESOURCE_NAME";;
+	publish)
+	    echo publish;;
 	delete)
 	    echo delete;;
 	done)
 	    echo done;;
 	help)
-	    ACTION="$BRANCH_NAME"
+	    ACTION="$RESOURCE_NAME"
 	    if [ x"$ACTION" == x"" ]; then
 		resource_usage
 	    else

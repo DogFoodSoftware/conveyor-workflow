@@ -52,7 +52,7 @@ start_branch() {
     echo "Switched to a new $SINGULAR_RESOURCE '$RESOURCE_NAME'."
 }
 
-join_branch() {
+checkout_branch() {
     RESOURCE="$1"; shift
     RESOURCE_NAME="$1"; shift
     SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
@@ -63,14 +63,42 @@ join_branch() {
 	exit 1
     fi
 
-    # We are now ready to join the branch.
-    git checkout -q $BRANCH_NAME
+    # We are now ready to checkout the branch.
+    git checkout -q "$BRANCH_NAME"
 
-    git fetch -q
-    if ! git merge --no-ff -q origin/"$BRANCH_NAME"; then
-	echo "There are local conflicts or other problems merging the update, please resolve and commit with 'git convey commit'."
-    else
+    # 'fetch_and_merge' reports any problems itself, so we just need to report
+    # on success.
+    if fetch_and_merge "$BRANCH_NAME"; then
 	echo "Switched to $SINGULAR_RESOURCE '$RESOURCE_NAME'."
+    fi
+}
+
+function commit_branch() {
+    RESOURCE="$1"; shift
+    if [ $# -gt 0 ]; then
+	RESOURCE_NAME="$1"; shift
+    fi
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    if [ x"$RESOURCE_NAME" == x"" ]; then
+	# Defaut to current branch, which must match the stated resource.
+	BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
+	if [[ "$BRANCH_NAME" != "${RESOURCE}-"* ]]; then
+	    echo "Attempted to commit a '$RESOURCE' while on mis-matched branch '$BRANCH'." >&2
+	    exit 1
+	fi
+    fi
+
+    if [ x`git status --porcelain` == x'' ]; then
+	echo "Nothing to commit."
+    else
+	check_for_new_files # This forces an exit if new files are found.
+	# With no new files, we assume '-a' for git.
+	git commit -am "TODO: allow user to pass in commit messege"
+	if [ x`git status --porcelain` == x'' ]; then
+	    echo "Status unexpectable reports outstanding changes after commit." >&2
+	    git status
+	    exit 2
+	fi
     fi
 }
 
@@ -117,4 +145,27 @@ function generic_name_tests() {
 
 function determine_singular_resource() {
     echo ${RESOURCE:0:$((${#RESOURCE} - 1))}
+}
+
+function fetch_and_merge() {
+    BRANCH_NAME="$1"; shift
+
+    git fetch -q
+    if ! git merge --no-ff -q origin/"$BRANCH_NAME"; then
+	echo "There are local conflicts or other problems merging the update, please resolve and commit with 'git convey commit'."
+	exit 1
+    fi
+
+    return 0
+}
+
+function check_for_new_files() {
+    NEW_FILES=`git status --porcelain | grep '^?? '`
+    if [ x"$NEW_FILES" != x"" ]; then
+	echo "You must explitly add new files with 'git add', add the files to '.gitignore', or remove the files:"
+	echo "$NEW_FILES" | perl -ne 's/\?\? //; print " $_"'
+	exit 1
+    fi
+
+    return 0
 }

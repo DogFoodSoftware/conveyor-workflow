@@ -16,8 +16,8 @@
 #* | help topics list       |
 #* | topics help start      |
 #* | help topics start      |
-#* | topics help join       |
-#* | help topics join       |
+#* | topics help checkout   |
+#* | help topics checkout   |
 #* | topics help commit     |
 #* | help topics commit     |
 #* | topics help done       |
@@ -49,8 +49,8 @@ test_significant_output "git convey help topics list"
 test_significant_output "git convey topics help list"
 test_significant_output "git convey help topics start"
 test_significant_output "git convey topics help start"
-test_significant_output "git convey help topics join"
-test_significant_output "git convey topics help join"
+test_significant_output "git convey help topics checkout"
+test_significant_output "git convey topics help checkout"
 test_significant_output "git convey help topics commit"
 test_significant_output "git convey topics help commit"
 test_significant_output "git convey help topics done"

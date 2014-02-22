@@ -91,7 +91,7 @@ resource_do() {
 	commit)
 	    commit_branch 'topics' "$RESOURCE_NAME";;
 	publish)
-	    echo publish;;
+	    publish_branch 'releases' "$RESOURCE_NAME";;
 	delete)
 	    echo delete;;
 	done)

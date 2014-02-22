@@ -15,6 +15,12 @@ list_resources() {
 
 start_branch() {
     RESOURCE="$1"; shift
+    # Process any options
+    FLAGS_PARENT="topics"
+    DEFINE_boolean 'checkout' false 'Automatically checkout newly created topic branch locally.' 'c'
+    FLAGS "$@" || exit $?
+    eval set -- "${FLAGS_ARGV}"
+
     RESOURCE_NAME="$1"; shift
     SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
     BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
@@ -44,13 +50,22 @@ start_branch() {
     if [ $RESULT -ne 0 ]; then
 	echo "Git reported an error pushing topic branch '$BRANCH_NAME' to origin." >&2
 	echo "Deleting local topic branch and bailing out." >&2
-	git checkout master
-	git branch -d "$BRANCH_NAME"
+	git checkout -q master
+	git branch -q -d "$BRANCH_NAME"
 	exit 3
     fi
+    if [ $FLAGS_checkout -eq $FLAGS_FALSE ]; then
+	# By default, 'start' only creates the branch on origin, so we remove
+	# the local branch. (I looked, but did not find a way to create
+	# branches on the remote without creating an intemediate local
+	# branch.)
+	git checkout -q master
+	git branch -q -d "$BRANCH_NAME"
+    fi
+    # Else, nothing to do, we are already on the new branch.
 
     echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Use 'git convey checkout'"
-    echo "to begin working locall. In future, you can use 'git convey start --checkout'"
+    echo "to begin working locally. In future, you can use 'git convey start --checkout'"
     echo "to automatically checkout the branch locally."
 }
 

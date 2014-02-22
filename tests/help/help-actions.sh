@@ -34,10 +34,8 @@
 #* | help releases checkout |
 #* | releases help delete   |
 #* | help releases delete   |
-#* | releases help promote  |
-#* | help releases promote  |
-#* | releases help sunset   |
-#* | help releases sunset   |
+#* | releases help archive  |
+#* | help releases archive  |
 #* | releases help help     |
 #* | help releases help     |
 #* </pre>
@@ -60,17 +58,14 @@ test_significant_output "git convey topics help delete"
 test_significant_output "git convey help topics help"
 test_significant_output "git convey topics help help"
 
+test_significant_output "git convey help releases list"
 test_significant_output "git convey releases help list"
-test_significant_output "git convey releases help list"
+test_significant_output "git convey help releases start"
 test_significant_output "git convey releases help start"
-test_significant_output "git convey releases help start"
+test_significant_output "git convey help releases checkout"
 test_significant_output "git convey releases help checkout"
-test_significant_output "git convey releases help checkout"
+test_significant_output "git convey help releases delete"
 test_significant_output "git convey releases help delete"
-test_significant_output "git convey releases help delete"
-test_significant_output "git convey releases help promote"
-test_significant_output "git convey releases help promote"
-test_significant_output "git convey releases help sunset"
-test_significant_output "git convey releases help sunset"
-test_significant_output "git convey releases help help"
+test_significant_output "git convey help releases archive"
+test_significant_output "git convey releases help archive"
 test_significant_output "git convey releases help help"

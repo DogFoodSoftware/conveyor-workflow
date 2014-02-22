@@ -49,7 +49,9 @@ start_branch() {
 	exit 3
     fi
 
-    echo "Switched to a new $SINGULAR_RESOURCE '$RESOURCE_NAME'."
+    echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Use 'git convey checkout'"
+    echo "to begin working locall. In future, you can use 'git convey start --checkout'"
+    echo "to automatically checkout the branch locally."
 }
 
 checkout_branch() {

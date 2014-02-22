@@ -1,3 +1,5 @@
+# Thanks to:
+# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/../../runnable/common-checks.sh
 
 function test_start() {

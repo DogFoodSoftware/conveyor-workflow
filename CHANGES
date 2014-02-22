@@ -1,0 +1,12 @@
+In order to keep everything consistent, it may be useful to remove the
+'start', 'done', and 'abandon' from the 'git-convey' level. The idea is that
+'git-convey' is dependent on external task and release systems that create the
+reference and then accept/reject/abandon the working branches.
+
+Instead, we will want to add 'merge' which take the changes on the branch
+since it was cut and attempt to apply them to another topic or release. That
+is, the changes are moved from one topic/release to another.
+
+The downside is that this conception is a bit more rigid and limits the
+usefulness of git-convey. Perhaps we could design things such that it can work
+either way; a 'standalone' vs 'integrated' mode.

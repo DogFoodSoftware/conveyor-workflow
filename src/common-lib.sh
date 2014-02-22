@@ -75,18 +75,8 @@ checkout_branch() {
 
 function commit_branch() {
     RESOURCE="$1"; shift
-    if [ $# -gt 0 ]; then
-	RESOURCE_NAME="$1"; shift
-    fi
+    RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
     SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    if [ x"$RESOURCE_NAME" == x"" ]; then
-	# Defaut to current branch, which must match the stated resource.
-	BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
-	if [[ "$BRANCH_NAME" != "${RESOURCE}-"* ]]; then
-	    echo "Attempted to commit a '$RESOURCE' while on mis-matched branch '$BRANCH'." >&2
-	    exit 1
-	fi
-    fi
 
     if [ x`git status --porcelain` == x'' ]; then
 	echo "Nothing to commit."
@@ -100,6 +90,42 @@ function commit_branch() {
 	    exit 2
 	fi
     fi
+}
+
+function publish_branch() {
+    RESOURCE="$1"; shift
+    RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+
+    # Check all local changes committed.
+    if [ x`git status --porcelain` != x'' ]; then
+	echo "Cannot publish $SINGULAR_RESOURCE '$RESOURCE_NAME' due to uncommited changes." >&2
+	exit 1
+    fi
+    # Check branch exists on origin.
+    if ! has_branch_origin "${RESOURCE}-${RESOURCE_NAME}"; then
+	echo "Could not find $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Perhaps it"
+	echo "has been closed or archived. Consider creating a new reference or"
+	echo "abandoning changes."
+	exit 1
+    fi
+    # Check that we can sync local branch with origin (if necessary).
+    # Push the changes.
+}
+
+function process_default_resource_name() {
+    RESOURCE="$1"; shift
+    if [ x"$1" != x"" ]; then
+	RESOURCE_NAME="$1"; shift
+    else
+	# Defaut to current branch, which must match the stated resource.
+	BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
+	if [[ "$BRANCH_NAME" != "${RESOURCE}-"* ]]; then
+	    echo "Mis-matched resource on default target. Cannot operate on branch '$BRANCH' as '$RESOURCE' resource." >&2
+	    exit 1
+	fi
+    fi
+    echo "$RESOURCE_NAME"
 }
 
 function verify_branch_inputs() {

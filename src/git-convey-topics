@@ -14,7 +14,7 @@ resource_usage() {
 	echo >&2
     fi
 
-    echo "usage: git convey topics [list [<topic pattern>]]|[start|checkout|commit|publish|delete|done [topic]]|[help [action]]"
+    echo "usage: git convey topics [list [<topic pattern>]]|[start|checkout|commit|publish|delete|done|abandon [topic]]|[help [action]]"
     echo
     echo "Available actions:"
     echo "   list      Lists open topics. This is the default action."
@@ -24,6 +24,7 @@ resource_usage() {
     echo "   publish   Publishes changes to a topic."
     echo "   delete    Deletes the local topic branch."
     echo "   done      Submits a topic branch."
+    echo "   abandon   Abandons a topic branch."
     echo "   help      Print this help."
     echo
     global_help
@@ -59,6 +60,10 @@ resource_help() {
 		;;
 	    done)
 		echo "Submits the topic branch for inclusion back to the source branch."
+		;;
+	    abandon)
+		echo "Archives a topic branch without submitting it for inclusion back to the"
+		echo "source branch."
 		;;
 	    help)
 		echo "Meta-help... you're blowing my mind."
@@ -96,6 +101,8 @@ resource_do() {
 	    echo delete;;
 	done)
 	    echo done;;
+	abandon)
+	    echo abondon;;
 	help)
 	    ACTION="$RESOURCE_NAME"
 	    if [ x"$ACTION" == x"" ]; then

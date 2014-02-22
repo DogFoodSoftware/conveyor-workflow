@@ -77,7 +77,7 @@ resource_help() {
 }
 
 resource_do() {
-    if [ $# -lt 1 ]; then
+    if [ $# -eq 0 ]; then
 	ACTION="list"
     else
 	ACTION="$1"; shift
@@ -108,7 +108,7 @@ resource_do() {
 	    fi
 	    ;;
 	*)
-	    resource_usage "Unknown action: '$1'."
+	    resource_usage "Unknown action: '$ACTION'."
 	    exit 1;
     esac
 }

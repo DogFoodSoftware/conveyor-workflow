@@ -113,21 +113,32 @@ function publish_branch() {
     RESOURCE="$1"; shift
     RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
     SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
 
-    # Check all local changes committed.
-    if [ x`git status --porcelain` != x'' ]; then
-	echo "Cannot publish $SINGULAR_RESOURCE '$RESOURCE_NAME' due to uncommited changes." >&2
-	exit 1
-    fi
-    # Check branch exists on origin.
-    if ! has_branch_origin "${RESOURCE}-${RESOURCE_NAME}"; then
+    # Check branch exists on origin. This goes first because it establishes
+    # the conanical, fundamental, and necessary existence of the topic branch
+    # whereas the local check (up next) is only an accidental check.
+    if ! has_branch_origin "$BRANCH_NAME"; then
 	echo "Could not find $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Perhaps it" >&2
 	echo "has been closed or archived. Consider creating a new reference or" >&2
 	echo "abandoning changes." >&2
 	exit 1
     fi
+    # Check that a local resource / branch exists.
+    if ! has_branch_local "$BRANCH_NAME"; then
+	echo "No such $SINGULAR_RESOURCE '$RESOURCE_NAME' exists locally." >&2
+	exit 1
+    fi
+    # Check all local changes committed.
+    if [ x`git status --porcelain` != x'' ]; then
+	echo "Cannot publish $SINGULAR_RESOURCE '$RESOURCE_NAME' due to uncommited changes." >&2
+	exit 1
+    fi
     # Check that we can sync local branch with origin (if necessary).
+    # TODO
     # Push the changes.
+    git push -q origin $BRANCH_NAME
+    echo "Published $SINGULAR_RESOURCE '$RESOURCE_NAME'."
 }
 
 function process_default_resource_name() {
@@ -135,12 +146,13 @@ function process_default_resource_name() {
     if [ x"$1" != x"" ]; then
 	RESOURCE_NAME="$1"; shift
     else
-	# Defaut to current branch, which must match the stated resource.
 	BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
+	# Defaut to current branch, which must match the stated resource.
 	if [[ "$BRANCH_NAME" != "${RESOURCE}-"* ]]; then
 	    echo "Mis-matched resource on default target. Cannot operate on branch '$BRANCH' as '$RESOURCE' resource." >&2
 	    exit 1
 	fi
+	RESOURCE_NAME="${BRANCH_NAME:$((${#RESOURCE} + 1))}"
     fi
     echo "$RESOURCE_NAME"
 }

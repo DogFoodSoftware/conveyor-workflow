@@ -23,15 +23,15 @@ init_test_environment `dirname $0`/../../.. `basename $0`
 cd $WORKING_REPO_PATH
 
 git checkout -q master
-git convey topics start existing-topic >/dev/null
+git convey topics start current-topic >/dev/null
 if ! git checkout -q master; then
     echo "ERROR: Could not reset to master; test inconclusive."
 fi
-if ! git convey checkout current-topic >/dev/null
+if ! git convey topics checkout current-topic >/dev/null; then
     echo "ERROR: Could not checkout current-topic; test inconclusive."
 fi
 test_output 'git convey topics publish' "Published topic 'current-topic'." '' 0
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-if [ x"$CURRENT_BRANCH" != x'current-topic' ]; then
-    echo "ERROR: Expected to be on branch 'current-topic' after publishing topic, but instead on '$CURRENT_BRANCH'."
+if [ x"$CURRENT_BRANCH" != x'topics-current-topic' ]; then
+    echo "ERROR: Expected to be on branch 'topics-current-topic' after publishing topic, but instead on '$CURRENT_BRANCH'."
 fi

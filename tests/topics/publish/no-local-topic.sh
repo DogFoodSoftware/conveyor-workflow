@@ -22,5 +22,5 @@ source `dirname $0`/../../lib/start-lib.sh
 init_test_environment `dirname $0`/../../.. `basename $0`
 cd $WORKING_REPO_PATH
 
-git convey start no-local-topic
-test_output "git convey topics publish no-local-topic" '' "No such topic 'no-colal-topic' exists locally." 1
+git convey topics start no-local-topic > /dev/null
+test_output "git convey topics publish no-local-topic" '' "No such topic 'no-local-topic' exists locally." 1

@@ -17,7 +17,7 @@ resource_usage() {
     echo "usage: git convey releases [list [<pattern>]|[start|checkout|commit|publish|delete|promote <branch>]]"
     echo
     echo "Available actions:"
-    echo "   list      List release branches in this repo. This is the default action."
+    echo "   list      List release branches. This is the default action."
     echo "   start     Start a new release."
     echo "   checkout  Checkout / switch to an existing release."
     echo "   commit    Commits changes to a release branch."

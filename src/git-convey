@@ -119,7 +119,7 @@ if [ ! -e "$GIT_CONVEY_DIR/git-convey-$RESOURCE" ]; then
     usage "Unknown resource: '$RESOURCE'."
     exit 1
 fi
-. "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
+source "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
 
 if [ x"$HELP_MODE" != x"$FLAGS_TRUE" ]; then
     # We process any action options here so that we can fire off the actions's

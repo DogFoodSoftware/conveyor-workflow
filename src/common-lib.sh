@@ -104,9 +104,9 @@ function publish_branch() {
     fi
     # Check branch exists on origin.
     if ! has_branch_origin "${RESOURCE}-${RESOURCE_NAME}"; then
-	echo "Could not find $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Perhaps it"
-	echo "has been closed or archived. Consider creating a new reference or"
-	echo "abandoning changes."
+	echo "Could not find $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Perhaps it" >&2
+	echo "has been closed or archived. Consider creating a new reference or" >&2
+	echo "abandoning changes." >&2
 	exit 1
     fi
     # Check that we can sync local branch with origin (if necessary).

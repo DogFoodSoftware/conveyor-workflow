@@ -21,4 +21,4 @@ source `dirname $0`/../../lib/start-lib.sh
 init_test_environment `dirname $0`/../../.. `basename $0`
 cd $WORKING_REPO_PATH
 
-test_output "git convey topics publish bad-topic" '' "No such topic 'bad-topic' exists on origin." 1
+test_output "git convey topics publish bad-topic" '' "Could not find release 'bad-topic' on origin." 1

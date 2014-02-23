@@ -87,31 +87,27 @@ resource_do() {
     else
 	ACTION="$1"; shift
     fi
-    if [ $# -ge 1 ]; then
-	RESOURCE_NAME="$1"; shift
-    fi
 
     case "$ACTION" in
 	list)
 	    list_resources release;;
 	start)
-	    start_branch 'releases' "$RESOURCE_NAME";;
+	    start_branch 'releases' "$@";;
 	checkout)
-	    checkout_branch 'releases' "$RESOURCE_NAME";;
+	    checkout_branch 'releases' "$@";;
 	commit)
-	    commit_branch 'releases' "$RESOURCE_NAME";;
+	    commit_branch 'releases' "$@";;
 	publish)
-	    publish_branch 'releases' "$RESOURCE_NAME";;
+	    publish_branch 'releases' "$@";;
 	delete)
 	    echo delete;;
 	archive)
 	    echo archive;;
 	help)
-	    ACTION="$RESOURCE_NAME"
-	    if [ x"$ACTION" == x"" ]; then
+	    if [ $# -eq 0 ]; then
 		resource_usage
 	    else
-		resource_help "$ACTION"
+		resource_help "$1"
 	    fi
 	    ;;
 	*)

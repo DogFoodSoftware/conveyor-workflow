@@ -77,26 +77,23 @@ resource_help() {
 }
 
 resource_do() {
-    if [ $# -lt 1 ]; then
+    if [ $# -eq 0 ]; then
 	ACTION="list"
     else
 	ACTION="$1"; shift
-    fi
-    if [ $# -ge 1 ]; then
-	RESOURCE_NAME="$1"; shift
     fi
 
     case "$ACTION" in
 	list)
 	    list_resources topic;;
 	start)
-	    start_branch 'topics' "$RESOURCE_NAME";;
+	    start_branch 'topics' "$@";;
 	checkout)
-	    checkout_branch 'topics' "$RESOURCE_NAME";;
+	    checkout_branch 'topics' "$@";;
 	commit)
-	    commit_branch 'topics' "$RESOURCE_NAME";;
+	    commit_branch 'topics' "$@";;
 	publish)
-	    publish_branch 'releases' "$RESOURCE_NAME";;
+	    publish_branch 'topics' "$@";;
 	delete)
 	    echo delete;;
 	done)
@@ -104,11 +101,10 @@ resource_do() {
 	abandon)
 	    echo abondon;;
 	help)
-	    ACTION="$RESOURCE_NAME"
-	    if [ x"$ACTION" == x"" ]; then
+	    if [ $# -eq 0 ]; then
 		resource_usage
 	    else
-		resource_help "$ACTION"
+		resource_help "$1"
 	    fi
 	    ;;
 	*)

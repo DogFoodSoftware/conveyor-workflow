@@ -22,11 +22,14 @@ init_test_environment `dirname $0`/../../.. `basename $0`
 cd $WORKING_REPO_PATH
 
 git checkout -q master
-git convey topics start existing-topic >/dev/null
+if ! git convey topics start --checkout existing-topic >/dev/null; then
+    echo "ERROR: could not start topic 'existing-topic'; test inconclusive."
+    exit
+fi
 if ! git checkout -q master; then
     echo "ERROR: Could not reset to master; test inconclusive."
 fi
 test_output 'git convey topics delete existing-topic' "Deleted local topic 'existing-topic'." '' 0
-if git rev-parse --verify -q existing-topic; then
+if git rev-parse --verify -q topics-existing-topic; then
     echo "ERROR: git seems to think that the deleted topic 'existing-topic' still exists."
 fi

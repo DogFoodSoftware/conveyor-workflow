@@ -21,4 +21,4 @@ source `dirname $0`/../../lib/start-lib.sh
 init_test_environment `dirname $0`/../../.. `basename $0`
 cd $WORKING_REPO_PATH
 
-test_output "git convey topics delete bad-topic" '' "Could not find topic 'bad-topic' in local repository." 1
+test_output "git convey topics delete bad-topic" '' "No such topic 'bad-topic' exists locally." 1

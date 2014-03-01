@@ -12,7 +12,8 @@
 #*   And I type 'git convey topic publish'
 #* Then text "Published topic 'current-topic'." is printed to stdout
 #*   And I am on branch 'current-topic'
-#*   And the script exits with exit code 0.
+#*   And the script exits with exit code 0
+#*   And the remote branch head matches the current branch head.
 #* </pre>
 #*/
 
@@ -34,4 +35,7 @@ test_output 'git convey topics publish' "Published topic 'current-topic'." '' 0
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ x"$CURRENT_BRANCH" != x'topics-current-topic' ]; then
     echo "ERROR: Expected to be on branch 'topics-current-topic' after publishing topic, but instead on '$CURRENT_BRANCH'."
+fi
+if [ `git rev-parse topics-current-topic` != `git rev-parse remotes/origin/topics-current-topic` ]; then
+    echo "ERROR: Expected local and remote 'topics-current-topic' to match, but they did not."
 fi

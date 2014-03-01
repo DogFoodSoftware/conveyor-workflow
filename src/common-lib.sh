@@ -137,7 +137,11 @@ function publish_branch() {
     # Check that we can sync local branch with origin (if necessary).
     # TODO
     # Push the changes.
-    git push -q origin $BRANCH_NAME
+    if ! git push -q origin $BRANCH_NAME; then
+	echo "Apparent error while attempting to push changes to origin." >&2
+	exit 2
+    fi
+    
     echo "Published $SINGULAR_RESOURCE '$RESOURCE_NAME'."
 }
 

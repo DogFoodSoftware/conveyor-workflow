@@ -216,7 +216,9 @@ function submit_branch() {
     # up and throw it back to the operator.
     ensure_current_branch_committed "submit $SINGULAR_RESOURCE '$RESOURCE_NAME'"
     git checkout -q master
-    git branch -q -D _test_merge
+    if git rev-parse --verify -q _test-merge; then
+	git branch -q -D _test-merge
+    fi
     git checkout -q -b _test-merge
     if fetch_and_merge master "$SINGULAR_RESOURCE" "$RESOURCE_NAME"; then
 	# We're good to generate the PR.
@@ -228,6 +230,9 @@ function submit_branch() {
 	    # Now check that we have the necessary connection inf.
 	    if ! is_github_configured; then exit 1; fi
 	    # Okay, now ready to do this thing.
+	    ISSUE_NUMBER=${RESOURCE_NAME:0:`expr index "$RESOURCE_NAME" '-'`}
+	    set_github_origin_data
+	    
 	    CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/pulls -d @-"
 	    cat <<EOF |	$CURL_COMMAND
 {
@@ -331,4 +336,14 @@ function check_for_new_files() {
     fi
 
     return 0
+}
+
+function set_github_origin_data() {
+    # We need the github owner and repo, which we can get by dissectin the
+    # origin url.
+    GITHUB_OWNER=`eval echo \`git config --get remote.origin.url\` | cut -d/ -f4`
+    GITHUB_REPO=`eval echo \`git config --get remote.origin.url\` | cut -d/ -f5`
+    # The URL includes the '.git', which isn't part of the name but an
+    # underlying git convention. We want to drop it for the API calls.
+    GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
 }

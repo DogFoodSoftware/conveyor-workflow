@@ -12,16 +12,8 @@ function check_issue_exists_for() {
     RESOURCE="$1"; shift
     RESOURCE_NAME="$1"; shift
 
-    REPO_BASE="$(git rev-parse --show-toplevel)"
-
     ISSUE_NUMBER=${RESOURCE_NAME:0:`expr index "$RESOURCE_NAME" '-'`}
-    # We need the github owner and repo, which we can get by dissectin the
-    # origin url.
-    GITHUB_OWNER=`eval echo \`git config --get remote.origin.url\` | cut -d/ -f4`
-    GITHUB_REPO=`eval echo \`git config --get remote.origin.url\` | cut -d/ -f5`
-    # The URL includes the '.git', which isn't part of the name but an
-    # underlying git convention. We want to drop it for the API calls.
-    GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
+    set_github_origin_data
 
     ISSUE_JSON=`curl -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
     RESULT=$?

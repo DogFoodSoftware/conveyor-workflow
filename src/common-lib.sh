@@ -216,7 +216,7 @@ function submit_branch() {
     # up and throw it back to the operator.
     ensure_current_branch_committed "submit $SINGULAR_RESOURCE '$RESOURCE_NAME'"
     git checkout -q master
-    if git rev-parse --verify -q _test-merge; then
+    if git rev-parse --verify -q _test-merge >/dev/null; then
 	git branch -q -D _test-merge
     fi
     git checkout -q -b _test-merge
@@ -340,6 +340,7 @@ function check_for_new_files() {
 }
 
 function set_github_origin_data() {
+    source $HOME/.git-convey
     # We need the github owner and repo, which we can get by dissectin the
     # origin url.
     GITHUB_OWNER=`eval echo \`git config --get remote.origin.url\` | cut -d/ -f4`

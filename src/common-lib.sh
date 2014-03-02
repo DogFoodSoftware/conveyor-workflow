@@ -116,7 +116,7 @@ function commit_branch() {
     else
 	check_for_new_files # This forces an exit if new files are found.
 	# With no new files, we assume '-a' for git.
-	git commit -am "$FLAGS_message"
+	git commit -q -am "$FLAGS_message"
     fi
 }
 

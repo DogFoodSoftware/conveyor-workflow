@@ -185,10 +185,10 @@ function delete_branch() {
 }
 
 function submit_branch() {
-    RESOURCE="$1"; shift
-    RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
-    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
+    local RESOURCE="$1"; shift
+    local RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
+    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    local BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
 
     ensure_has_branch_local "$BRANCH_NAME"
     ensure_can_fetch "submit $SINGULAR_RESOURCE '$RESOURCE_NAME'"
@@ -243,7 +243,6 @@ function submit_branch() {
   "base": "master"
 }
 EOF
-
 	else
 	    echo "Do not yet know how to submit work for non-GitHub repositories. Come back later..." >&2
 	    exit 2
@@ -253,24 +252,24 @@ EOF
 }
 
 function process_default_resource_name() {
-    RESOURCE="$1"; shift
+    local RESOURCE="$1"; shift
     if [ x"$1" != x"" ]; then
-	RESOURCE_NAME="$1"; shift
+	local RESOURCE_NAME="$1"; shift
     else
-	BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
+	local BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 	# Defaut to current branch, which must match the stated resource.
 	if [[ "$BRANCH_NAME" != "${RESOURCE}-"* ]]; then
 	    echo "Mis-matched resource on default target. Cannot operate on branch '$BRANCH' as '$RESOURCE' resource." >&2
 	    exit 1
 	fi
-	RESOURCE_NAME="${BRANCH_NAME:$((${#RESOURCE} + 1))}"
+	local RESOURCE_NAME="${BRANCH_NAME:$((${#RESOURCE} + 1))}"
     fi
     echo "$RESOURCE_NAME"
 }
 
 function verify_branch_inputs() {
-    RESOURCE="$1"; shift
-    RESOURCE_NAME="$1"; shift
+    local RESOURCE="$1"; shift
+    local RESOURCE_NAME="$1"; shift
 
     if [ x"$RESOURCE" == x"" ]; then
 	echo "Internal error; no resource given." >&2
@@ -294,9 +293,9 @@ function verify_branch_inputs() {
 }
 
 function generic_name_tests() {
-    NAME="$1"; shift
+    local NAME="$1"; shift
 
-    EXIT=0
+    local EXIT=0
     if [[ x"$NAME" == *" "* ]]; then
 	echo "Resource names cannot contain spaces; got '$NAME'." >&2
 	EXIT=1
@@ -314,9 +313,9 @@ function determine_singular_resource() {
 }
 
 function fetch_and_merge() {
-    BRANCH_NAME="$1"; shift
-    SINGULAR_RESOURCE="$1"; shift
-    RESOURCE_NAME="$1"; shift
+    local BRANCH_NAME="$1"; shift
+    local SINGULAR_RESOURCE="$1"; shift
+    local RESOURCE_NAME="$1"; shift
 
     git fetch -q
     if ! git merge --no-ff -q origin/"$BRANCH_NAME"; then
@@ -329,7 +328,7 @@ function fetch_and_merge() {
 }
 
 function check_for_new_files() {
-    NEW_FILES=`git status --porcelain | grep '^?? '`
+    local NEW_FILES=`git status --porcelain | grep '^?? '`
     if [ x"$NEW_FILES" != x"" ]; then
 	echo "You must explitly add new files with 'git add', add the files to '.gitignore', or remove the files:"
 	echo "$NEW_FILES" | perl -ne 's/\?\? //; print " $_"'

@@ -12,16 +12,25 @@ function check_issue_exists_for() {
     RESOURCE="$1"; shift
     RESOURCE_NAME="$1"; shift
 
-    # TODO: I keep going back and forth thinking we need something like this
-    # an then thinknig that user level is sufficient. If we stick with this
-    # dichotomy, move it to a library.
     REPO_BASE="$(git rev-parse --show-toplevel)"
-    if [ -f $REPO_BASE/.git-convey ]; then
-	source $REPO_BASE/.git-convey
-    elif [ -f $HOME/.git-convey ]; then
-	source $HOME/.git-convey
-    fi
-    $ISSUE_NUMBER=${RESOURCE_NAME:0:`expr index "$RESOURCE_NAME" '-'`}
+    source $HOME/.git-convey
 
-    curl -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/git-convey/issues/$ISSUE_NUMBER
+    ISSUE_NUMBER=${RESOURCE_NAME:0:`expr index "$RESOURCE_NAME" '-'`}
+    # We need the github owner and repo, which we can get by dissectin the
+    # origin url.
+    GITHUB_OWNER=`eval echo \`git config --get remote.origin.url\` | cut -d/ -f4`
+    GITHUB_REPO=`eval echo \`git config --get remote.origin.url\` | cut -d/ -f5`
+    # The URL includes the '.git', which isn't part of the name but an
+    # underlying git convention. We want to drop it for the API calls.
+    GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
+
+    ISSUE_JSON=`curl -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+	echo "Could not contact github to verify task. Bailing out." >&2
+	exit 2
+    fi
+    # Now we need to extract the status and verify the issue is open.
+    echo "Implement me." >&2
+    exit 2
 }

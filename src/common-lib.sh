@@ -117,11 +117,6 @@ function commit_branch() {
 	check_for_new_files # This forces an exit if new files are found.
 	# With no new files, we assume '-a' for git.
 	git commit -am "$FLAGS_message"
-	if [ x`git status --porcelain` == x'' ]; then
-	    echo "Status unexpectable reports outstanding changes after commit." >&2
-	    git status
-	    exit 2
-	fi
     fi
 }
 
@@ -328,7 +323,7 @@ function fetch_and_merge() {
 }
 
 function check_for_new_files() {
-    NEW_FILES=`git status --porcelain 2>/dev/null | grep '^?? '`
+    NEW_FILES=`git status --porcelain | grep '^?? '`
     if [ x"$NEW_FILES" != x"" ]; then
 	echo "You must explitly add new files with 'git add', add the files to '.gitignore', or remove the files:"
 	echo "$NEW_FILES" | perl -ne 's/\?\? //; print " $_"'

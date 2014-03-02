@@ -215,9 +215,9 @@ function submit_branch() {
     # branch. This can fail at any point in the process, in which case we give
     # up and throw it back to the operator.
     ensure_current_branch_committed "submit $SINGULAR_RESOURCE '$RESOURCE_NAME'"
-    git checkout master
-    git branch -D _test_merge
-    git checkout -b _test-merge
+    git checkout -q master
+    git branch -q -D _test_merge
+    git checkout -q -b _test-merge
     if fetch_and_merge master "$SINGULAR_RESOURCE" "$RESOURCE_NAME"; then
 	# We're good to generate the PR.
 	git checkout "$BRANCH_NAME"

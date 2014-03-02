@@ -98,7 +98,7 @@ resource_do() {
 	delete)
 	    delete_branch 'topics' "$@";;
 	submit)
-	    echo submit;;
+	    submit_branch 'topics' "$@";;
 	abandon)
 	    echo abondon;;
 	help)

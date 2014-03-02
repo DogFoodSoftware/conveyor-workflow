@@ -15,6 +15,10 @@ list_resources() {
 
 start_branch() {
     RESOURCE="$1"; shift
+    # TODO: This seems a little off to me; I think it works, but structure
+    # seems to imply that 'checkout' is an option of 'topics' when it is in
+    # fact an option for 'start'.
+
     # Process any options
     FLAGS_PARENT="topics"
     DEFINE_boolean 'checkout' false 'Automatically checkout newly created topic branch locally.' 'c'
@@ -75,6 +79,7 @@ checkout_branch() {
     SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
     BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
 
+    ensure_current_branch_committed "checkout $SINGULAR_RESOURCE '$RESOURCE_NAME'"
     if ! has_branch_origin "$BRANCH_NAME"; then
 	echo "No such $SINGULAR_RESOURCE '$RESOURCE_NAME' exists on origin." >&2
 	exit 1
@@ -85,22 +90,32 @@ checkout_branch() {
 
     # 'fetch_and_merge' reports any problems itself, so we just need to report
     # on success.
-    if fetch_and_merge "$BRANCH_NAME"; then
+    if fetch_and_merge "$BRANCH_NAME" "$SINGULAR_RESOURCE" "$RESOURCE_NAME"; then
 	echo "Switched to $SINGULAR_RESOURCE '$RESOURCE_NAME'."
     fi
 }
 
 function commit_branch() {
     RESOURCE="$1"; shift
+    FLAGS_PARENT=""
+    DEFINE_string 'message' '' 'Message to include with commit.' 'm'
+    FLAGS "$@" || exit $?
+    eval set -- "${FLAGS_ARGV}"
+
     RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
     SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+
+    if [ x"$FLAGS_message" == x'' ]; then
+	echo "Must supply commit message. Use option '-m' after 'commit'." >&2
+	exit 1
+    fi
 
     if [ x`git status --porcelain` == x'' ]; then
 	echo "Nothing to commit."
     else
 	check_for_new_files # This forces an exit if new files are found.
 	# With no new files, we assume '-a' for git.
-	git commit -am "TODO: allow user to pass in commit messege"
+	git commit -am "$FLAGS_message"
 	if [ x`git status --porcelain` == x'' ]; then
 	    echo "Status unexpectable reports outstanding changes after commit." >&2
 	    git status
@@ -151,15 +166,8 @@ function delete_branch() {
     SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
     BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
 
-    # Check that a local resource / branch exists.
-    if ! has_branch_local "$BRANCH_NAME"; then
-	echo "No such $SINGULAR_RESOURCE '$RESOURCE_NAME' exists locally." >&2
-	exit 1
-    fi
-    if ! git fetch -q; then
-	echo "Could not fetch origin updates to check if local changed published; cowardly refusing te delete $SINGULAR_RESOURCE '$RESOURCE_NAME'." >&2
-	exit 2
-    fi
+    ensure_has_branch_local "$BRANCH_NAME"
+    ensure_can_fetch "delete $SINGULAR_RESOURCE '$RESOURCE_NAME'"
     if [ `git rev-parse "$BRANCH_NAME"` != `git rev-parse "remotes/origin/$BRANCH_NAME"` ]; then
 	# We're not quite cooked yet, if the local branch head is in the
 	# remote branch history, then it's us that's behind.
@@ -168,7 +176,7 @@ function delete_branch() {
 	if [ $RESULT -eq 0 ]; then
 	    echo "${SINGULAR_RESOURCE^} '$RESOURCE_NAME' has local changes. Please publish or abandon." >&2
 	    exit 1
-	fi   
+	fi
     fi
     # Notice we use '-D' to force the delete. This is because many branches
     # are deleted while not in master. Git-convey rather insists that
@@ -178,6 +186,68 @@ function delete_branch() {
 	exit 2
     fi
     echo "Deleted local $SINGULAR_RESOURCE '$RESOURCE_NAME'."
+}
+
+function submit_branch() {
+    RESOURCE="$1"; shift
+    RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
+
+    ensure_has_branch_local "$BRANCH_NAME"
+    ensure_can_fetch "submit $SINGULAR_RESOURCE '$RESOURCE_NAME'"
+    if [ `git rev-parse "$BRANCH_NAME"` != `git rev-parse "remotes/origin/$BRANCH_NAME"` ]; then
+	# For submission, we require the local and remote branches to be
+	# exactly the same, but we do distinguish which is out of sync with
+	# witch in order to give the user better feedback.
+	LOCAL_HASH=`git rev-parse "$BRANCH_NAME"`
+	RESULT=`git branch -r --contains $LOCAL_HASH | grep "origin/$BRANCH_NAME" | wc -l`
+	if [ $RESULT -eq 0 ]; then
+	    echo "${SINGULAR_RESOURCE^} '$RESOURCE_NAME' has local changes. You must 'publish' before submitting." >&2
+	    exit 1
+	else # Then local is ahead of the remote.
+	    echo "${SINGULAR_RESOURCE^} '$RESOURCE_NAME' is out of date. You must 'sync' before submitting." >&2
+	    exit 1
+	fi
+    fi # if <local and remote branch heads out of sync>
+    # else, everything is in sync.
+
+    # Next step is to preview the merge, which we'll handle locally. Really,
+    # the easiest way to do that is to just perform locally. To do this, we
+    # ensure everything is committed on the local branch, switch to master,
+    # update it, branch a test branch, and then merge the original
+    # branch. This can fail at any point in the process, in which case we give
+    # up and throw it back to the operator.
+    ensure_current_branch_committed "submit $SINGULAR_RESOURCE '$RESOURCE_NAME'"
+    git checkout master
+    git branch -D _test_merge
+    git checkout -b _test-merge
+    if fetch_and_merge master "$SINGULAR_RESOURCE" "$RESOURCE_NAME"; then
+	# We're good to generate the PR.
+	git checkout "$BRANCH_NAME"
+	# OK, it's possible that the remote branch has been updated since we
+	# first checked, but that will always be the case. We don't try to be
+	# thread safe.
+	if is_github_clone; then
+	    # Now check that we have the necessary connection inf.
+	    if ! is_github_configured; then exit 1; fi
+	    # Okay, now ready to do this thing.
+	    CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/pulls -d @-"
+	    cat <<EOF |	$CURL_COMMAND
+{
+  "title": "Pull request for $ISSUE_NUMBER",
+  "body": "Fixes #${ISSUE_NUMBER}.",
+  "head": "$BRANCH_NAME",
+  "base": "master"
+}
+EOF
+
+	else
+	    echo "Do not yet know how to submit work for non-GitHub repositories. Come back later..." >&2
+	    exit 2
+	fi
+    fi # if fetch_and_merge master...;
+    # If that fais, then there's nothing for us to do.
 }
 
 function process_default_resource_name() {
@@ -243,11 +313,14 @@ function determine_singular_resource() {
 
 function fetch_and_merge() {
     BRANCH_NAME="$1"; shift
+    SINGULAR_RESOURCE="$1"; shift
+    RESOURCE_NAME="$1"; shift
 
     git fetch -q
     if ! git merge --no-ff -q origin/"$BRANCH_NAME"; then
-	echo "There are local conflicts or other problems merging the update, please resolve and commit with 'git convey commit'."
-	exit 1
+	echo "There are local conflicts or other problems merging the local and remote $SINGULAR_RESOURCE '$RESOURCE_NAME';" >&2
+	echo "please resolve and commit with 'git convey commit'." >&2
+	return 1
     fi
 
     return 0

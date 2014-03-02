@@ -328,7 +328,7 @@ function fetch_and_merge() {
 }
 
 function check_for_new_files() {
-    NEW_FILES=`git status --porcelain | grep '^?? '`
+    NEW_FILES=`git status --porcelain 2>/dev/null | grep '^?? '`
     if [ x"$NEW_FILES" != x"" ]; then
 	echo "You must explitly add new files with 'git add', add the files to '.gitignore', or remove the files:"
 	echo "$NEW_FILES" | perl -ne 's/\?\? //; print " $_"'

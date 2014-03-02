@@ -19,20 +19,17 @@ resource_usage() {
 resource_do() {
     if is_github_clone; then
 	if [ ! -f $HOME/.git-convey ]; then
-	    # TODO: tell user how to configure
 	    echo "Could not find '~/.git-convey' configuration necessary to check GitHub" >&2
 	    echo "connectivity." >&2	    
 	else
 	    source $HOME/.git-convey
 	    if [ x"$GITHUB_AUTH_TOKEN" == x"" ]; then
-		# TODO: tell user how to configure
 		echo "GitHub authorization token not defined in '~/.git-convey. Cannot" >&2
 		echo "check GitHub connectivity." >&2
 	    else # We are good for connection check.
 		USER_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/user`
 		RESULT=$?
 		if [ $RESULT -ne 0 ]; then
-		    # TODO: provide more useful info.
 		    echo "Could not connect with GitHub (or token invalid)." >&2
 		else
 		    PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php

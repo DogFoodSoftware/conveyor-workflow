@@ -233,6 +233,7 @@ function submit_branch() {
 	    ISSUE_NUMBER=${RESOURCE_NAME:0:`expr index "$RESOURCE_NAME" '-'`}
 	    set_github_origin_data
 	    
+	    echo "$CURL_COMMAND"
 	    CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/pulls -d @-"
 	    cat <<EOF |	$CURL_COMMAND
 {

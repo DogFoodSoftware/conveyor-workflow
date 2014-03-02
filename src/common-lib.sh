@@ -137,12 +137,47 @@ function publish_branch() {
     # Check that we can sync local branch with origin (if necessary).
     # TODO
     # Push the changes.
-    if ! git push -q origin $BRANCH_NAME; then
+    if ! git push -q origin "$BRANCH_NAME"; then
 	echo "Apparent error while attempting to push changes to origin." >&2
 	exit 2
     fi
     
     echo "Published $SINGULAR_RESOURCE '$RESOURCE_NAME'."
+}
+
+function delete_branch() {
+    RESOURCE="$1"; shift
+    RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
+
+    # Check that a local resource / branch exists.
+    if ! has_branch_local "$BRANCH_NAME"; then
+	echo "No such $SINGULAR_RESOURCE '$RESOURCE_NAME' exists locally." >&2
+	exit 1
+    fi
+    if ! git fetch -q; then
+	echo "Could not fetch origin updates to check if local changed published; cowardly refusing te delete $SINGULAR_RESOURCE '$RESOURCE_NAME'." >&2
+	exit 2
+    fi
+    if [ `git rev-parse "$BRANCH_NAME"` != `git rev-parse "remotes/origin/$BRANCH_NAME"` ]; then
+	# We're not quite cooked yet, if the local branch head is in the
+	# remote branch history, then it's us that's behind.
+	LOCAL_HASH=`git rev-parse "$BRANCH_NAME"`
+	RESULT=`git branch -r --contains $LOCAL_HASH | grep "origin/$BRANCH_NAME" | wc -l`
+	if [ $RESULT -eq 0 ]; then
+	    echo "${SINGULAR_RESOURCE^} '$RESOURCE_NAME' has local changes. Please publish or abandon." >&2
+	    exit 1
+	fi   
+    fi
+    # Notice we use '-D' to force the delete. This is because many branches
+    # are deleted while not in master. Git-convey rather insists that
+    # (unforced) deletes are instead published back to origin before deleting.
+    if ! git branch -q -D "$BRANCH_NAME"; then
+	echo "Could not delete branch for $SINGULAR_RESOURCE '$RESOURCE_NAME'; reason unknown."
+	exit 2
+    fi
+    echo "Deleted local $SINGULAR_RESOURCE '$RESOURCE_NAME'."
 }
 
 function process_default_resource_name() {

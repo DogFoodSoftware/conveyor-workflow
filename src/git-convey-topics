@@ -95,7 +95,7 @@ resource_do() {
 	publish)
 	    publish_branch 'topics' "$@";;
 	delete)
-	    echo delete;;
+	    delete_branch 'topics' "$@";;
 	done)
 	    echo done;;
 	abandon)

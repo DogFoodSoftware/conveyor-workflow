@@ -1,5 +1,6 @@
 export GIT_CONVEY_TEST_MODE=0
 
+# TODO: change to 'init_local_test_environment'
 function init_test_environment() {
     GIT_CONVEY_HOME=`realpath $1`
     TEST_SCRIPT="$2"
@@ -23,6 +24,29 @@ function init_test_environment() {
     # init adds the extension. Users do not generally deal with the '.git'.
     git convey init $WORKING_REPO > /dev/null
     git convey sync "file://$ORIGIN_REPO_PATH" "$WORKING_REPO_PATH" > /dev/null
+}
+
+function init_github_test_environment() {
+    GIT_CONVEY_HOME=`realpath $1`; shift
+    TEST_SCRIPT="$1"; shift
+    ORIGIN_REPO_URL="$1"; shift
+    export GIT_CONVEY_HOME
+    export GIT_CONVEY_TEST_DIR="$GIT_CONVEY_HOME/data/test"
+    export WORKING_REPO="$TEST_SCRIPT"
+    export WORKING_REPO_PATH="$GIT_CONVEY_TEST_DIR/$WORKING_REPO"
+
+    rm -rf $WORKING_REPO_PATH
+
+    cd $GIT_CONVEY_HOME 2>/dev/null || (echo "Did not find standard git-convey install." >&2; exit 2)
+    mkdir -p data
+    cd data
+    rm -rf test
+    mkdir test
+    cd test
+    # TODO: we should support '-q/--quiet' for the following command.  Notice
+    # we use the 'working repo', without the '.git' extension because init
+    # adds the extension. Users do not generally deal with the '.git'.
+    git convey sync "$ORIGIN_REPO_URL" "$WORKING_REPO_PATH" > /dev/null
 }
 
 function populate_test_environment() {

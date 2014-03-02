@@ -1,0 +1,45 @@
+resource_usage() {
+    if [ x"$1" != x"" ]; then
+	echo $1 >&2
+	echo >&2
+    fi
+
+    echo "usage:"
+    echo "  git convey status"
+    echo
+
+    echo "Prints useful information about the state of the repository. In"
+    echo "addition to the standard status supplied by git, indicating new, modified,"
+    echo "and deleted files as well as relative position of the branch head"
+    echo "vis-a-vie the origin branch, 'convey status' also checks the accessibility"
+    echo "of github or other remote systems as appropriate."
+    echo
+}
+
+resource_do() {
+    if is_github_clone; then
+	if [ ! -f $HOME/.git-convey ]; then
+	    # TODO: tell user how to configure
+	    echo "Could not find '~/.git-convey' configuration necessary to check GitHub" >&2
+	    echo "connectivity." >&2	    
+	else
+	    source $HOME/.git-convey
+	    if [ x"$GITHUB_AUTH_TOKEN" == x"" ]; then
+		# TODO: tell user how to configure
+		echo "GitHub authorization token not defined in '~/.git-convey. Cannot" >&2
+		echo "check GitHub connectivity." >&2
+	    else # We are good for connection check.
+		USER_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/user`
+		RESULT=$?
+		if [ $RESULT -ne 0 ]; then
+		    # TODO: provide more useful info.
+		    echo "Could not connect with GitHub (or token invalid)." >&2
+		else
+		    PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+		    GITHUB_LOGIN=`echo $USER_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["login"];'`
+		    echo "Connected to GitHub as: $GITHUB_LOGIN"
+		fi
+	    fi # if [ x"$GITHUB_AUTH_TOKEN" == x"" ]
+	fi # if [ ! -f $HOME/.git-convey ]
+    fi # if is_github_clone
+}

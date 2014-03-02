@@ -36,5 +36,16 @@ function has_branch_origin() {
     # is the status of the last command.
     git ls-remote --exit-code . "origin/$BRANCH_NAME" &> /dev/null
 }
+
+#* <div class="subHeader"><span><code>is_github_clone()</code></span></div>
+#* <div class="p">
+#*   Looks at the repository's origin URL to determine whether this repo was
+#*   cloned from a GitHub repository.
+#* </div>
+function is_github_clone() {
+    ORIGIN_URL=`git config --get remote.origin.url`
+    [[ "$ORIGIN_URL" == 'https://github.com'* ]]
+}
+
 #* </div><!-- #Implementation -->
 #*/

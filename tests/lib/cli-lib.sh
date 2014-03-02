@@ -34,6 +34,11 @@ test_output() {
     else
 	MIN_WORDS=''
     fi
+    if [ $# -ge 1 ]; then
+	ECHO_OUTPUT="$1"
+    else
+	ECHO_OUTPUT=1 # Bash for false.
+    fi
 
     # Evaluate whether or not we expect output for stdout and stderr.
     if [[ ( x"$EXPECTED_STDOUT_START" == x"") && 
@@ -87,6 +92,10 @@ test_output() {
     fi
 
     rm $TMP_FILE
+
+    if [ $ECHO_OUTPUT -eq 0 ]; then
+	echo $OUTPUT
+    fi
 }
 
 test_help() {

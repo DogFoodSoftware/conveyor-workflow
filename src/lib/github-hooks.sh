@@ -13,7 +13,6 @@ function check_issue_exists_for() {
     RESOURCE_NAME="$1"; shift
 
     REPO_BASE="$(git rev-parse --show-toplevel)"
-    source $HOME/.git-convey
 
     ISSUE_NUMBER=${RESOURCE_NAME:0:`expr index "$RESOURCE_NAME" '-'`}
     # We need the github owner and repo, which we can get by dissectin the

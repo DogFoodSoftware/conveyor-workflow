@@ -110,7 +110,8 @@ function commit_branch() {
 	exit 1
     fi
 
-    if [ x`git status --porcelain` == x'' ]; then
+    git update-index -q --ignore-submodules --refresh
+    if git diff-files --quiet --ignore-submodules -- && git diff-index --cached --quiet HEAD --ignore-submodules --; then
 	echo "Nothing to commit."
     else
 	check_for_new_files # This forces an exit if new files are found.

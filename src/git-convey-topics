@@ -14,7 +14,7 @@ resource_usage() {
 	echo >&2
     fi
 
-    echo "usage: git convey topics [list [<topic pattern>]]|[start|checkout|commit|publish|delete|done|abandon [topic]]|[help [action]]"
+    echo "usage: git convey topics [list [<topic pattern>]]|[start|checkout|commit|publish|delete|submit|abandon [topic]]|[help [action]]"
     echo
     echo "Available actions:"
     echo "   list      Lists open topics. This is the default action."
@@ -23,7 +23,7 @@ resource_usage() {
     echo "   commit    Commits changes to a topic."
     echo "   publish   Publishes changes to a topic."
     echo "   delete    Deletes the local topic branch."
-    echo "   done      Submits a topic branch."
+    echo "   submit    Submits a topic branch for merge back to source."
     echo "   abandon   Abandons a topic branch."
     echo "   help      Print this help."
     echo
@@ -56,10 +56,11 @@ resource_help() {
 		;;
 	    delete)
 		echo "Deletes the named topic branch from the local repository. To submit a topic"
-		echo "for inclusion back to the source, use 'done'."
+		echo "for inclusion back to the source, use 'submit'."
 		;;
-	    done)
-		echo "Submits the topic branch for inclusion back to the source branch."
+	    submit)
+		echo "Submits the topic branch for inclusion back to the source branch. I.e.,"
+		echo "generate a pull request back to the origin."
 		;;
 	    abandon)
 		echo "Archives a topic branch without submitting it for inclusion back to the"
@@ -96,8 +97,8 @@ resource_do() {
 	    publish_branch 'topics' "$@";;
 	delete)
 	    delete_branch 'topics' "$@";;
-	done)
-	    echo done;;
+	submit)
+	    echo submit;;
 	abandon)
 	    echo abondon;;
 	help)

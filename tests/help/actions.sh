@@ -20,8 +20,8 @@
 #* | help topics checkout   |
 #* | topics help commit     |
 #* | help topics commit     |
-#* | topics help done       |
-#* | help topics done       |
+#* | topics help submit     |
+#* | help topics submit     |
 #* | topics help abandon    |
 #* | help topics abandon    |
 #* | topics help delete     |
@@ -53,8 +53,8 @@ test_significant_output "git convey help topics checkout"
 test_significant_output "git convey topics help checkout"
 test_significant_output "git convey help topics commit"
 test_significant_output "git convey topics help commit"
-test_significant_output "git convey help topics done"
-test_significant_output "git convey topics help done"
+test_significant_output "git convey help topics submit"
+test_significant_output "git convey topics help submit"
 test_significant_output "git convey help topics abandon"
 test_significant_output "git convey topics help abandon"
 test_significant_output "git convey help topics delete"

@@ -109,6 +109,13 @@ test_significant_output() {
     test_output "$COMMAND" "" "" 0 5
 }
 
+#/**
+#* Thanks to <a
+#* href="http://stackoverflow.com/users/1320169/rintcius">rintcius</a> for his
+#* <a
+#* href="http://stackoverflow.com/questions/6565357/git-push-requires-username-and-password">answer</a>
+#* on StackOverflow.com.
+#*/
 function automate_github_https() {
     set_github_origin_data
     cat <<EOF > $HOME/.netrc

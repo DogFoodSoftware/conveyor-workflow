@@ -25,8 +25,8 @@ resource_do() {
 	    if [ $RESULT -ne 0 ]; then
 		echo "Could not connect with GitHub (or token invalid)." >&2
 	    else
-		PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-		GITHUB_LOGIN=`echo $USER_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["login"];'`
+		local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+		local GITHUB_LOGIN=`echo $USER_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["login"];'`
 		echo "Connected to GitHub as: $GITHUB_LOGIN"
 	    fi
 	fi # if_github_configured

@@ -108,3 +108,12 @@ test_significant_output() {
     COMMAND="$1"; shift
     test_output "$COMMAND" "" "" 0 5
 }
+
+function automate_github_https() {
+    set_github_origin_data
+    cat <<EOF > $HOME/.netrc
+machine github.com
+   login $GITHUB_AUTH_TOKEN
+   password x-oauth-basic
+EOF
+}

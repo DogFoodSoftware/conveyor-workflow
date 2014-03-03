@@ -52,7 +52,7 @@ resource_do() {
 	    echo "Found unstaged files in repo." >&2
 	    EXIT=1
 	fi
-	if ! git diff-index --cached --quite HEAD --; then
+	if ! git diff-index --cached --quiet HEAD --; then
 	    echo "Found uncommitted changes in the repo." >&2
 	    EXIT=1
 	fi

@@ -1,16 +1,17 @@
 list_resources() {
-    RESOURCE="$1"; shift
+    local RESOURCE="$1"; shift
+    local FORMAT
     if [ x"${FLAGS_mark}" == x"${FLAGS_FALSE}" ]; then
 	FORMAT='echo -n " "; echo "  %(refname:short)";'
     else
 	FORMAT='if [ `git branch | grep "^*" | cut -d" " -f2 ` == %(refname:short) ]; then echo -n "*"; else echo -n " "; fi; BRANCH=%(refname:short); TOPIC=${BRANCH:$((${#RESOURCE} + 1))}; echo " $TOPIC";'
     fi
-    EVAL=`git for-each-ref --shell --format="$FORMAT" refs/heads/$RESOURCE-*`
+    local EVAL=`git for-each-ref --shell --format="$FORMAT" refs/heads/$RESOURCE-*`
     eval $EVAL
 }
 
 start_branch() {
-    RESOURCE="$1"; shift
+    local RESOURCE="$1"; shift
     # TODO: This seems a little off to me; I think it works, but structure
     # seems to imply that 'checkout' is an option of 'topics' when it is in
     # fact an option for 'start'.
@@ -21,9 +22,9 @@ start_branch() {
     FLAGS "$@" || exit $?
     eval set -- "${FLAGS_ARGV}"
 
-    RESOURCE_NAME="$1"; shift
-    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
+    local RESOURCE_NAME="$1"; shift
+    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    local BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
     
     # Now we check that the branch name conforms. There's one generic test,
     # then we hand it off to the callback defined in the resource handler
@@ -40,13 +41,13 @@ start_branch() {
 
     # The name is acceptable; create the branch.
     git checkout -q -b "$BRANCH_NAME"
-    RESULT=$?
+    local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "Git reported an error creating topic branch '$BRANCH_NAME'. Bailing out." >&2
 	exit 3
     fi
     git push -q origin "$BRANCH_NAME"
-    RESULT=$?
+    local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "Git reported an error pushing topic branch '$BRANCH_NAME' to origin." >&2
 	echo "Deleting local topic branch and bailing out." >&2
@@ -70,10 +71,10 @@ start_branch() {
 }
 
 checkout_branch() {
-    RESOURCE="$1"; shift
-    RESOURCE_NAME="$1"; shift
-    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
+    local RESOURCE="$1"; shift
+    local RESOURCE_NAME="$1"; shift
+    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    local BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
 
     ensure_current_branch_committed "checkout $SINGULAR_RESOURCE '$RESOURCE_NAME'"
     if ! has_branch_origin "$BRANCH_NAME"; then
@@ -92,14 +93,14 @@ checkout_branch() {
 }
 
 function commit_branch() {
-    RESOURCE="$1"; shift
+    local RESOURCE="$1"; shift
     FLAGS_PARENT=""
     DEFINE_string 'message' '' 'Message to include with commit.' 'm'
     FLAGS "$@" || exit $?
     eval set -- "${FLAGS_ARGV}"
 
-    RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
-    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    local RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
+    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
 
     if [ x"$FLAGS_message" == x'' ]; then
 	echo "Must supply commit message. Use option '-m' after 'commit'." >&2
@@ -117,10 +118,10 @@ function commit_branch() {
 }
 
 function publish_branch() {
-    RESOURCE="$1"; shift
-    RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
-    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
+    local RESOURCE="$1"; shift
+    local RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
+    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    local BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
 
     # Check branch exists on origin. This goes first because it establishes
     # the conanical, fundamental, and necessary existence of the topic branch
@@ -160,8 +161,8 @@ function delete_branch() {
     if [ `git rev-parse "$BRANCH_NAME"` != `git rev-parse "remotes/origin/$BRANCH_NAME"` ]; then
 	# We're not quite cooked yet, if the local branch head is in the
 	# remote branch history, then it's us that's behind.
-	LOCAL_HASH=`git rev-parse "$BRANCH_NAME"`
-	RESULT=`git branch -r --contains $LOCAL_HASH | grep "origin/$BRANCH_NAME" | wc -l`
+	local LOCAL_HASH=`git rev-parse "$BRANCH_NAME"`
+	local RESULT=`git branch -r --contains $LOCAL_HASH | grep "origin/$BRANCH_NAME" | wc -l`
 	if [ $RESULT -eq 0 ]; then
 	    echo "${SINGULAR_RESOURCE^} '$RESOURCE_NAME' has local changes. Please publish or abandon." >&2
 	    exit 1
@@ -251,8 +252,9 @@ EOF
 
 function process_default_resource_name() {
     local RESOURCE="$1"; shift
+    local RESOURCE_NAME;
     if [ x"$1" != x"" ]; then
-	local RESOURCE_NAME="$1"; shift
+	RESOURCE_NAME="$1"; shift
     else
 	local BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 	# Defaut to current branch, which must match the stated resource.
@@ -260,7 +262,7 @@ function process_default_resource_name() {
 	    echo "Mis-matched resource on default target. Cannot operate on branch '$BRANCH' as '$RESOURCE' resource." >&2
 	    exit 1
 	fi
-	local RESOURCE_NAME="${BRANCH_NAME:$((${#RESOURCE} + 1))}"
+	RESOURCE_NAME="${BRANCH_NAME:$((${#RESOURCE} + 1))}"
     fi
     echo "$RESOURCE_NAME"
 }

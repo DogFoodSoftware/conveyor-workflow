@@ -9,14 +9,14 @@
 # *   many-to-one.
 # * </div>
 function check_issue_exists_for() {
-    RESOURCE="$1"; shift
-    RESOURCE_NAME="$1"; shift
+    local RESOURCE="$1"; shift
+    local RESOURCE_NAME="$1"; shift
 
-    ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
+    local ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
     set_github_origin_data
 
-    ISSUE_JSON=`curl -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
-    RESULT=$?
+    local ISSUE_JSON=`curl -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
+    local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "Could not contact github to verify task. Bailing out." >&2
 	exit 2

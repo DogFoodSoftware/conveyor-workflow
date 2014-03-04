@@ -85,6 +85,7 @@ fi
 #  * <div class="subHeader"><span>Options Parsing</span></div>
 #  */
 
+source "$HOME/.conveyor/config"
 source "$GIT_CONVEY_DIR/lib/shflags"
 source "$GIT_CONVEY_DIR/common-checks.sh"
 source "$GIT_CONVEY_DIR/common-lib.sh"

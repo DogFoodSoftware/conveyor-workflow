@@ -42,7 +42,7 @@ resource_help() {
     if [ $# -lt 1 ]; then
 	resource_usage
     else
-	ACTION="$1"; shift
+	local ACTION="$1"; shift
 	case "$ACTION" in
 	    list)
 		echo "Lists the release branches active in the current repository."
@@ -82,6 +82,7 @@ resource_help() {
 }
 
 resource_do() {
+    local ACTION
     if [ $# -lt 1 ]; then
 	ACTION="list"
     else

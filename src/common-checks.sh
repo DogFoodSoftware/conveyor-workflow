@@ -17,7 +17,7 @@
 #*   on StackOverflow.
 #* </div>
 function has_branch_local() {
-    BRANCH_NAME="$1"; shift
+    local BRANCH_NAME="$1"; shift
     # Recall, if there's no explicit return, the return value of the function
     # is the status of the last command.
     git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"
@@ -45,14 +45,14 @@ function ensure_has_branch_local() {
 #*   on StackOverflow.
 #* </div>
 function has_branch_origin() {
-    BRANCH_NAME="$1"; shift
+    local BRANCH_NAME="$1"; shift
     # Recall, if there's no explicit return, the return value of the function
     # is the status of the last command.
     git ls-remote --exit-code . "origin/$BRANCH_NAME" &> /dev/null
 }
 
 function ensure_can_fetch() {
-    ACTION_MSG="$1"; shift
+    local ACTION_MSG="$1"; shift
     if ! git fetch -q; then
 	echo "Could not fetch origin updates to check if local changed published; cowardly refusing to $ACTION_MSG." >&2
 	exit 2
@@ -80,7 +80,6 @@ function ensure_current_branch_committed() {
     # Update the index... I'm curious why the index would be out of sync, but
     # can't hurt and so we follow the original code.
     git update-index -q --ignore-submodules --refresh
-    err=0
 
     # Check for unstaged changes in the working trea.
     if ! git diff-files --quiet --ignore-submodules --; then

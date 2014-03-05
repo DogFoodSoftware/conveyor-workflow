@@ -62,12 +62,13 @@ start_branch() {
 	# branch.)
 	git checkout -q master
 	git branch -q -d "$BRANCH_NAME"
-    fi
-    # Else, nothing to do, we are already on the new branch.
 
-    echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Use 'git convey checkout'"
-    echo "to begin working locally. In future, you can use 'git convey start --checkout'"
-    echo "to automatically checkout the branch locally."
+	echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Use 'git convey checkout'"
+	echo "to begin working locally. In future, you can use 'git convey start --checkout'"
+	echo "to automatically checkout the branch locally."
+    else
+	echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin."
+    fi
 }
 
 checkout_branch() {

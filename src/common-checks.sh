@@ -48,6 +48,7 @@ function has_branch_origin() {
     local BRANCH_NAME="$1"; shift
     # Recall, if there's no explicit return, the return value of the function
     # is the status of the last command.
+    git fetch -q # To update our knowledge of origin branches.
     git ls-remote --exit-code . "origin/$BRANCH_NAME" &> /dev/null
 }
 

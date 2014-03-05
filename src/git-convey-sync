@@ -15,7 +15,7 @@ resource_usage() {
 
 resource_do() {
     # First, let's determine whether we're in clone or update mode.
-    if [ $# -eq 1 ] || [ $# -eq 2 ]; then
+    if [ $# -eq 1 ] || [ $# -eq 2 ]; then # Clone it is.
 	local REMOTE_URL="$1"; shift
 	if [ $# -eq 1 ]; then
 	    local LOCAL_DIR="$1"; shift
@@ -62,12 +62,15 @@ resource_do() {
 	fi
 	# Okay, we are clean, time to move ahead.
 	local BRANCH_LIST="git for-each-ref --shell --format='%(refname:short)' refs/heads"
-	local BRANCH_PREFIXES="task- bugfix- hotfix- release-"
+	local BRANCH_PREFIXES="topics- releases-"
 	for PREFIX in $BRANCH_PREFIXES; do
 	    for BRANCH in `$BRANCH_LIST/${PREFIX}*`; do
+		echo "doing $BRANCH"
+		BRANCH="${BRANCH%\'\'}"
+		BRANCH="${BRANCH#\'\'}"
 		# TODO: do this with plumbing
-		git checkout $i
-		git pull origin $i
+		git checkout -q $BRANCH
+		git pull -q origin $BRANCH
 	    done
 	done
     else

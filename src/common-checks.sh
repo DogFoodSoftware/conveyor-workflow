@@ -78,11 +78,18 @@ function is_github_clone() {
 #*   href="http://stackoverflow.com/questions/3878624/how-do-i-programmatically-determine-if-there-are-uncommited-changes">answer</a>.
 #* </div>
 function ensure_current_branch_committed() {
+    ACTION_MSG="$1"; shift
     # Update the index... I'm curious why the index would be out of sync, but
     # can't hurt and so we follow the original code.
     git update-index -q --ignore-submodules --refresh
 
-    # Check for unstaged changes in the working trea.
+    # Check for new files.
+    if [ `git ls-files --exclude-standard --others | wc -l` -gt 0 ]; then
+	echo "Current branch has unknown files; cowardly refusing $ACTION_MSG." >&2
+	exit 1
+    fi
+
+    # Check for unstaged changes in tracked files in the working tree.
     if ! git diff-files --quiet --ignore-submodules --; then
         echo "Current branch has unstaged changes; cowardly refusing to $ACTION_MSG." >&2
 	exit 1

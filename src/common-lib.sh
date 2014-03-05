@@ -39,19 +39,23 @@ start_branch() {
 	echo "Branch for topic '$BRANCH_NAME' already exists on origin."
     fi
 
+    local ORIGINAL_BRANCH=$(git symbolic-ref -q HEAD)
+    ORIGINAL_BRANCH=${ORIGINAL_BRANCH##refs/heads/}
+    ORIGINAL_BRANCH=${ORIGINAL_BRANCH:-HEAD}
     # The name is acceptable; create the branch.
     git checkout -q -b "$BRANCH_NAME"
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "Git reported an error creating topic branch '$BRANCH_NAME'. Bailing out." >&2
+	git checkout $ORIGINAL_BRANCH
 	exit 3
     fi
     git push -q origin "$BRANCH_NAME"
+    git checkout -q $ORIGINAL_BRANCH
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "Git reported an error pushing topic branch '$BRANCH_NAME' to origin." >&2
 	echo "Deleting local topic branch and bailing out." >&2
-	git checkout -q master
 	git branch -q -d "$BRANCH_NAME"
 	exit 3
     fi
@@ -60,13 +64,13 @@ start_branch() {
 	# the local branch. (I looked, but did not find a way to create
 	# branches on the remote without creating an intemediate local
 	# branch.)
-	git checkout -q master
 	git branch -q -d "$BRANCH_NAME"
 
 	echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Use 'git convey checkout'"
 	echo "to begin working locally. In future, you can use 'git convey start --checkout'"
 	echo "to automatically checkout the branch locally."
     else
+	git checkout -q "$BRANCH_NAME"
 	echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin."
     fi
 }

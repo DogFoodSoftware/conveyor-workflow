@@ -66,8 +66,8 @@ start_branch() {
 	# branch.)
 	git branch -q -d "$BRANCH_NAME"
 
-	echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Use 'git convey checkout'"
-	echo "to begin working locally. In future, you can use 'git convey start --checkout'"
+	echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Use 'con checkout'"
+	echo "to begin working locally. In future, you can use 'con start --checkout'"
 	echo "to automatically checkout the branch locally."
     else
 	git checkout -q "$BRANCH_NAME"
@@ -341,7 +341,7 @@ function fetch_and_merge() {
     git fetch -q
     if ! git merge --no-ff -q origin/"$BRANCH_NAME"; then
 	echo "There are local conflicts or other problems merging the local and remote $SINGULAR_RESOURCE '$RESOURCE_NAME';" >&2
-	echo "please resolve and commit with 'git convey commit'." >&2
+	echo "please resolve and commit with 'con commit'." >&2
 	return 1
     fi
 

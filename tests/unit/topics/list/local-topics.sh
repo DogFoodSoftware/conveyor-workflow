@@ -4,11 +4,11 @@
 #* <pre>
 #* Feature: List current local topics.
 #*
-#* Scenario: 'git convey topics list' from any branch
+#* Scenario: 'con topics list' from any branch
 #* Given 'git-convey' is installed
 #* And a pre-populated test repository
 #* And I am on the 'master' branch'
-#* When I type 'git convey list'
+#* When I type 'con list'
 #* Then lines 'add-bar' and 'add-foo' are printed to stdout
 #* And the script exits with exit code 0.
 #* </pre>
@@ -26,7 +26,7 @@ populate_test_environment
 
 git checkout -q master
 
-test_output 'git convey topics' "  add-bar
+test_output 'con topics' "  add-bar
   add-foo" '' 0
-test_output 'git convey topics list' "  add-bar
+test_output 'con topics list' "  add-bar
   add-foo" '' 0

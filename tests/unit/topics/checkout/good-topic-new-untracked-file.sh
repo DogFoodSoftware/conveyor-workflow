@@ -10,7 +10,7 @@
 #*   And there exists a topic 'existing-topic-b'
 #*   And I have checked out 'existing-topic-a'
 #*   And there is a new, untracked file in the working directory
-#* When I type 'git convey topics checkout existing-topic-b'
+#* When I type 'con topics checkout existing-topic-b'
 #* Then text "Foo bar" is printed to stderr
 #*   And I remain on topic 'existing-topic-a'
 #*   And the script exits with exit code 1.

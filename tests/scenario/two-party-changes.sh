@@ -31,7 +31,7 @@ init_test_environment $TEST_BASE/.. `basename $0`
 
 WORKING_REPO_PATH_B="$WORKING_REPO_PATH/.."
 WORKING_REPO_PATH_B=`realpath $WORKING_REPO_PATH_B`/repo_b
-git convey sync "file://$ORIGIN_REPO_PATH" "$WORKING_REPO_PATH_B" > /dev/null
+con sync "file://$ORIGIN_REPO_PATH" "$WORKING_REPO_PATH_B" > /dev/null
 
 function check_heads() {
     MSG="$1"; shift

@@ -4,10 +4,10 @@
 #* <pre>
 #* Feature: Create a valid topic.
 #*
-#* Scenario: 'git convey topics start task-foo' from master
+#* Scenario: 'con topics start task-foo' from master
 #* Given 'git-convey' is installed
 #*   And I am on the 'master' branch'
-#* When I type 'git convey topics start task-foo'
+#* When I type 'con topics start task-foo'
 #* Then text "Switched to branch 'task-foo'" is printed to stdout
 #*   And branch 'task-foo' is not created in the local repository
 #*   And branch 'task-foo' is created in the origin repository
@@ -23,4 +23,4 @@ source $TEST_BASE/lib/start-lib.sh
 init_test_environment $TEST_BASE/.. `basename $0`
 cd $WORKING_REPO_PATH
 
-test_start 'git convey topics start task-foo' 'topics' 'task-foo' "Created topic 'task-foo' on origin." '' 1 0
+test_start 'con topics start task-foo' 'topics' 'task-foo' "Created topic 'task-foo' on origin." '' 1 0

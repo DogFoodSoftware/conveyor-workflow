@@ -4,10 +4,10 @@
 #* <pre>
 #* Feature: Sync/Clone a New Repo
 #*
-#* Scenario: 'git convey sync' a new repo
+#* Scenario: 'con sync' a new repo
 #* Given 'git-convey' is installed
 #* And a pre-populated test repository
-#* When I type 'git convey sync $ORIGIN_REPO_PATH $WORKING_REPO_PATH'
+#* When I type 'con sync $ORIGIN_REPO_PATH $WORKING_REPO_PATH'
 #* Then text "Sync complete." is printed to stdout
 #* And all remote references are created in the local repository
 #* And the script exits with exit code 0.
@@ -28,7 +28,7 @@ populate_test_environment
 
 rm -rf $WORKING_REPO_PATH
 cd $GIT_CONVEY_TEST_DIR
-test_output "git convey --test sync file://$ORIGIN_REPO_PATH $WORKING_REPO_PATH" "Sync complete." '' 0
+test_output "con --test sync file://$ORIGIN_REPO_PATH $WORKING_REPO_PATH" "Sync complete." '' 0
 cd $WORKING_REPO_PATH
 REFERENCES=`git show-ref -d`
 ORIGIN_REF_COUNT=`echo "$REFERENCES" | grep refs/remotes | wc -l`

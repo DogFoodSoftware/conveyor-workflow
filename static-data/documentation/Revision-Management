@@ -57,12 +57,12 @@
   <div class="p">
     Activity starts with the project manager who
     creates <code>topics</code>. Topics may, but need not be, captured in an
-    external issue DB, such as GitHub's issue tracker. <code>git convey
+    external issue DB, such as GitHub's issue tracker. <code>con
     start</code> creates a topic branch in the origin repository.
   </div>
   <div class="p">
-    A developer may then <code>git convey checkout</code> the topic branch, do
-    work, and commit changes locally with <code>git convey
+    A developer may then <code>con checkout</code> the topic branch, do
+    work, and commit changes locally with <code>con
     commit</code>. TODO: further discussion awaits experimentation with
     flowing through git.
   </div>
@@ -141,28 +141,28 @@
     Every action which would introduce a new commit can be isolated to one of
     six actions:
     <ul>
-      <li><code>git convey update</code>: brings the local repository
+      <li><code>con update</code>: brings the local repository
       up-to-date with the remote <code>origin</code>.</li>
-      <li><code>git convey start &lt;task|bugfix|hotfix&gt; &lt;task
+      <li><code>con start &lt;task|bugfix|hotfix&gt; &lt;task
       ID&gt;</code>: used to create a new branch where changes can be
       isoloted.</li>
-      <li><code>git convey commit ...</code>: used to commit changes to a topic
+      <li><code>con commit ...</code>: used to commit changes to a topic
       branch.<span class="note">This is essentially a synonym
-      for <code>git commit</code>. Developers should prefer <code>git convey
+      for <code>git commit</code>. Developers should prefer <code>con
       commit</code> anyway in order to keep the habit of consistently using
       the Git-Convey tool and because future versions may want to do some
       custom house keeping at commit time.</span></li>
-      <li><code>git convey finish [[&lt;task|bugfix|hotfix&gt;] &lt;task
+      <li><code>con finish [[&lt;task|bugfix|hotfix&gt;] &lt;task
       ID&gt;]</code>: marks the current or indicated topic branch for
       integration back into the original source branch from which it was
       cut. Note that 'finished' branches may receive further commits, such as
       may be requested by the merge master, and be re-finished any number of
       times.</li>
-      <li><code>git convey promote-testing</code>: archives the
+      <li><code>con promote-testing</code>: archives the
       current <code>testing</code> <code>HEAD</code> and then forces
       the <code>testing</code> <code>HEAD</code> to the
       current <code>master</code> <code>HEAD</code>.</li>
-      <li><code>git convey promote-release &lt;release ID&gt;</code>: cuts a
+      <li><code>con promote-release &lt;release ID&gt;</code>: cuts a
       new release branch from the
       current <code>testing</code> <code>HEAD</code>.</li>
     </ul>

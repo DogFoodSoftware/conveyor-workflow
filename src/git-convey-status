@@ -5,7 +5,7 @@ resource_usage() {
     fi
 
     echo "usage:"
-    echo "  git convey status"
+    echo "  con status"
     echo
 
     echo "Prints useful information about the state of the repository. In"

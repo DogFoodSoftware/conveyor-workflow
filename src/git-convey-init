@@ -4,18 +4,18 @@ resource_usage() {
 	echo >&2
     fi
 
-    echo "usage: git convey init <source repo name> [<staging dir>]"
+    echo "usage: con init <source repo name> [<staging dir>]"
     echo
     echo "Used to initialize a new origin repository for git-convey. This is a"
     echo "standard git repository with the 'master' branch pre-populated with"
     echo "a README.repo file."
     echo
-    echo "Use 'git convey sync' to checkout a local working directory."
+    echo "Use 'con sync' to checkout a local working directory."
 }
 
 resource_do() {
     if [ $# -lt 1 ] || [ $# -gt 2 ]; then
-	resource_usage "Unknown usage for 'git convey init'."
+	resource_usage "Unknown usage for 'con init'."
 	exit 1
     fi
 

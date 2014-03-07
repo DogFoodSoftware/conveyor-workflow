@@ -12,7 +12,7 @@
 #*   And there exists a topic 'existing-topic-b'
 #*   And I have checked out 'existing-topic-a'
 #*   And there is a new, uncommitted file in the working directory
-#* When I type 'git convey topics checkout --force existing-topic-b'
+#* When I type 'con topics checkout --force existing-topic-b'
 #* Then text "Switched to topic 'existing-topic-b'." is printed to stdout
 #*   And I am on branch 'topics-existing-topic-b'
 #*   And the script exits with exit code 0.

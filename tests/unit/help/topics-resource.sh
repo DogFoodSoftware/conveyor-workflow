@@ -4,16 +4,16 @@
 #* <pre>
 #* Feature: Topics resource command line help.
 #*
-#* Scenario: 'git convey topics help'
+#* Scenario: 'con topics help'
 #* Given 'git-convey' is installed
-#* When I type 'git convey topics help'
-#* Then text is printed to stdout starting with 'usage: git convey topics'
+#* When I type 'con topics help'
+#* Then text is printed to stdout starting with 'usage: con topics'
 #* And the script exits with exit code 0.
 #*
-#* Scenario: 'git convey help topics'
+#* Scenario: 'con help topics'
 #* Given 'git-convey' is installed
-#* When I type 'git convey help topics'
-#* Then text is printed to stdout starting with 'usage: git convey topics'
+#* When I type 'con help topics'
+#* Then text is printed to stdout starting with 'usage: con topics'
 #* And the script exits with exit code 0.
 #* </pre>
 #*/
@@ -21,5 +21,5 @@
 TEST_BASE=`dirname $0`/../..
 source $TEST_BASE/lib/cli-lib.sh
 
-test_help "git convey help topics" "usage: git convey topics"
-test_help "git convey topics help" "usage: git convey topics"
+test_help "con help topics" "usage: con topics"
+test_help "con topics help" "usage: con topics"

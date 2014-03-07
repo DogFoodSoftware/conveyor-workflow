@@ -4,10 +4,10 @@
 #* <pre>
 #* Feature: Report bad topics action.
 #*
-#* Scenario: 'git convey topics foo'
+#* Scenario: 'con topics foo'
 #* Given 'git-convey' is installed
-#* When I type 'git convey topics foo'
-#* Then text is printed to stdout starting with 'usage: git convey topics'
+#* When I type 'con topics foo'
+#* Then text is printed to stdout starting with 'usage: con topics'
 #* And text is printed to stderr starting with "Unknown action: 'foo'."
 #* And the script exits with exit code 1.
 #* </pre>
@@ -17,4 +17,4 @@ TEST_BASE=`dirname $0`/../..
 source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 
-test_output "git convey topics foo" "usage: git convey topics" "Unknown action: 'foo'." 1
+test_output "con topics foo" "usage: con topics" "Unknown action: 'foo'." 1

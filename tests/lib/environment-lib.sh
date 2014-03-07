@@ -22,8 +22,8 @@ function init_test_environment() {
     # TODO: we should support '-q/--quiet' for the following two commands.
     # Notice we use the 'working repo', without the '.git' extension because
     # init adds the extension. Users do not generally deal with the '.git'.
-    git convey init $WORKING_REPO > /dev/null
-    git convey sync "file://$ORIGIN_REPO_PATH" "$WORKING_REPO_PATH" > /dev/null
+    con init $WORKING_REPO > /dev/null
+    con sync "file://$ORIGIN_REPO_PATH" "$WORKING_REPO_PATH" > /dev/null
 }
 
 function init_github_test_environment() {
@@ -46,7 +46,7 @@ function init_github_test_environment() {
     # TODO: we should support '-q/--quiet' for the following command.  Notice
     # we use the 'working repo', without the '.git' extension because init
     # adds the extension. Users do not generally deal with the '.git'.
-    git convey sync "$ORIGIN_REPO_URL" "$WORKING_REPO_PATH" > /dev/null
+    con sync "$ORIGIN_REPO_URL" "$WORKING_REPO_PATH" > /dev/null
 }
 
 function populate_test_environment() {

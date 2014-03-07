@@ -14,7 +14,7 @@ resource_usage() {
 	echo >&2
     fi
 
-    echo "usage: git convey releases [list [<release pattern>]]|[start|checkout|commit|delete|archive [release]]|[help [action]]"
+    echo "usage: con releases [list [<release pattern>]]|[start|checkout|commit|delete|archive [release]]|[help [action]]"
     echo
     echo "Available actions:"
     echo "   list      List release branches. This is the default action."

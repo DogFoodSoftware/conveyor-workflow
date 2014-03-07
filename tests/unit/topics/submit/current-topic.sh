@@ -2,9 +2,9 @@
 
 #/**
 #* <pre>
-#* Feature: 'git convey topics submit' current branch
+#* Feature: 'con topics submit' current branch
 #*
-#* Scenario: 'git convey topics submit' current branch
+#* Scenario: 'con topics submit' current branch
 #* Given 'git-convey' is installed
 #*   And the current repository has been cloned from GitHub
 #*   And $HOME/.git-convey is in place

@@ -5,8 +5,8 @@ resource_usage() {
     fi
 
     echo "usage:"
-    echo "  git convey sync"
-    echo "  git convey sync <repo URL> [<local repo dir>]"
+    echo "  con sync"
+    echo "  con sync <repo URL> [<local repo dir>]"
     echo
     echo "Used to update (1st usage) or clone (2nd usage) a git-convey"
     echo "repository."

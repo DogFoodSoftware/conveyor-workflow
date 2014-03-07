@@ -6,7 +6,7 @@
 #*
 #* Scenario Outline: git-convey action help
 #* Given 'git-convey' is installed
-#* When I type 'git convey <action help>'
+#* When I type 'con <action help>'
 #* Then significant text is printed to stdout 
 #* And the script exits with exit code 0.
 #*
@@ -46,31 +46,31 @@
 TEST_BASE=`dirname $0`/../..
 source $TEST_BASE/lib/cli-lib.sh
 
-test_significant_output "git convey help topics list"
-test_significant_output "git convey topics help list"
-test_significant_output "git convey help topics start"
-test_significant_output "git convey topics help start"
-test_significant_output "git convey help topics checkout"
-test_significant_output "git convey topics help checkout"
-test_significant_output "git convey help topics commit"
-test_significant_output "git convey topics help commit"
-test_significant_output "git convey help topics submit"
-test_significant_output "git convey topics help submit"
-test_significant_output "git convey help topics abandon"
-test_significant_output "git convey topics help abandon"
-test_significant_output "git convey help topics delete"
-test_significant_output "git convey topics help delete"
-test_significant_output "git convey help topics help"
-test_significant_output "git convey topics help help"
+test_significant_output "con help topics list"
+test_significant_output "con topics help list"
+test_significant_output "con help topics start"
+test_significant_output "con topics help start"
+test_significant_output "con help topics checkout"
+test_significant_output "con topics help checkout"
+test_significant_output "con help topics commit"
+test_significant_output "con topics help commit"
+test_significant_output "con help topics submit"
+test_significant_output "con topics help submit"
+test_significant_output "con help topics abandon"
+test_significant_output "con topics help abandon"
+test_significant_output "con help topics delete"
+test_significant_output "con topics help delete"
+test_significant_output "con help topics help"
+test_significant_output "con topics help help"
 
-test_significant_output "git convey help releases list"
-test_significant_output "git convey releases help list"
-test_significant_output "git convey help releases start"
-test_significant_output "git convey releases help start"
-test_significant_output "git convey help releases checkout"
-test_significant_output "git convey releases help checkout"
-test_significant_output "git convey help releases delete"
-test_significant_output "git convey releases help delete"
-test_significant_output "git convey help releases archive"
-test_significant_output "git convey releases help archive"
-test_significant_output "git convey releases help help"
+test_significant_output "con help releases list"
+test_significant_output "con releases help list"
+test_significant_output "con help releases start"
+test_significant_output "con releases help start"
+test_significant_output "con help releases checkout"
+test_significant_output "con releases help checkout"
+test_significant_output "con help releases delete"
+test_significant_output "con releases help delete"
+test_significant_output "con help releases archive"
+test_significant_output "con releases help archive"
+test_significant_output "con releases help help"

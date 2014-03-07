@@ -42,7 +42,7 @@ export POSIXLY_CORRECT=1
 #  */
 
 global_help() {
-    echo "Use 'git convey help [<resource> [<action>]]' for details and refer to "
+    echo "Use 'con help [<resource> [<action>]]' for details and refer to "
     echo "http://dogfoodsoftware.com/documentatione/conveyor/ref/Branching-Strategy for"
     echo "more on the underlying branch strategy which git-convey implements."
     echo
@@ -63,7 +63,7 @@ usage() {
 	echo >&2
     fi
 
-    echo "usage: git convey <resource|global action>"
+    echo "usage: con <resource|global action>"
     echo
     echo "Available resources:"
     echo "   topics    Manage topics / topic branches."

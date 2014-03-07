@@ -117,10 +117,13 @@ test_significant_output() {
 #* on StackOverflow.com.
 #*/
 function automate_github_https() {
-    set_github_origin_data
-    cat <<EOF > $HOME/.netrc
+    if [ ! -f $HOME/.netrc ]; then
+	set_github_origin_data
+	cat <<EOF > $HOME/.netrc
 machine github.com
    login $GITHUB_AUTH_TOKEN
    password x-oauth-basic
 EOF
+	trap "{ rm $HOME/.netrc }" EXIT
+    fi
 }

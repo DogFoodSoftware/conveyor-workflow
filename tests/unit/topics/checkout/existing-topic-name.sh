@@ -10,7 +10,7 @@
 #*   And there exists a topic 'existing-topic'
 #* When I type 'git convey topics checkout existing-topic'
 #* Then text "Switched to topic 'existing-topic'." is printed to stdout
-#*   And I am on branch 'master'
+#*   And I am on branch 'topics-existing-topic'
 #*   And the script exits with exit code 0.
 #* </pre>
 #*/

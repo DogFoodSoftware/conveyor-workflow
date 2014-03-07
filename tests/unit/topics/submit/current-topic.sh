@@ -43,4 +43,4 @@ if ! [[ "$NUMBER" =~ ^-?[0-9]+$ ]]; then
     echo "ERROR: Expected PR number, but got: ${NUMBER}."
 fi
 # TODO: cleanup branch
-rm $HOME/.netrc
+

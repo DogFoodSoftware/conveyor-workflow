@@ -13,7 +13,7 @@ list_resources() {
 start_branch() {
     local RESOURCE="$1"; shift
     # TODO: This seems a little off to me; I think it works, but structure
-    # seems to imply that 'checkout' is an option of 'topics' when it is in
+    # seems to imply that '--checkout' is an option of 'topics' when it is in
     # fact an option for 'start'.
 
     # Process any options
@@ -77,12 +77,28 @@ start_branch() {
 
 checkout_branch() {
     local RESOURCE="$1"; shift
+    # TODO: This seems a little off to me; I think it works, but structure
+    # seems to imply that '--force' is an option of 'topics' when it is in
+    # fact an option for 'checkout'.
+
+    # Process any options
+    local FLAGS_PARENT="topics"
+    DEFINE_boolean 'force' false 'Force checkout of new branch.' 'f'
+    FLAGS "$@" || exit $?
+    eval set -- "${FLAGS_ARGV}"
+
     local RESOURCE_NAME="$1"; shift
     local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
     local BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
 
-    ensure_current_branch_committed "checkout $SINGULAR_RESOURCE '$RESOURCE_NAME'"
+    if [ $FLAGS_force -ne $FLAGS_TRUE ]; then
+	ensure_current_branch_committed "checkout $SINGULAR_RESOURCE '$RESOURCE_NAME'"
+    fi
+    # else the checkout is forced and we skip the commit checks.
+
+    # We always checkin with origin.
     if ! has_branch_origin "$BRANCH_NAME"; then
+	# TODO: Shouldn't this add something to the effect of "Consider abandoning or re-start the topic."
 	echo "No such $SINGULAR_RESOURCE '$RESOURCE_NAME' exists on origin." >&2
 	exit 1
     fi

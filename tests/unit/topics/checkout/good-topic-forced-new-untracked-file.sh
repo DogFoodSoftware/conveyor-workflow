@@ -4,16 +4,17 @@
 #* <pre>
 #* Feature: Checkout
 #*
-#* Scenario: Switching topics with local changes; specifically new, untracked file.
+#* Scenario: Force checkout of an existing topic with an untracked new file.
+#*
 #* Given 'git-convey' is installed
 #*   And there exists a topic 'existing-topic-a'
 #*   And there exists a topic 'existing-topic-b'
 #*   And I have checked out 'existing-topic-a'
 #*   And there is a new, untracked file in the working directory
-#* When I type 'git convey topics checkout existing-topic-b'
-#* Then text "Foo bar" is printed to stderr
-#*   And I remain on topic 'existing-topic-a'
-#*   And the script exits with exit code 1.
+#* When I type 'git convey topics checkout --force existing-topic-b'
+#* Then text "Switched to topic 'existing-topic-b'." is printed to stdout
+#*   And I am on branch 'topics-existing-topic-b'
+#*   And the script exits with exit code 0.
 #* </pre>
 #*/
 
@@ -27,4 +28,4 @@ cd $WORKING_REPO_PATH
 
 setup_a_b
 touch foo
-verify_fail_a_b 'existing-topic-b' "Current branch has unknown files; cowardly refusing checkout topic 'existing-topic-b'."
+verify_pass_a_b '--force existing-topic-b' "Switched to topic 'existing-topic-b'."

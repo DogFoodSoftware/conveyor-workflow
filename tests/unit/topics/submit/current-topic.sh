@@ -42,5 +42,13 @@ NUMBER=${NUMBER:0:$((${#NUMBER} - 1))}
 if ! [[ "$NUMBER" =~ ^-?[0-9]+$ ]]; then
     echo "ERROR: Expected PR number, but got: ${NUMBER}."
 fi
-# TODO: cleanup branch
-
+# Cleanup branch.
+git push -q origin :topics-1-$ISSUE_DESC
+# Close PR
+set_github_origin_data
+CURL_COMMAND="curl --max-time 4 -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic -X PATCH -d @- https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/pulls/$NUMBER"
+cat <<EOF | $CURL_COMMAND > /dev/null
+{
+  "state" : "closed"
+}
+EOF

@@ -10,7 +10,7 @@
 #*   And $HOME/.git-convey is in place
 #*   And $HOME/.git-convey defines GITHUB_AUTH_TOKEN
 #*   And the token has the necessary 'user' scope
-#* When I type 'con status
+#* When I type 'con status'
 #* Then I should find the text 'Connected to GitHub as: xxx' in the output
 #*   And the script exits with exit code 0.
 #* </pre>

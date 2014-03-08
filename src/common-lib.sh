@@ -39,9 +39,7 @@ start_branch() {
 	echo "Branch for topic '$BRANCH_NAME' already exists on origin."
     fi
 
-    local ORIGINAL_BRANCH=$(git symbolic-ref -q HEAD)
-    ORIGINAL_BRANCH=${ORIGINAL_BRANCH##refs/heads/}
-    ORIGINAL_BRANCH=${ORIGINAL_BRANCH:-HEAD}
+    local ORIGINAL_BRANCH=`get_current_branch`
     # The name is acceptable; create the branch.
     git checkout -q -b "$BRANCH_NAME"
     local RESULT=$?
@@ -394,4 +392,11 @@ function figure_resource_name_from_branch() {
 	echo "Internal error; unexpected branch name: '$BRANCH'." >&2
 	exit 2
     fi
+}
+
+function get_current_branch() {
+    local ORIGINAL_BRANCH=$(git symbolic-ref -q HEAD)
+    ORIGINAL_BRANCH=${ORIGINAL_BRANCH##refs/heads/}
+    ORIGINAL_BRANCH=${ORIGINAL_BRANCH:-HEAD}
+    echo "$ORIGINAL_BRANCH"
 }

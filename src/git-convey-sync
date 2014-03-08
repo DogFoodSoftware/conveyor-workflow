@@ -61,8 +61,10 @@ resource_do() {
 	    exit $EXIT
 	fi
 	# Okay, we are clean, time to move ahead.
+	local ORIGINAL_BRANCH=`get_current_branch`
+	trap "git checkout -q $ORIGINAL_BRANCH" EXIT
 	git fetch -p -q
-	if ! update_branch master; then
+	if ! update_branch master "$ORIGINAL_BRANCH"; then
 	    echo "Could not updated 'master' release branch. Bailing out." >&2
 	    exit 2
 	fi
@@ -74,7 +76,7 @@ resource_do() {
 		BRANCH="${BRANCH%\'\'}"
 		BRANCH="${BRANCH#\'\'}"
 		# This method takes care of communicating problems to the user.
-		update_branch $BRANCH
+		update_branch "$BRANCH" "$ORIGINAL_BRANCH"
 	    done
 	done
     else
@@ -87,6 +89,7 @@ resource_do() {
 
 function update_branch() {
     local BRANCH="$1"; shift
+    local ORIGINAL_BRANCH="$1"; shift
 
     # TODO: do this with plumbing
     if ! git checkout -q $BRANCH; then
@@ -103,12 +106,21 @@ function update_branch() {
 	local RESOURCE=`figure_resource_from_branch "$BRANCH"`
 	local RESOURCE_SINGULAR="${RESOURCE%s}"
 	local RESOURCE_NAME=`figure_resource_name_from_branch "$BRANCH"`
+	local RESOURCE_REF=""
+	local SWITCH_ALERT=""
+	if [ x"$BRANCH" == x"$ORIGINAL_BRANCH" ]; then
+	    RESOURCE_REF="Current ${RESOURCE_SINGULAR}"
+	    SWITCH_ALERT=" Switched to master release."
+	else
+	    RESOURCE_REF="${RESOURCE_SINGULAR^}"
+	fi
 	if [ `git branch --contains $BRANCH | grep master | wc -l` -eq 1 ]; then
 	    git checkout -q master
 	    git branch -q -d "$BRANCH"
-	    echo "Current $RESOURCE_SINGULAR '$RESOURCE_NAME' closed. Switched to master release."
+	    echo "$RESOURCE_REF '$RESOURCE_NAME' closed.$SWITCH_ALERT"
+	    trap "git checkout -q master" EXIT
 	else
-	    echo "Current $RESOURCE_SINGULAR '$RESOURCE_NAME' abandoned on origin. Local branch left intact. Please abandon or re-start."
+	    echo "$RESOURCE_REF '$RESOURCE_NAME' abandoned on origin. Local branch left intact. Please abandon or re-start."
 	fi
     fi
     return 0

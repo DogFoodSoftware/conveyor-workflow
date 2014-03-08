@@ -51,7 +51,7 @@ start_branch() {
     if [ ! -f $HOOKS_LIB ]; then
 	echo "WARNING: Could not load '$HOOKS' hooks; skipping some issue checks."
     else
-	source $DFS_HOME/git-convey/runnable/lib/github-hooks.sh
+	source $DFS_HOME/git-convey/runnable/lib/${HOOKS}-hooks.sh
 	if ! type -t check_issue_exists_for >/dev/null; then
 	    # TODO: add URL for github
 	    echo "WARNING: Found hooks '$HOOKS', but did not provide 'check_issue_exists_for'. Let us know if you're seeing this in a supported release."

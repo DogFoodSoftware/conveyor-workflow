@@ -21,7 +21,6 @@ setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 init_test_environment $TEST_BASE/.. `basename $0`
 cd $WORKING_REPO_PATH
-
 git checkout -q master
 if ! con topics start --checkout existing-topic >/dev/null; then
     echo "ERROR: could not start topic 'existing-topic'; test inconclusive."

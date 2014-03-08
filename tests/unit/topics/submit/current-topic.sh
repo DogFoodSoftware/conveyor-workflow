@@ -46,7 +46,7 @@ fi
 git push -q origin :topics-1-$ISSUE_DESC
 # Close PR
 set_github_origin_data
-CURL_COMMAND="curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic -X PATCH -d @- https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/pulls/$NUMBER"
+CURL_COMMAND="curl --max-time 4 -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic -X PATCH -d @- https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/pulls/$NUMBER"
 cat <<EOF | $CURL_COMMAND > /dev/null
 {
   "state" : "closed"

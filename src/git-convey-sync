@@ -61,16 +61,20 @@ resource_do() {
 	    exit $EXIT
 	fi
 	# Okay, we are clean, time to move ahead.
+	git fetch -p -q
+	if ! update_branch master; then
+	    echo "Could not updated 'master' release branch. Bailing out." >&2
+	    exit 2
+	fi
 	local BRANCH_LIST="git for-each-ref --shell --format='%(refname:short)' refs/heads"
 	local BRANCH_PREFIXES="topics- releases-"
 	for PREFIX in $BRANCH_PREFIXES; do
 	    for BRANCH in `$BRANCH_LIST/${PREFIX}*`; do
-		echo "doing $BRANCH"
+		# Git spits out the branches quoted.
 		BRANCH="${BRANCH%\'\'}"
 		BRANCH="${BRANCH#\'\'}"
-		# TODO: do this with plumbing
-		git checkout -q $BRANCH
-		git pull -q origin $BRANCH
+		# This method takes care of communicating problems to the user.
+		update_branch $BRANCH
 	    done
 	done
     else
@@ -79,4 +83,33 @@ resource_do() {
     fi # Top level clone / update check.
 
     echo "Sync complete."
+}
+
+function update_branch() {
+    local BRANCH="$1"; shift
+
+    # TODO: do this with plumbing
+    if ! git checkout -q $BRANCH; then
+	echo "Very strange; found local branch '$BRANCH' but could not check it out for sync." >&2
+	return 2
+    fi
+    if has_branch_origin "$BRANCH"; then # We sync with origin.
+	if ! git pull -q origin $BRANCH; then
+	    echo "Could not sync local branch '$BRANCH'. This may be due to network problems." >&2
+	    return 2
+	fi
+    else # The branch does not exist on origin; closed or abandoned?
+	# Remember, 'master' has already been synced.
+	local RESOURCE=`figure_resource_from_branch "$BRANCH"`
+	local RESOURCE_SINGULAR="${RESOURCE%s}"
+	local RESOURCE_NAME=`figure_resource_name_from_branch "$BRANCH"`
+	if [ `git branch --contains $BRANCH | grep master | wc -l` -eq 1 ]; then
+	    git checkout -q master
+	    git branch -q -d "$BRANCH"
+	    echo "Current $RESOURCE_SINGULAR '$RESOURCE_NAME' closed. Switched to master release."
+	else
+	    echo "Current $RESOURCE_SINGULAR '$RESOURCE_NAME' abandoned on origin. Local branch left intact. Please abandon or re-start."
+	fi
+    fi
+    return 0
 }

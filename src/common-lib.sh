@@ -369,3 +369,29 @@ function set_github_origin_data() {
     # underlying git convention. We want to drop it for the API calls.
     GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
 }
+
+function figure_resource_from_branch() {
+    local BRANCH="$1"; shift
+
+    if [[ x"$BRANCH" == xtopics-* ]]; then
+	echo "topics"
+    elif [[ x"$BRANCH" == xreleases-* ]] || [[ x"$BRANCH" == x"master" ]]; then
+	echo "releases"
+    else
+	echo "Internal error; unexpected branch name: '$BRANCH'." >&2
+	exit 2
+    fi
+}
+
+function figure_resource_name_from_branch() {
+    local BRANCH="$1"; shift
+
+    if [[ x"$BRANCH" == xtopics-* ]]; then
+	echo ${BRANCH#topics-}
+    elif [[ x"$BRANCH" == xreleases-* ]] || [[ x"$BRANCH" == x"master" ]]; then
+	echo ${BRANCH#releases-}
+    else
+	echo "Internal error; unexpected branch name: '$BRANCH'." >&2
+	exit 2
+    fi
+}

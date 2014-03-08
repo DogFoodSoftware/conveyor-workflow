@@ -41,6 +41,27 @@ start_branch() {
 	exit 1
     fi
 
+    # Now time for the issue check.
+    local HOOKS='manual' # Set default hooks.
+    if is_github_clone; then
+	HOOKS='github'
+    fi
+    local HOOKS_LIB="$DFS_HOME/git-convey/runnable/lib/${HOOKS}-hooks.sh"
+    local VERIFY_MSG=''
+    if [ ! -f $HOOKS_LIB ]; then
+	echo "WARNING: Could not load '$HOOKS' hooks; skipping some issue checks."
+    else
+	source $DFS_HOME/git-convey/runnable/lib/github-hooks.sh
+	if ! type -t check_issue_exists_for >/dev/null; then
+	    # TODO: add URL for github
+	    echo "WARNING: Found hooks '$HOOKS', but did not provide 'check_issue_exists_for'. Let us know if you're seeing this in a supported release."
+	else
+	    # The hooks will provide feedback and exit as necessary. It may
+	    # provide additional information to be echod in non-quite modes.
+	    VERIFY_MSG=`check_issue_exists_for "$RESOURCE" "$RESOURCE_NAME"`
+	fi
+    fi
+
     local ORIGINAL_BRANCH=`get_current_branch`
     # The name is acceptable; create the branch.
     git checkout -q -b "$BRANCH_NAME"
@@ -59,6 +80,12 @@ start_branch() {
 	git branch -q -d "$BRANCH_NAME"
 	exit 3
     fi
+    echo -n "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin."
+    if [ x"$VERIFY_MSG" != x"" ]; then
+	echo " $VERIFY_MSG"
+    else
+	echo
+    fi
     if [ $FLAGS_checkout -eq $FLAGS_FALSE ]; then
 	# By default, 'start' only creates the branch on origin, so we remove
 	# the local branch. (I looked, but did not find a way to create
@@ -66,12 +93,10 @@ start_branch() {
 	# branch.)
 	git branch -q -d "$BRANCH_NAME"
 
-	echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin. Use 'con checkout'"
-	echo "to begin working locally. In future, you can use 'con start --checkout'"
-	echo "to automatically checkout the branch locally."
+	echo "Use 'con checkout' to begin working locally. In future, you can use"
+	echo "'con start --checkout' to automatically checkout the branch locally."
     else
 	git checkout -q "$BRANCH_NAME"
-	echo "Created $SINGULAR_RESOURCE '$RESOURCE_NAME' on origin."
     fi
 }
 
@@ -363,8 +388,9 @@ function set_github_origin_data() {
     source $HOME/.git-convey
     # We need the github owner and repo, which we can get by dissectin the
     # origin url.
-    GITHUB_OWNER=`eval echo \`git config --get remote.origin.url\` | cut -d/ -f4`
-    GITHUB_REPO=`eval echo \`git config --get remote.origin.url\` | cut -d/ -f5`
+    GITHUB_URL=`git config --get remote.origin.url`
+    GITHUB_OWNER=`echo $GITHUB_URL | cut -d/ -f4`
+    GITHUB_REPO=`echo $GITHUB_URL | cut -d/ -f5`
     # The URL includes the '.git', which isn't part of the name but an
     # underlying git convention. We want to drop it for the API calls.
     GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}

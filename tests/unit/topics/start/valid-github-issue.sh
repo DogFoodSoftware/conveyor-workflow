@@ -29,3 +29,5 @@ cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
 test_output "con topics start 1-$ISSUE_DESC" "Created topic '1-$ISSUE_DESC' on origin. Issue is verified at $TEST_REPO." '' 0
+# Cleanup branch.
+git push -q origin :topics-1-$ISSUE_DESC

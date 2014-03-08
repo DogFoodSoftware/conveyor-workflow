@@ -12,7 +12,7 @@ fi
 
 cd $TEST_DIR
 
-TEST_SCRIPTS=`find $FIND_PATH -not -path "./data/*" -not -path "./lib/*" -name "*.sh" -not -name "$SELF"`
+TEST_SCRIPTS=`find $FIND_PATH -not -path "./data/*" -not -path "./lib/*" -name "*.sh" -not -name "$SELF" -not -name ".#*"`
 
 for i in $TEST_SCRIPTS; do
     echo "Running ${i}..."

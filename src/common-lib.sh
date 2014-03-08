@@ -39,9 +39,7 @@ start_branch() {
 	echo "Branch for topic '$BRANCH_NAME' already exists on origin."
     fi
 
-    local ORIGINAL_BRANCH=$(git symbolic-ref -q HEAD)
-    ORIGINAL_BRANCH=${ORIGINAL_BRANCH##refs/heads/}
-    ORIGINAL_BRANCH=${ORIGINAL_BRANCH:-HEAD}
+    local ORIGINAL_BRANCH=`get_current_branch`
     # The name is acceptable; create the branch.
     git checkout -q -b "$BRANCH_NAME"
     local RESULT=$?
@@ -368,4 +366,37 @@ function set_github_origin_data() {
     # The URL includes the '.git', which isn't part of the name but an
     # underlying git convention. We want to drop it for the API calls.
     GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
+}
+
+function figure_resource_from_branch() {
+    local BRANCH="$1"; shift
+
+    if [[ x"$BRANCH" == xtopics-* ]]; then
+	echo "topics"
+    elif [[ x"$BRANCH" == xreleases-* ]] || [[ x"$BRANCH" == x"master" ]]; then
+	echo "releases"
+    else
+	echo "Internal error; unexpected branch name: '$BRANCH'." >&2
+	exit 2
+    fi
+}
+
+function figure_resource_name_from_branch() {
+    local BRANCH="$1"; shift
+
+    if [[ x"$BRANCH" == xtopics-* ]]; then
+	echo ${BRANCH#topics-}
+    elif [[ x"$BRANCH" == xreleases-* ]] || [[ x"$BRANCH" == x"master" ]]; then
+	echo ${BRANCH#releases-}
+    else
+	echo "Internal error; unexpected branch name: '$BRANCH'." >&2
+	exit 2
+    fi
+}
+
+function get_current_branch() {
+    local ORIGINAL_BRANCH=$(git symbolic-ref -q HEAD)
+    ORIGINAL_BRANCH=${ORIGINAL_BRANCH##refs/heads/}
+    ORIGINAL_BRANCH=${ORIGINAL_BRANCH:-HEAD}
+    echo "$ORIGINAL_BRANCH"
 }

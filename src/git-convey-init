@@ -20,24 +20,15 @@ resource_do() {
     fi
 
     local REPO_NAME="$1"; shift
-    local STAGING_DIR
-    if [ $# -ge 1 ]; then
-	STAGING_DIR="$1"; shift
-    else
-	STAGING_DIR="staging"
-    fi
 
     generic_name_tests "$REPO_NAME"
 
     # Create the repo.
     mkdir ${REPO_NAME}.git
     cd ${REPO_NAME}.git
-    git init --bare --quiet .
-
-    # Create clone into staging and initialize for git-convey.
-    cd ..
-    git clone --quiet file://$PWD/${REPO_NAME}.git "$STAGING_DIR" 2>/dev/null
-    cd "$STAGING_DIR"
+    # Notice this is not a bare repo; we want to be able to do merges and
+    # other git operations from the repo.
+    git init --quiet .
     cat <<EOF > README.repo
 This is a git-convey repository and is intended for use with git-convey
 porcelain. For further information, please refer to:
@@ -47,9 +38,7 @@ EOF
     git add README.repo
     git commit --quiet -m "Initialized git-convey repo with README.repo file."
     # For some reason, the 'push' output comes out ot stderr...
-    git push --quiet origin master
     cd ..
-    rm -rf "$STAGING_DIR"
 
     # TODO: use 'shell-echo.sh' functions for quite output.
     echo "'$REPO_NAME' initialized."

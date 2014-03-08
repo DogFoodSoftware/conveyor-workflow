@@ -33,10 +33,12 @@ start_branch() {
 
     # And are we going to step on existing branches?
     if has_branch_local "$BRANCH_NAME"; then
-	echo "Local branch for topic '$BRANCH_NAME' already exists."
+	echo "Local branch for topic '$BRANCH_NAME' already exists. Bailng out." >&2
+	exit 1
     fi
     if has_branch_origin "$BRANCH_NAME"; then
-	echo "Branch for topic '$BRANCH_NAME' already exists on origin."
+	echo "Branch for topic '$BRANCH_NAME' already exists on origin. Bailing out." >&2
+	exit 1
     fi
 
     local ORIGINAL_BRANCH=`get_current_branch`

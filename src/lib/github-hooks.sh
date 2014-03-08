@@ -26,7 +26,7 @@ function check_issue_exists_for() {
     local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
     local MESSAGE=`echo $ISSUE_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
     if [ "$MESSAGE" == 'Not Found' ]; then
-	echo "Invalid issue number." >&2
+	echo "GitHub reports invalid issue number at $GITHUB_URL." >&2
 	exit 1
     fi
     # Else, assume we have an issue

@@ -56,9 +56,14 @@ start_branch() {
 	    # TODO: add URL for github
 	    echo "WARNING: Found hooks '$HOOKS', but did not provide 'check_issue_exists_for'. Let us know if you're seeing this in a supported release."
 	else
-	    # The hooks will provide feedback and exit as necessary. It may
-	    # provide additional information to be echod in non-quite modes.
+	    # The method calls 'exit', but since it's running in a backtick,
+	    # it doesn't kill the parent shell this script is running in on
+	    # it's own.
 	    VERIFY_MSG=`check_issue_exists_for "$RESOURCE" "$RESOURCE_NAME"`
+	    local RESULT=$?
+	    if [ $RESULT -ne 0 ]; then
+		exit $RESULT
+	    fi
 	fi
     fi
 

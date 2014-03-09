@@ -9,8 +9,8 @@
 #* Given 'git-convey' is installed
 #*   And the current repository has been cloned from GitHub
 #*   And that repo has an open issue #1
-#*   And $HOME/.git-convey is in place
-#*   And $HOME/.git-convey defines GITHUB_AUTH_TOKEN
+#*   And $HOME/.git-convey/github is in place
+#*   And $HOME/.git-convey/github defines GITHUB_AUTH_TOKEN
 #*   And the token has the necessary 'user' scope
 #* When I type 'con topics start 100-foo'
 #* Then I should find the text 'Created topic '100-foo' on origin.' in the output

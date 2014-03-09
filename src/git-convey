@@ -71,6 +71,7 @@ usage() {
     echo
     echo "Available global actions:"
     echo "   sync      Clones and synchronizes local repo with origin."
+    echo "   -s        Set implied resource."
     echo "   help      Prints this help."
     echo
     global_help
@@ -92,6 +93,7 @@ source "$GIT_CONVEY_DIR/common-lib.sh"
 FLAGS_PARENT="git convey"
 
 DEFINE_boolean verbose false 'be verbose => show git commands' 'v'
+DEFINE_boolean setresource false 'set implied resource' 's'
 DEFINE_boolean test false 'run in test mode'
 
 FLAGS "$@" || exit $?
@@ -102,45 +104,82 @@ if [ $FLAGS_test -eq $FLAGS_TRUE ]; then
 fi
 
 #/**
-#  * <div class="subHeader"><span>Main Logic</span></div>
-#  */
-RESOURCE="$1"; shift
-
-if [ x"$RESOURCE" == x"help" ]; then
-    if [ $# -lt 1 ]; then
-	usage
-	exit 0
+#* <div class="subHeader"><span>Main Logic</span></div>
+#* <div class="p">
+#*   Normally, we would process the arguments into named variables as a first
+#*   step. In this case, the processing differences between 'implied
+#*   resources' and 'explicit resources' means we have to do some work to
+#*   establish the semantics of teh arguments.
+#* </div>
+#*/
+# Handle the 'set resource' case.
+if [ $FLAGS_setresource -eq $FLAGS_TRUE ]; then
+    if [ $# -eq 0 ]; then # clear implied resource, if it exists.
+	if [ -f $HOME/.git-convey/implied-resource ]; then
+	    rm -f $HOME/.git-convey/implied-resource
+	    echo "Implied resource cleared."
+	fi
+    elif [ $# -eq 1 ]; then # set implied resource.
+	case "$1" in
+	    topics|releases|issues)
+		echo "$1" > $HOME/.git-convey/implied-resource
+		echo "Resource set as '$1'.";;
+	    *)
+		echo "Unknown resource '$1'." >&2
+		exit 1;;
+	esac
     else
-	HELP_MODE=${FLAGS_TRUE}
-	RESOURCE="$1"; shift
+	echo "You may only supply a single supplied resource: topics, releases, or issues." >&2
+	exit 1
     fi
+    exit 0 # If we successfully set resource, then we're done.
+fi # 'set-resources' handling
+
+if [ x"$1" == x"help" ]; then
+    shift
+    if [ $# -eq 0 ]; then
+	usage
+    else
+	RESOURCE="$1"; shift
+	source "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
+	if [ $# -eq 0 ]; then
+	    resource_usage
+	else
+	    ACTION="$1"; shift
+	    resource_help $ACTION
+	fi
+    fi
+    exit 0
 fi
 
-if [ ! -e "$GIT_CONVEY_DIR/git-convey-$RESOURCE" ]; then
+# We've handled the special cases, now we handle actual requests.
+if [ -f $HOME/.git-convey/implied-resource ]; then
+    RESOURCE=`cat $HOME/.git-convey/implied-resource`
+    source "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
+    if ! action_check "$1"; then
+	rm -f $HOME/.git-convey/implied-resource
+	RESOURCE="$1"; shift
+    fi
+else
+    RESOURCE="$1"; shift
+fi
+
+if [ ! -f "$GIT_CONVEY_DIR/git-convey-$RESOURCE" ]; then
     usage "Unknown resource: '$RESOURCE'."
     exit 1
 fi
 source "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
 
-if [ x"$HELP_MODE" != x"$FLAGS_TRUE" ]; then
-    # We process any action options here so that we can fire off the actions's
-    # main logic without further ado.
-    if type "resource_opts" >/dev/null 2>&1; then
-	FLAGS_PARENT=""
-	resource_opts
-	FLAGS "$@" || exit $?
-	eval set -- "${FLAGS_ARGV}"
-    fi
-
-    resource_do "$@"
-else # we are in help mode
-    if [ $# -lt 1 ]; then # it's general resource help
-	resource_usage
-    else
-	ACTION="$1"; shift
-	resource_help $ACTION
-    fi
+# We process any action options here so that we can fire off the actions's
+# main logic without further ado.
+if type "resource_opts" >/dev/null 2>&1; then
+    FLAGS_PARENT=""
+    resource_opts
+    FLAGS "$@" || exit $?
+    eval set -- "${FLAGS_ARGV}"
 fi
+
+resource_do "$@"
 #/**
 #  * </div><!-- #Implementation.blurbSummary -->
 #  */

@@ -36,13 +36,13 @@
 <div id="Basic-Model" class="blurbSummary grid_12">
   <div class="blurbTitle">Basic Model</div>
   <div class="p">
-    The conveyor-workflows model makes use of two resources: <code>topics</code>
+    The conveyor-workflow model makes use of two resources: <code>topics</code>
     and <code>releases</code>. <code>Topics</code> isolate
     changes. <code>Releases</code> are meant for actual internal or public
     use.
   </div>
   <div class="p">
-    The conveyor-workflows model envisions four primary roles: project managers,
+    The conveyor-workflow model envisions four primary roles: project managers,
     developers, merge masters, and operations. In practice, a single
     individual may handle multiple or all of the roles, or multiple
     individuals may act in each role. Your own process may involve other
@@ -50,7 +50,7 @@
     described here.
   </div>
   <div class="p">
-    While entirely compatible with standard git, conveyor-workflows itself treats the
+    While entirely compatible with standard git, conveyor-workflow itself treats the
     origin server as the central repository, referred to as 'origin', and the
     local checkout as a dependent copy.
   </div>

@@ -3,7 +3,7 @@
 # /**
 #  * <div id="Overview" class="blurbSummary grid_12">
 #  * <div class="p">
-#  *   Sets up a Vagrant VM as a minimal Conveyor workstation with conveyor-workflows
+#  *   Sets up a Vagrant VM as a minimal Conveyor workstation with conveyor-workflow
 #  *   project checked out.
 #  * </div>
 #  * </div><!-- #Overview.blurbSummary -->
@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION_2) do |config|
   config.vm.box = "opensuse-13.1-64bit-20GB-server"
   config.vm.box_url = "http://dogfoodsoftware.com/bitbucket/opensuse-13.1-64bit-20GB-server.box"
 
-  config.vm.hostname = 'conveyor-workflows-wkst'
+  config.vm.hostname = 'conveyor-workflow-wkst'
 
   # Expose the (naughty) HTTP port on the host.
   config.vm.network :forwarded_port, guest: 42069, host: 42069, auto_correct: true
@@ -53,7 +53,7 @@ SCRIPT
   config.vm.provision "shell", :inline => $SETUP_MINIMAL_CONVEYOR
 
   $INSTALL_CONVEYOR_PROJECTS = <<SCRIPT
-sudo -u user /home/user/playground/dogfoodsoftware.com/conveyor/core/bin/conveyor-project-install https://github.com/DogFoodSoftware/conveyor-workflows.git
+sudo -u user /home/user/playground/dogfoodsoftware.com/conveyor/core/bin/conveyor-project-install https://github.com/DogFoodSoftware/conveyor-workflow.git
 SCRIPT
   config.vm.provision "shell", :inline => $INSTALL_CONVEYOR_PROJECTS
 

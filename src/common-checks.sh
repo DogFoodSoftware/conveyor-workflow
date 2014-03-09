@@ -1,7 +1,7 @@
 #/**
 #* <div id="Overview" class="blurbSummary">
 #* <div class="p">
-#*   Collection of shell functions useful in the git-convey code and unit
+#*   Collection of shell functions useful in the conveyor-workflow code and unit
 #*   tests. Implements basic checks regarding git branches so the code can
 #*   enforce and verify expectations.
 #* </div>
@@ -112,14 +112,14 @@ function ensure_current_branch_committed() {
 #*   <code>STDERR</code> and return 1.
 #* </div>
 function is_github_configured() {
-    if [ ! -f $HOME/.git-convey/github ]; then
-	echo "Could not find '~/.git-convey/github' configuration necessary to check GitHub" >&2
+    if [ ! -f $HOME/.conveyor-workflow/github ]; then
+	echo "Could not find '~/.conveyor-workflow/github' configuration necessary to check GitHub" >&2
 	echo "connectivity." >&2	    
 	return 1
     else
-	source $HOME/.git-convey/github
+	source $HOME/.conveyor-workflow/github
 	if [ x"$GITHUB_AUTH_TOKEN" == x"" ]; then
-	    echo "GitHub authorization token not defined in '~/.git-convey/github. Cannot" >&2
+	    echo "GitHub authorization token not defined in '~/.conveyor-workflow/github. Cannot" >&2
 	    echo "check GitHub connectivity." >&2
 	    return 1
 	fi

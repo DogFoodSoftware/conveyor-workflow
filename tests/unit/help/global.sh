@@ -2,10 +2,10 @@
 
 #/**
 #* <pre>
-#* Feature: Global git-convey command line help.
+#* Feature: Global conveyor-workflow command line help.
 #*
 #* Scenario: 'con help'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con help'
 #* Then text is printed to stdout starting with 'usage: con <resource|global action>'
 #* And no text is printed to stdeer

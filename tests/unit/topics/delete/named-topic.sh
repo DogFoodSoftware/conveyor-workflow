@@ -5,7 +5,7 @@
 #* Feature: Delete existing (local) topic.
 #*
 #* Scenario: 'con topics delete existing-topic' from master
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And I am on the 'master' branch
 #*   And there exists a topic 'existing-topic'
 #* When I type 'con topics delete existing-topic'
@@ -19,7 +19,7 @@ TEST_BASE=`dirname $0`/../../..
 source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
-init_test_environment $TEST_BASE/.. `basename $0`
+init_test_environment `basename $0`
 cd $WORKING_REPO_PATH
 git checkout -q master
 if ! con topics start --checkout existing-topic >/dev/null; then

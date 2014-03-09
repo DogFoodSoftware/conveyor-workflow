@@ -6,7 +6,7 @@
 #*
 #* Scenario: Force checkout of an existing topic with tracked file modifications.
 #*
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And there exists a topic 'existing-topic-a'
 #*   And there exists a topic 'existing-topic-b'
 #*   And I have checked out 'existing-topic-a'
@@ -23,7 +23,7 @@ source `dirname $0`/lib/helpers.sh
 source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
-init_test_environment $TEST_BASE/.. `basename $0`
+init_test_environment `basename $0`
 cd $WORKING_REPO_PATH
 
 setup_a_b

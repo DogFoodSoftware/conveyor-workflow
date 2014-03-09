@@ -5,7 +5,7 @@
 #* Feature: Multi-feature
 #*
 #* Scenario: repo-a and repo-b each track each others work through shared branch
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And a there is a local origin repo
 #*   And there is a local working repo-a
 #*   And there is a local working repo-b
@@ -27,7 +27,7 @@ TEST_BASE=`dirname $0`/..
 source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
-init_test_environment $TEST_BASE/.. `basename $0`
+init_test_environment `basename $0`
 
 WORKING_REPO_PATH_B="$WORKING_REPO_PATH/.."
 WORKING_REPO_PATH_B=`realpath $WORKING_REPO_PATH_B`/repo_b

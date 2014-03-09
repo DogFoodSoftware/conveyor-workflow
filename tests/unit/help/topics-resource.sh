@@ -5,13 +5,13 @@
 #* Feature: Topics resource command line help.
 #*
 #* Scenario: 'con topics help'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con topics help'
 #* Then text is printed to stdout starting with 'usage: con topics'
 #* And the script exits with exit code 0.
 #*
 #* Scenario: 'con help topics'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con help topics'
 #* Then text is printed to stdout starting with 'usage: con topics'
 #* And the script exits with exit code 0.

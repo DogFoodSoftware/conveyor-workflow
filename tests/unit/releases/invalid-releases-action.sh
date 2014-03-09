@@ -5,7 +5,7 @@
 #* Feature: Report bad releases action.
 #*
 #* Scenario: 'con releases foo'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con releases foo'
 #* Then text is printed to stdout starting with 'usage: con releases'
 #* And text is printed to stderr starting with "Unknown action: 'foo'."

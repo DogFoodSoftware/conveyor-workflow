@@ -4,8 +4,8 @@
 #*
 #* Scenario: Sync discovers current topic abandoned.
 #*
-#* Given 'git-convey' is installed
-#*   And I have cloned a git-convey repository
+#* Given 'conveyor-workflow' is installed
+#*   And I have cloned a conveyor-workflow repository
 #*   And I have started topic '1-foo' and published changes
 #*   And I am currently on 'topics-1-foo'
 #*   And '1-foo' has been deleted, but not merged into master
@@ -20,8 +20,8 @@ TEST_BASE=`dirname $0`/../..
 source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
-init_test_environment $TEST_BASE/.. `basename $0`
-cd $WORKING_REPO_PATH
+init_test_environment `basename $0`
+cd $WORKING_REPO_PATH || (echo "ERROR: Did not find working repo."; exit 2)
 
 git checkout -q master
 con topics start --checkout 1-foo >/dev/null

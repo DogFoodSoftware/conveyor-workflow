@@ -5,7 +5,7 @@
 #* Feature: Create a valid release.
 #*
 #* Scenario: 'con releases checkout existing-release' from master
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And I am on the 'master' branch
 #*   And there exists a release 'existing-release'
 #* When I type 'con releases checkout existing-release'
@@ -19,7 +19,7 @@ TEST_BASE=`dirname $0`/../../..
 source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
-init_test_environment $TEST_BASE/.. `basename $0`
+init_test_environment `basename $0`
 cd $WORKING_REPO_PATH
 
 git checkout -q master

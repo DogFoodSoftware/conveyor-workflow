@@ -3,7 +3,7 @@
 #  * <div id="Overview" class="blurbSummary">
 
 #  * Script to determine and report the <a
-#  * href="http://dogfoodsoftware.com/documentation/git-convey">git-convey</a>
+#  * href="http://dogfoodsoftware.com/documentation/conveyor-workflow">conveyor-workflow</a>
 #  * project. Based on the  the <a href="http://dogfoodsoftware.com/documentation/vagabond/">Vagabond</a> <a
 #  * href="http://dogfoodsoftware.com/documentation/vagabond/src/get-project-console-url-template">template
 #  * script for the general purpose</a>

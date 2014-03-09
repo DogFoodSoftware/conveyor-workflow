@@ -36,13 +36,13 @@
 <div id="Basic-Model" class="blurbSummary grid_12">
   <div class="blurbTitle">Basic Model</div>
   <div class="p">
-    The git-convey model makes use of two resources: <code>topics</code>
+    The conveyor-workflow model makes use of two resources: <code>topics</code>
     and <code>releases</code>. <code>Topics</code> isolate
     changes. <code>Releases</code> are meant for actual internal or public
     use.
   </div>
   <div class="p">
-    The git-convey model envisions four primary roles: project managers,
+    The conveyor-workflow model envisions four primary roles: project managers,
     developers, merge masters, and operations. In practice, a single
     individual may handle multiple or all of the roles, or multiple
     individuals may act in each role. Your own process may involve other
@@ -50,7 +50,7 @@
     described here.
   </div>
   <div class="p">
-    While entirely compatible with standard git, git-convey itself treats the
+    While entirely compatible with standard git, conveyor-workflow itself treats the
     origin server as the central repository, referred to as 'origin', and the
     local checkout as a dependent copy.
   </div>
@@ -150,7 +150,7 @@
       branch.<span class="note">This is essentially a synonym
       for <code>git commit</code>. Developers should prefer <code>con
       commit</code> anyway in order to keep the habit of consistently using
-      the Git-Convey tool and because future versions may want to do some
+      the Conveyor-Workflows tool and because future versions may want to do some
       custom house keeping at commit time.</span></li>
       <li><code>con finish [[&lt;task|bugfix|hotfix&gt;] &lt;task
       ID&gt;]</code>: marks the current or indicated topic branch for
@@ -172,9 +172,9 @@
   <div class="blurbTitle">Internal-Mechanics</div>
   <div class="p">
     Most of the time, users will not need to concern themselves with the
-    internal mechanics of the Git-Convey extensions. Developers should
+    internal mechanics of the Conveyor-Workflows extensions. Developers should
     generally have a basic understanding of what's happenning in the repo
-    whenever Git-Convey commands are executed, and of course Git-Convey
+    whenever Conveyor-Workflows commands are executed, and of course Conveyor-Workflows
     developers will need to know exactly what's going on.
   </div>
   <div class="subHeader"><span><code>update</code></span></div>

@@ -21,7 +21,7 @@ source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
-init_github_test_environment $TEST_BASE/.. `basename $0` 'https://github.com/DogFoodSoftware/test-repo.git'
+init_github_test_environment `basename $0` 'https://github.com/DogFoodSoftware/test-repo.git'
 cd $WORKING_REPO_PATH
 
 OUTPUT=`test_output 'con status | grep "Connected to GitHub as:"' 'Connected to GitHub' '' 0 4 0`

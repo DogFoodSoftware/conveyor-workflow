@@ -46,12 +46,12 @@ start_branch() {
     if is_github_clone; then
 	HOOKS='github'
     fi
-    local HOOKS_LIB="$CONVEYOR_HAME/conveyor-workflow/runnable/lib/${HOOKS}-hooks.sh"
+    local HOOKS_LIB="$CONVEYOR_HOME/workflow/runnable/lib/${HOOKS}-hooks.sh"
     local VERIFY_MSG=''
     if [ ! -f $HOOKS_LIB ]; then
 	echo "WARNING: Could not load '$HOOKS' hooks; skipping some issue checks."
     else
-	source $CONVEYOR_HOME/conveyor-workflow/runnable/lib/${HOOKS}-hooks.sh
+	source $CONVEYOR_HOME/workflow/runnable/lib/${HOOKS}-hooks.sh
 	if ! type -t check_issue_exists_for >/dev/null; then
 	    # TODO: add URL for github
 	    echo "WARNING: Found hooks '$HOOKS', but did not provide 'check_issue_exists_for'. Let us know if you're seeing this in a supported release."

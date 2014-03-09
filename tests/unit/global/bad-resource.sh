@@ -13,6 +13,6 @@
 #* </pre>
 #*/
 
-source `dirname $0`/../lib/cli-lib.sh
+source `dirname $0`/../../lib/cli-lib.sh
 
 test_output "con foo" "usage: con <resource|global action>" "Unknown resource: 'foo'." 1

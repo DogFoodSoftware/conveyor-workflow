@@ -3,7 +3,7 @@ export GIT_CONVEY_TEST_MODE=0
 # TODO: change to 'init_local_test_environment'
 function init_test_environment() {
     local TEST_SCRIPT="$1"; shift
-    source $HOME/conveyor/config
+    source $HOME/.conveyor/config
     local GIT_CONVEY_HOME=$CONVEYOR_HOME/workflow
     export GIT_CONVEY_HOME
     export GIT_CONVEY_TEST_DIR="$GIT_CONVEY_HOME/data/test"

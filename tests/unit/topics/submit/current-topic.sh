@@ -7,8 +7,8 @@
 #* Scenario: 'con topics submit' current branch
 #* Given 'git-convey' is installed
 #*   And the current repository has been cloned from GitHub
-#*   And $HOME/.git-convey is in place
-#*   And $HOME/.git-convey defines GITHUB_AUTH_TOKEN
+#*   And $HOME/.git-convey/github is in place
+#*   And $HOME/.git-convey/github defines GITHUB_AUTH_TOKEN
 #*   And the token has the necessary 'repo' scope
 #*   And I have created and checked out a random topic branch
 #* When I type 'con topics status'

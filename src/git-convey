@@ -71,6 +71,7 @@ usage() {
     echo
     echo "Available global actions:"
     echo "   sync      Clones and synchronizes local repo with origin."
+    echo "   -s        Set implied resource."
     echo "   help      Prints this help."
     echo
     global_help
@@ -92,6 +93,7 @@ source "$GIT_CONVEY_DIR/common-lib.sh"
 FLAGS_PARENT="git convey"
 
 DEFINE_boolean verbose false 'be verbose => show git commands' 'v'
+DEFINE_boolean setresource false 'set implied resource' 's'
 DEFINE_boolean test false 'run in test mode'
 
 FLAGS "$@" || exit $?
@@ -116,9 +118,38 @@ if [ x"$RESOURCE" == x"help" ]; then
     fi
 fi
 
-if [ ! -e "$GIT_CONVEY_DIR/git-convey-$RESOURCE" ]; then
-    usage "Unknown resource: '$RESOURCE'."
-    exit 1
+# Handle the 'set resource' case.
+if [ $FLAGS_setresource -eq $FLAGS_TRUE ]; then
+    if [ $# -eq 0 ]; then # clear implied resource, if it exists.
+	if [ -f $HOME/.git-convey/implied-resource ]; then
+	    rm -f $HOME/.git-convey/implied-resource
+	fi
+    elif [ $# -eq 1 ]; then # set implied resource.
+	case "$1" in
+	    topics|releases|issues)
+		echo "$1" > $HOME/.git-convey/implied-resource;;
+	    *)
+		echo "Unknown resource." >&2
+		exit 1;;
+	esac
+    else
+	echo "You may only supply a single supplied resource: topics, releases, or issues." >&2
+	exit 1
+    fi
+    exit 0 # If we successfully set resource, then we're done.
+fi # 'set-resources' handling
+
+if [ -e "$GIT_CONVEY_DIR/git-convey-$RESOURCE" ]; then
+    if [ -f $HOME/.git-convey/implied-resource ]; then
+	rm -f $HOME/.git-convey/implied-resource
+    fi
+else
+    if [ -f $HOME/.git-convey/implied-resource ]; then
+	RESOURCE=`cat $HOME/.git-convey/implied-resource`
+    else
+	usage "Unknown resource: '$RESOURCE'."
+	exit 1
+    fi
 fi
 source "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
 

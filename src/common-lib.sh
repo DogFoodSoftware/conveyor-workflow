@@ -390,7 +390,7 @@ function check_for_new_files() {
 }
 
 function set_github_origin_data() {
-    source $HOME/.git-convey
+    source $HOME/.git-convey/github
     # We need the github owner and repo, which we can get by dissectin the
     # origin url.
     GITHUB_URL=`git config --get remote.origin.url`

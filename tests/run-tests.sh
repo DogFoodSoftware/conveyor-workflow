@@ -18,3 +18,5 @@ for i in $TEST_SCRIPTS; do
     echo "Running ${i}..."
     bash $i
 done
+
+rm $HOME/.git-convey/implied-resource

@@ -26,7 +26,7 @@ resource_do() {
 	local GIT_DIR=`git rev-parse --git-dir`
 	# There is one exception: if we're running tests, then we will be
 	# working under the conveyor-workflow repo, and that's okay.
-	if [ x"$GIT_CONVEY_TEST_MODE" != x"0" ] || [[ x"$GIT_DIR" != x*conveyor-workflow/.git ]]; then
+	if [ x"$GIT_CONVEY_TEST_MODE" != x"0" ] || [[ x"$GIT_DIR" != x*conveyor/workflow/.git ]]; then
 	    echo "Cannot clone a conveyor-workflow repo within an existing repo: '$GIT_DIR'." >&1
 	    exit 1
 	fi

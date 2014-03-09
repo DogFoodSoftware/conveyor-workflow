@@ -37,7 +37,6 @@ http://dogfoodsoftware.com/documentation/conveyor-workflow
 EOF
     git add README.repo
     git commit --quiet -m "Initialized conveyor-workflow repo with README.repo file."
-    # For some reason, the 'push' output comes out ot stderr...
     cd ..
 
     # TODO: use 'shell-echo.sh' functions for quite output.

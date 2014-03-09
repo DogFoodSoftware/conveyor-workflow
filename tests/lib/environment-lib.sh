@@ -2,9 +2,9 @@ export GIT_CONVEY_TEST_MODE=0
 
 # TODO: change to 'init_local_test_environment'
 function init_test_environment() {
-    local TEST_SCRIPT="$1"; shift
+    TEST_SCRIPT="$1"; shift
     source $HOME/.conveyor/config
-    local GIT_CONVEY_HOME=$CONVEYOR_HOME/workflow
+    GIT_CONVEY_HOME="$CONVEYOR_HOME/workflow"
     export GIT_CONVEY_HOME
     export GIT_CONVEY_TEST_DIR="$GIT_CONVEY_HOME/data/test"
     export ORIGIN_REPO="$TEST_SCRIPT.git"
@@ -15,11 +15,8 @@ function init_test_environment() {
     rm -rf $ORIGIN_REPO_PATH $WORKING_REPO_PATH
 
     cd $GIT_CONVEY_HOME 2>/dev/null || (echo "Did not find standard conveyor-workflow install." >&2; exit 2)
-    mkdir -p data
-    cd data
-    rm -rf test
-    mkdir test
-    cd test
+    mkdir -p dat/test
+    cd data/test
     # TODO: we should support '-q/--quiet' for the following two commands.
     # Notice we use the 'working repo', without the '.git' extension because
     # init adds the extension. Users do not generally deal with the '.git'.
@@ -28,6 +25,9 @@ function init_test_environment() {
 }
 
 function init_github_test_environment() {
+    local TEST_SCRIPT="$1"; shift
+    source $HOME/.conveyor/config
+    GIT_CONVEY_HOME=$CONVEYOR_HOME/workflow
     GIT_CONVEY_HOME=`realpath $1`; shift
     TEST_SCRIPT="$1"; shift
     ORIGIN_REPO_URL="$1"; shift
@@ -44,6 +44,8 @@ function init_github_test_environment() {
     rm -rf test
     mkdir test
     cd test
+    echo "$WORKING_REPO_PATH"
+    exit
     # TODO: we should support '-q/--quiet' for the following command.  Notice
     # we use the 'working repo', without the '.git' extension because init
     # adds the extension. Users do not generally deal with the '.git'.

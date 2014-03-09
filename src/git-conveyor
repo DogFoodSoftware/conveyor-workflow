@@ -11,7 +11,7 @@
 #  *   <div class="p">
 #  *     This script essentially reads the first argument&mdash;which is
 #  *     understood as the resource name&mdash;and then looks for the matching
-#  *     <code>conveyor-workflow-*</code> script to handle the resource action.
+#  *     <code>git-conveyor-*</code> script to handle the resource action.
 #  *   </div>
 #  *   <div class="subHeader"><span>Platform Workarounds</span></div>
 #  *   <div class="p">
@@ -141,7 +141,7 @@ if [ x"$1" == x"help" ]; then
 	usage
     else
 	RESOURCE="$1"; shift
-	source "$GIT_CONVEY_DIR/conveyor-workflow-$RESOURCE"
+	source "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE"
 	if [ $# -eq 0 ]; then
 	    resource_usage
 	else
@@ -155,7 +155,7 @@ fi
 # We've handled the special cases, now we handle actual requests.
 if [ -f $HOME/.conveyor-workflow/implied-resource ]; then
     RESOURCE=`cat $HOME/.conveyor-workflow/implied-resource`
-    source "$GIT_CONVEY_DIR/conveyor-workflow-$RESOURCE"
+    source "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE"
     if ! action_check "$1"; then
 	rm -f $HOME/.conveyor-workflow/implied-resource
 	RESOURCE="$1"; shift
@@ -164,11 +164,11 @@ else
     RESOURCE="$1"; shift
 fi
 
-if [ ! -f "$GIT_CONVEY_DIR/conveyor-workflow-$RESOURCE" ]; then
+if [ ! -f "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE" ]; then
     usage "Unknown resource: '$RESOURCE'."
     exit 1
 fi
-source "$GIT_CONVEY_DIR/conveyor-workflow-$RESOURCE"
+source "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE"
 
 # We process any action options here so that we can fire off the actions's
 # main logic without further ado.

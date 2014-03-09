@@ -21,7 +21,7 @@ source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 init_test_environment `basename $0`
-cd $WORKING_REPO_PATH
+cd $WORKING_REPO_PATH || (echo "ERROR: Did not find working repo."; exit 2)
 
 git checkout -q master
 con topics start --checkout 1-foo >/dev/null

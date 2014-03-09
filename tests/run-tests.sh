@@ -19,4 +19,6 @@ for i in $TEST_SCRIPTS; do
     bash $i
 done
 
-rm $HOME/.conveyor-workflow/implied-resource
+if [ -f $HOME/.conveory-workflow/implied-resources ]; then
+    rm $HOME/.conveyor-workflow/implied-resource
+fi

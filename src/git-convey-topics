@@ -77,6 +77,17 @@ resource_help() {
     fi
 }
 
+action_check() {
+    local ACTION="$1"; shift
+
+    case "$ACTION" in
+	list|start|checkout|commit|publish|delete|submit|abandon|help)
+	    return 0;;
+	*)
+	    return 1
+    esac
+}
+
 resource_do() {
     if [ $# -eq 0 ]; then
 	local ACTION="list"

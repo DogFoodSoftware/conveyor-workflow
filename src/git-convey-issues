@@ -1,0 +1,9 @@
+function action_check() {
+    local ACTION="$1"; shift
+    case "$ACTION" in
+	list)
+	    return 0;;
+	*)
+	    return 1;;
+    esac
+}

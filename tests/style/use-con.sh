@@ -13,12 +13,12 @@
 #*/
 
 cd `dirname $0`/../..
-FILES=(`find . -type f -not -name "*~" -not -path "*/.git/*" -not -path "./tests/style/use-con.sh" | xargs grep 'git convey' | cut -d: -f1`)
+FILES=(`find . -type f -not -name "*~" -not -path "*/.git/*" -not -path "./tests/style/use-con.sh" | xargs grep 'git conveyor' | cut -d: -f1`)
 if [ ${#FILES[@]} -ne 2 ]; then
-    echo "ERROR: Expected 2 references to 'git convey', but got ${#FILES[@]}."
+    echo "ERROR: Expected 2 references to 'git conveyor', but got ${#FILES[@]}."
 fi
 for (( i=0; i < ${#FILES[@]}; i++ )); do
-    if [ ${FILES[$i]} != './src/conveyor-workflow' ] && [ ${FILES[$i]} != './src/con' ]; then
-	echo "ERROR: unexpected reference to conveyor-workflow: ${FILES[$i]}."
+    if [ ${FILES[$i]} != './src/git-conveyor' ] && [ ${FILES[$i]} != './src/con' ]; then
+	echo "ERROR: unexpected reference to 'git conveyor': ${FILES[$i]}."
     fi
 done

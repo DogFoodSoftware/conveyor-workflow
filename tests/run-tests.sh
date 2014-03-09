@@ -19,4 +19,4 @@ for i in $TEST_SCRIPTS; do
     bash $i
 done
 
-rm $HOME/.git-convey/implied-resource
+rm $HOME/.conveyor-workflow/implied-resource

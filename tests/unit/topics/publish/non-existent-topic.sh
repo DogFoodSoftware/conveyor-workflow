@@ -5,7 +5,7 @@
 #* Feature: Report bad topics names on publish.
 #*
 #* Scenario: 'con topics publish bad-topic'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And their is no topic 'bad-topic'
 #* When I type 'con topics publish bad-topic'
 #* Then no text is printed to stdout

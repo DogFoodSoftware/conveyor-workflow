@@ -5,7 +5,7 @@
 #* Feature: Sync/Clone a New Repo
 #*
 #* Scenario: 'con sync' a new repo
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* And a pre-populated test repository
 #* When I type 'con sync $ORIGIN_REPO_PATH $WORKING_REPO_PATH'
 #* Then text "Sync complete." is printed to stdout

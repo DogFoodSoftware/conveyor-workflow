@@ -5,7 +5,7 @@
 #* Feature: Report lack of local topic on publish.
 #*
 #* Scenario: 'con topics publish no-local-topic'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And their is a topic 'no-local-topic' on origin
 #*   And topic 'no-local-topic' does not exist locally
 #* When I type 'con topics publish no-local-topic'

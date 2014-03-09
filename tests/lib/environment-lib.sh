@@ -13,7 +13,7 @@ function init_test_environment() {
 
     rm -rf $ORIGIN_REPO_PATH $WORKING_REPO_PATH
 
-    cd $GIT_CONVEY_HOME 2>/dev/null || (echo "Did not find standard git-convey install." >&2; exit 2)
+    cd $GIT_CONVEY_HOME 2>/dev/null || (echo "Did not find standard conveyor-workflow install." >&2; exit 2)
     mkdir -p data
     cd data
     rm -rf test
@@ -37,7 +37,7 @@ function init_github_test_environment() {
 
     rm -rf $WORKING_REPO_PATH
 
-    cd $GIT_CONVEY_HOME 2>/dev/null || (echo "Did not find standard git-convey install." >&2; exit 2)
+    cd $GIT_CONVEY_HOME 2>/dev/null || (echo "Did not find standard conveyor-workflow install." >&2; exit 2)
     mkdir -p data
     cd data
     rm -rf test
@@ -50,9 +50,9 @@ function init_github_test_environment() {
 }
 
 function populate_test_environment() {
-    cd $GIT_CONVEY_TEST_DIR 2>/dev/null || (echo "Did not find standard git-convey data dir." >&2; exit 2)
+    cd $GIT_CONVEY_TEST_DIR 2>/dev/null || (echo "Did not find standard conveyor-workflow data dir." >&2; exit 2)
     cd $WORKING_REPO_PATH 2>/dev/null || (echo "Did not find working repo: '$WORKING_REPO_PATH'." >&2; exit 2)
-    # Notice we don't use the git-convey porcelain here as we don't want to
+    # Notice we don't use the conveyor-workflow porcelain here as we don't want to
     # use what we're trying to test. I guess ideally we wouldn't use git
     # porcelain either, but git plumbing is tedious.
     git checkout --quiet -b topic-add-foo

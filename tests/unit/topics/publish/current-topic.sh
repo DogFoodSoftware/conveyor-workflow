@@ -5,7 +5,7 @@
 #* Feature: Publish current topic.
 #*
 #* Scenario: 'con topics publish' from topic 'current-topic'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And I am on the 'master' branch
 #*   And there exists a topic 'current-topic'
 #* When I type 'con topic checkout current-topic'

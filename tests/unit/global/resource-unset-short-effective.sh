@@ -5,7 +5,7 @@
 #* Feature: Set Resource
 #*
 #* Scenario: Unset resource with long option.
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And the implied resource has been set to topics
 #* When I type 'con -s'
 #*   And I type 'con start --checkout foo-bar'

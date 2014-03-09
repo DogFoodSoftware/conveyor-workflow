@@ -11,7 +11,7 @@
 #  *   <div class="p">
 #  *     This script essentially reads the first argument&mdash;which is
 #  *     understood as the resource name&mdash;and then looks for the matching
-#  *     <code>git-convey-*</code> script to handle the resource action.
+#  *     <code>conveyor-workflows-*</code> script to handle the resource action.
 #  *   </div>
 #  *   <div class="subHeader"><span>Platform Workarounds</span></div>
 #  *   <div class="p">
@@ -44,14 +44,14 @@ export POSIXLY_CORRECT=1
 global_help() {
     echo "Use 'con help [<resource> [<action>]]' for details and refer to "
     echo "http://dogfoodsoftware.com/documentatione/conveyor/ref/Branching-Strategy for"
-    echo "more on the underlying branch strategy which git-convey implements."
+    echo "more on the underlying branch strategy which conveyor-workflows implements."
     echo
 }
 
 # /**
 #  * <div class="subHeader"><span>usage()</span></div>
 #  * <div class="p">
-#  *   Prints usage information for the <code>git-convey</code> script. Takes a
+#  *   Prints usage information for the <code>conveyor-workflows</code> script. Takes a
 #  *   single optional argument, which is interpretted as a string containing
 #  *   additional information about whyt he usage is being displayed. The error
 #  *   is printed to <code>stderr</code>.
@@ -115,14 +115,14 @@ fi
 # Handle the 'set resource' case.
 if [ $FLAGS_setresource -eq $FLAGS_TRUE ]; then
     if [ $# -eq 0 ]; then # clear implied resource, if it exists.
-	if [ -f $HOME/.git-convey/implied-resource ]; then
-	    rm -f $HOME/.git-convey/implied-resource
+	if [ -f $HOME/.conveyor-workflows/implied-resource ]; then
+	    rm -f $HOME/.conveyor-workflows/implied-resource
 	    echo "Implied resource cleared."
 	fi
     elif [ $# -eq 1 ]; then # set implied resource.
 	case "$1" in
 	    topics|releases|issues)
-		echo "$1" > $HOME/.git-convey/implied-resource
+		echo "$1" > $HOME/.conveyor-workflows/implied-resource
 		echo "Resource set as '$1'.";;
 	    *)
 		echo "Unknown resource '$1'." >&2
@@ -141,7 +141,7 @@ if [ x"$1" == x"help" ]; then
 	usage
     else
 	RESOURCE="$1"; shift
-	source "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
+	source "$GIT_CONVEY_DIR/conveyor-workflows-$RESOURCE"
 	if [ $# -eq 0 ]; then
 	    resource_usage
 	else
@@ -153,22 +153,22 @@ if [ x"$1" == x"help" ]; then
 fi
 
 # We've handled the special cases, now we handle actual requests.
-if [ -f $HOME/.git-convey/implied-resource ]; then
-    RESOURCE=`cat $HOME/.git-convey/implied-resource`
-    source "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
+if [ -f $HOME/.conveyor-workflows/implied-resource ]; then
+    RESOURCE=`cat $HOME/.conveyor-workflows/implied-resource`
+    source "$GIT_CONVEY_DIR/conveyor-workflows-$RESOURCE"
     if ! action_check "$1"; then
-	rm -f $HOME/.git-convey/implied-resource
+	rm -f $HOME/.conveyor-workflows/implied-resource
 	RESOURCE="$1"; shift
     fi
 else
     RESOURCE="$1"; shift
 fi
 
-if [ ! -f "$GIT_CONVEY_DIR/git-convey-$RESOURCE" ]; then
+if [ ! -f "$GIT_CONVEY_DIR/conveyor-workflows-$RESOURCE" ]; then
     usage "Unknown resource: '$RESOURCE'."
     exit 1
 fi
-source "$GIT_CONVEY_DIR/git-convey-$RESOURCE"
+source "$GIT_CONVEY_DIR/conveyor-workflows-$RESOURCE"
 
 # We process any action options here so that we can fire off the actions's
 # main logic without further ado.

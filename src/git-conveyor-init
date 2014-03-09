@@ -6,7 +6,7 @@ resource_usage() {
 
     echo "usage: con init <source repo name> [<staging dir>]"
     echo
-    echo "Used to initialize a new origin repository for git-convey. This is a"
+    echo "Used to initialize a new origin repository for conveyor-workflows. This is a"
     echo "standard git repository with the 'master' branch pre-populated with"
     echo "a README.repo file."
     echo
@@ -30,13 +30,13 @@ resource_do() {
     # other git operations from the repo.
     git init --quiet .
     cat <<EOF > README.repo
-This is a git-convey repository and is intended for use with git-convey
+This is a conveyor-workflows repository and is intended for use with conveyor-workflows
 porcelain. For further information, please refer to:
 
-http://dogfoodsoftware.com/documentation/git-convey
+http://dogfoodsoftware.com/documentation/conveyor-workflows
 EOF
     git add README.repo
-    git commit --quiet -m "Initialized git-convey repo with README.repo file."
+    git commit --quiet -m "Initialized conveyor-workflows repo with README.repo file."
     # For some reason, the 'push' output comes out ot stderr...
     cd ..
 

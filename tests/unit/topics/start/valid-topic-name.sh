@@ -5,7 +5,7 @@
 #* Feature: Create a valid topic.
 #*
 #* Scenario: 'con topics start task-foo' from master
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And I am on the 'master' branch'
 #* When I type 'con topics start task-foo'
 #* Then text "Created topic 'task-foo' on origin." is printed to stdout

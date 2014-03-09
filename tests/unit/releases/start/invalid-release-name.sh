@@ -5,7 +5,7 @@
 #* Feature: Report bad releases branch names.
 #*
 #* Scenario: 'con releases start "foo bar"'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con releases start "foo bar"'
 #* Then no text is printed to stdout
 #* And text is printed to stderr starting with "Branch name 'foo bar' cannot contain spaces."

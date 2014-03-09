@@ -5,7 +5,7 @@
 #* Feature: Multi-feature
 #*
 #* Scenario: repo-a and repo-b each track each others work through shared branch
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And a there is a local origin repo
 #*   And there is a local working repo-a
 #*   And there is a local working repo-b

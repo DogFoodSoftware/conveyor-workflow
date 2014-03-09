@@ -2,10 +2,10 @@
 
 #/**
 #* <pre>
-#* Feature: Commandline help for the git-convey topics actions.
+#* Feature: Commandline help for the conveyor-workflow topics actions.
 #*
-#* Scenario Outline: git-convey action help
-#* Given 'git-convey' is installed
+#* Scenario Outline: conveyor-workflow action help
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con <action help>'
 #* Then significant text is printed to stdout 
 #* And the script exits with exit code 0.

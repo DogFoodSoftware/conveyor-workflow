@@ -5,7 +5,7 @@
 #* Feature: Report bad topics names on checkout.
 #*
 #* Scenario: 'con topics checkout bad-topic'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And their is no topic 'foo-bar'
 #* When I type 'con topics checkout bad-topic'
 #* Then no text is printed to stdout

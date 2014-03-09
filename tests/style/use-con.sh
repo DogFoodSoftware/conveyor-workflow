@@ -8,7 +8,7 @@
 #* Given the code basae
 #* When I search for 'git convey', excluding this file
 #* Then I find one reference in the <code>con</code> script
-#*   And I find one refernece in the <code>git-convey</code> script.
+#*   And I find one refernece in the <code>conveyor-workflow</code> script.
 #* </pre>
 #*/
 
@@ -18,7 +18,7 @@ if [ ${#FILES[@]} -ne 2 ]; then
     echo "ERROR: Expected 2 references to 'git convey', but got ${#FILES[@]}."
 fi
 for (( i=0; i < ${#FILES[@]}; i++ )); do
-    if [ ${FILES[$i]} != './src/git-convey' ] && [ ${FILES[$i]} != './src/con' ]; then
-	echo "ERROR: unexpected reference to git-convey: ${FILES[$i]}."
+    if [ ${FILES[$i]} != './src/conveyor-workflow' ] && [ ${FILES[$i]} != './src/con' ]; then
+	echo "ERROR: unexpected reference to conveyor-workflow: ${FILES[$i]}."
     fi
 done

@@ -5,7 +5,7 @@
 #* Feature: Delete existing (local) topic.
 #*
 #* Scenario: 'con topics delete existing-topic' from master
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And I am on the 'master' branch
 #*   And there exists a topic 'existing-topic'
 #* When I type 'con topics delete existing-topic'

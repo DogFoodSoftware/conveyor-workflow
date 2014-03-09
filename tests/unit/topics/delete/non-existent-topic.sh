@@ -5,7 +5,7 @@
 #* Feature: Report bad topics names on delete.
 #*
 #* Scenario: 'con topics delete bad-topic'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And their is no topic 'bad-topic'
 #* When I type 'con topics delete bad-topic'
 #* Then no text is printed to stdout

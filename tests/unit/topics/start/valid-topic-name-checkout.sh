@@ -5,7 +5,7 @@
 #* Feature: Create a valid topic and checks it out.
 #*
 #* Scenario: 'con topics start --checkout task-foo' from master
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And I am on the 'master' branch'
 #* When I type 'con topics start task-foo'
 #* Then text "Switched to branch 'task-foo'" is printed to stdout

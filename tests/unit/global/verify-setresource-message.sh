@@ -5,7 +5,7 @@
 #* Feature: Set Resource
 #*
 #* Scenario: Set resource with long option.
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con --setresource topics'
 #* Then text is printed to stdout starting with 'Resource set as 'topics'.'
 #*   And the script exits with value 0.

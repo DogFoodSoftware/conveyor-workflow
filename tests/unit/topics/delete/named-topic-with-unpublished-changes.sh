@@ -6,7 +6,7 @@
 #* changes.
 #*
 #* Scenario: 'con topics delete changed-topic' from master
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And I am on the 'master' branch
 #*   And there exists a topic 'changed-topic'
 #*   And the topic has unpublished changes

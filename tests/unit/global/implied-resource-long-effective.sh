@@ -5,7 +5,7 @@
 #* Feature: Set Resource
 #*
 #* Scenario: Set resource with long option.
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con --setresource topics'
 #*   And I type 'con start --checkout foo-bar'
 #* Then the topic is correctly started.

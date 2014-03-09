@@ -5,7 +5,7 @@
 #* Feature: List current local topics.
 #*
 #* Scenario: 'con topics list' from any branch
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* And a pre-populated test repository
 #* And I am on the 'master' branch'
 #* When I type 'con list'

@@ -5,7 +5,7 @@
 #* Feature: Checkout
 #*
 #* Scenario: Switching topics with local changes; spec. uncommitted new file.
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And there exists a topic 'existing-topic-a'
 #*   And there exists a topic 'existing-topic-b'
 #*   And I have checked out 'existing-topic-a'

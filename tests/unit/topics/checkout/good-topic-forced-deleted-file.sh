@@ -6,7 +6,7 @@
 #*
 #* Scenario: Force checkout of an existing topic with tracked file deleted file.
 #*
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And there exists a topic 'existing-topic-a'
 #*   And there exists a topic 'existing-topic-b'
 #*   And I have checked out 'existing-topic-a'

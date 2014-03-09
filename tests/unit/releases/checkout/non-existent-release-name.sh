@@ -5,7 +5,7 @@
 #* Feature: Report bad release names on join.
 #*
 #* Scenario: 'con releases join bad-release'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And their is no release 'foo-bar'
 #* When I type 'con releases checkout bad-release'
 #* Then no text is printed to stdout

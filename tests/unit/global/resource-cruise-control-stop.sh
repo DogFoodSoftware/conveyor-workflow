@@ -8,7 +8,7 @@
 #* Scenario: Implied resource is cleared when non-resource action or another
 #* resource indicated.
 #*
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And the implied resource has been set to topics
 #*   And I invoke 'con' with a valid resource or global action
 #* When I type 'con checkout foo'

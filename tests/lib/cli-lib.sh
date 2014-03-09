@@ -6,9 +6,9 @@ FLAGS_FALSE=1
 setup_path() {
     RUNNABLE_PATH="$1"
 
-    # Git expects to find 'git-convey' on the PATH. So we check to see if it
+    # Git expects to find 'conveyor-workflow' on the PATH. So we check to see if it
     # is, and if not, we add it.
-    which git-convey > /dev/null 2> /dev/null
+    which conveyor-workflow > /dev/null 2> /dev/null
     RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	cd $RUNNABLE_PATH

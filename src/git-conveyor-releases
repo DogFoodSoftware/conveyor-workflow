@@ -3,7 +3,7 @@
 #  * <div class="p">
 #  *   Script to implement 'releases' management within git. This is an
 #  *   extension defined by <a
-#  *   href="http://dogfoodsoftware.com/documentation/git-convey">Git
+#  *   href="http://dogfoodsoftware.com/documentation/conveyor-workflows">Git
 #  *   Convey</a>.
 #  * </div>
 #  * <div id="Implementation" data-perspective="implementation" class="grid_12 blurbSummary">

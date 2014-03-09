@@ -5,7 +5,7 @@
 #* Feature: Report bad topics action.
 #*
 #* Scenario: 'con topics foo'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con topics foo'
 #* Then text is printed to stdout starting with 'usage: con topics'
 #* And text is printed to stderr starting with "Unknown action: 'foo'."

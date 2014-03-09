@@ -5,7 +5,7 @@
 #* Feature: Report bad topics branch names.
 #*
 #* Scenario: 'con topics start "foo bar"'
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #* When I type 'con topics start "foo bar"'
 #* Then no text is printed to stdout
 #* And text is printed to stderr starting with "Branch name 'foo bar' cannot contain spaces."

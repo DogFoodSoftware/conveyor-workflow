@@ -6,8 +6,8 @@
 #*
 #* Scenario: Sync discovers (non-current) topic closed.
 #*
-#* Given 'git-convey' is installed
-#*   And I have cloned a git-convey repository
+#* Given 'conveyor-workflow' is installed
+#*   And I have cloned a conveyor-workflow repository
 #*   And I have started topic '1-foo' and published changes
 #*   And I am currontly on master
 #*   And '1-foo' has been deleted, but not merged into master

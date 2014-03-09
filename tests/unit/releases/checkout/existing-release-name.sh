@@ -5,7 +5,7 @@
 #* Feature: Create a valid release.
 #*
 #* Scenario: 'con releases checkout existing-release' from master
-#* Given 'git-convey' is installed
+#* Given 'conveyor-workflow' is installed
 #*   And I am on the 'master' branch
 #*   And there exists a release 'existing-release'
 #* When I type 'con releases checkout existing-release'

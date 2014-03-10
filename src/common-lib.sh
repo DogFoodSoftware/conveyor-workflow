@@ -126,8 +126,8 @@ checkout_branch() {
     fi
     # else the checkout is forced and we skip the commit checks.
 
-    # We always checkin with origin.
-    if ! has_branch_origin "$BRANCH_NAME"; then
+    # We always checkin with origin; unless it's master
+    if [ x"$BRANCH_NAME" != x"master" ] && ! has_branch_origin "$BRANCH_NAME"; then
 	# TODO: Shouldn't this add something to the effect of "Consider abandoning or re-start the topic."
 	echo "No such $SINGULAR_RESOURCE '$RESOURCE_NAME' exists on origin." >&2
 	exit 1
@@ -340,7 +340,12 @@ function verify_branch_inputs() {
 	exit 1
     fi
 
-    echo "${RESOURCE}-${RESOURCE_NAME}"
+    # There is one special case
+    if [ x"$RESOURCE" == x"releases" ] && [ x"$RESOURCE_NAME" == x"master" ]; then
+	echo "master"
+    else # Standard naming convention for everything else.
+	echo "${RESOURCE}-${RESOURCE_NAME}"
+    fi
 }
 
 function generic_name_tests() {

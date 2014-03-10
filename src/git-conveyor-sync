@@ -72,10 +72,7 @@ resource_do() {
 	if [ $FLAGS_allbranches -ne $FLAGS_TRUE ]; then
 	    update_branch "$ORIGINAL_BRANCH" "$ORIGINAL_BRANCH"
 	else # attempt all branches
-	    if ! update_branch master "$ORIGINAL_BRANCH"; then
-		echo "Could not updated 'master' release branch. Bailing out." >&2
-		exit 2
-	    fi
+	    update_master "$ORIGINAL_BRANCH"
 	    local BRANCH_LIST="git for-each-ref --shell --format='%(refname:short)' refs/heads"
 	    local BRANCH_PREFIXES="topics- releases-"
 	    for PREFIX in $BRANCH_PREFIXES; do
@@ -127,6 +124,10 @@ function update_branch() {
 	else
 	    RESOURCE_REF="${RESOURCE_SINGULAR^}"
 	fi
+	# If we're not in 'allbranch' mode, master may not be updated.
+	if [ `git rev-parse master` != `git rev-parse origin/master` ]; then
+	    update_master "$ORIGINAL_BRANCH"
+	fi
 	if [ `git branch --contains $BRANCH | grep master | wc -l` -eq 1 ]; then
 	    git checkout -q master
 	    git branch -q -d "$BRANCH"
@@ -137,4 +138,13 @@ function update_branch() {
 	fi
     fi
     return 0
+}
+
+function update_master() {
+    local ORIGINAL_BRANCH="$1"; shift
+
+    if ! update_branch master "$ORIGINAL_BRANCH"; then
+	echo "Could not updated 'master' release branch. Bailing out." >&2
+	exit 2
+    fi
 }

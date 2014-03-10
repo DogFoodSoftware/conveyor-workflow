@@ -9,7 +9,7 @@
 #*   And I have started topic '1-foo' and published changes
 #*   And I am currently on master
 #*   And '1-foo' has been deleted, but not merged into master
-#* When I type 'con topics sync'
+#* When I type 'con sync --allbranches'
 #* Then I remain on the master branch
 #*   And the local topic branch is deleted
 #*   And "Topic '1-foo' abandoned on origin. Local branch left intact. Please abandon or re-start." is printed to stdout
@@ -36,7 +36,7 @@ git checkout -q master
 git branch -q -D topics-1-foo
 
 cd $WORKING_REPO_PATH
-test_output 'con sync' "Topic '1-foo' abandoned on origin. Local branch left intact. Please abandon or re-start." '' 0
+test_output 'con sync --allbranches' "Topic '1-foo' abandoned on origin. Local branch left intact. Please abandon or re-start." '' 0
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ x"$CURRENT_BRANCH" != x'master' ]; then
     echo "ERROR: Expected to be on branch 'master' after sync, but instead on '$CURRENT_BRANCH'."

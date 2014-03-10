@@ -11,7 +11,7 @@
 #*   And I have started topic '1-foo' and published changes
 #*   And I am currontly on master
 #*   And '1-foo' has been deleted, but not merged into master
-#* When I type 'con topics sync'
+#* When I type 'con sync --allbranches'
 #* Then I remain on the 'master' branch
 #*   And the local topic branch remains intact
 #*   And "Current topic '1-foo' abandoned on origin. Local branch left intact. Please abandon or re-start." is printed to stdout

@@ -170,15 +170,6 @@ if [ ! -f "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE" ]; then
 fi
 source "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE"
 
-# We process any action options here so that we can fire off the actions's
-# main logic without further ado.
-if type "resource_opts" >/dev/null 2>&1; then
-    FLAGS_PARENT=""
-    resource_opts
-    FLAGS "$@" || exit $?
-    eval set -- "${FLAGS_ARGV}"
-fi
-
 resource_do "$@"
 #/**
 #  * </div><!-- #Implementation.blurbSummary -->

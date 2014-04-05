@@ -4,17 +4,26 @@ resource_usage() {
 	echo >&2
     fi
 
-    echo "usage: con init <source repo name> [<staging dir>]"
+    echo "usage: con init <local repo name>"
+    echo "usage: con init --github <github repo name>"
     echo
     echo "Used to initialize a new origin repository for conveyor-workflow. This is a"
     echo "standard git repository with the 'master' branch pre-populated with"
     echo "a README.repo file."
     echo
+    echo "The '--github' variant will set up the named repo on github under the"
+    echo "configured account."
+    echo
     echo "Use 'con sync' to checkout a local working directory."
 }
 
 resource_do() {
-    if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+    FLAGS_PARENT=""
+    DEFINE_boolean github false 'Sets up repo on github.' ''
+    FLAGS "$@" || exit $?
+    eval set -- "${FLAGS_ARGV}"
+
+    if [ $# -ne 1 ]; then
 	resource_usage "Unknown usage for 'con init'."
 	exit 1
     fi
@@ -23,7 +32,17 @@ resource_do() {
 
     generic_name_tests "$REPO_NAME"
 
-    # Create the repo.
+    # Now read to create the repo.
+    if [[ $FLAGS_github -eq $FLAGS_FALSE ]]; then
+	setup_local_repo "$REPO_NAME"
+    else
+	setup_github_repo "$REPO_NAME"
+    fi
+}
+
+function setup_local_repo() {
+    REPO_NAME="$1"; shift
+
     mkdir ${REPO_NAME}.git
     cd ${REPO_NAME}.git
     # Notice this is not a bare repo; we want to be able to do merges and
@@ -41,4 +60,43 @@ EOF
 
     # TODO: use 'shell-echo.sh' functions for quite output.
     echo "'$REPO_NAME' initialized."
+}
+
+function setup_github_repo() {
+    echo C
+    REPO_NAME="$1"; shift
+
+    source $HOME/.conveyor-workflow/github
+
+    # First, we check if the repo exists or not.
+    if ! does_github_repo_exist "DogFoodSoftware" "$REPO_NAME"; then
+	echo "No such repo exists; we currently only support configuration of existing repos. Bailing out." >&2
+	exit 1
+    fi
+    echo D
+    # There is an existing repository, let's configure it.
+    local LABELS=('change : bug#ff0000' 'sched : whenever#e0e0e0')
+    local LABEL
+    for LABEL in "${LABELS[@]}"; do
+	echo E
+	local NAME=`echo $LABEL | cut -d# -f1`
+	local COLOR=`echo $LABEL | cut -d# -f2`
+	local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/$GITHUB_REPO/labels -d @-"
+	local TMP_FILE="/tmp/$RANDOM"
+	cat <<EOF | $CURL_COMMAND > $TMP_FILE
+{
+  "name": "$NAME"
+  "colol": "$COLOR"
+}
+EOF
+	echo F
+	RESULT="$?"
+	if [ $RESULT -ne 0 ]; then
+	    echo "Request to create label '$NAME' failed; baling out. Re-run or fix manually."
+	fi
+	local JSON=`cat $TMP_FILE`
+	rm $TMP_FILE
+	echo G
+    done
+    echo H
 }

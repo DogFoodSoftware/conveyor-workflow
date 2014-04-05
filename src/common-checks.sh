@@ -62,14 +62,22 @@ function ensure_can_fetch() {
 	exit 2
     fi
 }
+
 #* <div class="subHeader"><span><code>is_github_clone()</code></span></div>
 #* <div class="p">
 #*   Looks at the repository's origin URL to determine whether this repo was
 #*   cloned from a GitHub repository.
 #* </div>
 function is_github_clone() {
-    ORIGIN_URL=`git config --get remote.origin.url`
-    [[ "$ORIGIN_URL" == 'https://github.com'* ]]
+    is_guthub_url `git config --get remote.origin.url`
+}
+
+#* <div class="subHeader"><span><code>is_github_url()</code></span></div>
+#* <div class="p">
+#*   Tests whether the provided string appears to be a GitHub URL.
+#* </div>
+function is_guthub_url() {
+    [[ x"$1" == x'https://github.com'* ]]
 }
 
 #* <div class="subHeader"><span><code>ensure_current_branch_committed()</code></span></div>

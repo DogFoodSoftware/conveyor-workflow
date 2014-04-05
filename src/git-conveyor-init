@@ -66,9 +66,10 @@ function setup_github_repo() {
     REPO_NAME="$1"; shift
 
     source $HOME/.conveyor-workflow/github
+    source $GIT_CONVEY_DIR/lib/github-hooks.sh
 
     # First, we check if the repo exists or not.
-    if ! does_github_repo_exist "DogFoodSoftware" "$REPO_NAME"; then
+    if ! does_repo_exist "$REPO_NAME"; then
 	echo "No such repo exists; we currently only support configuration of existing repos. Bailing out." >&2
 	exit 1
     fi
@@ -78,7 +79,7 @@ function setup_github_repo() {
     for LABEL in "${LABELS[@]}"; do
 	local NAME=`echo $LABEL | cut -d# -f1`
 	local COLOR=`echo $LABEL | cut -d# -f2`
-	local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/$REPO_NAME/labels -d @-"
+	local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$REPO_NAME/labels -d @-"
 	local TMP_FILE="/tmp/$RANDOM"
 	cat <<EOF | $CURL_COMMAND > $TMP_FILE
 {

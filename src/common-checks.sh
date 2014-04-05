@@ -80,23 +80,6 @@ function is_guthub_url() {
     [[ x"$1" == x'https://github.com'* ]]
 }
 
-#* <div class="subHeader"><span><code>does_github_repo_exist()</code></span></div>
-#* <div class="p">
-#*   Tests whether the provided string appears to be a GitHub URL.
-#* </div>
-function does_github_repo_exist() {
-    local GITHUB_OWNER="$1"; shift
-    local REPO_NAME="$1"; shift
-
-    local GITHUB_RESPONSE=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$REPO_NAME`
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github to verify repo available. Bailing out." >&2
-	exit 2
-    fi
-    [ `echo $GITHUB_RESPONSE | grep '"id":' | wc -l` -eq 1 ]
-}
-
 #* <div class="subHeader"><span><code>ensure_current_branch_committed()</code></span></div>
 #* <div class="p">
 #*   Checks to see if the current branch is committed and if not, emits error

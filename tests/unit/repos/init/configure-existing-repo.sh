@@ -29,18 +29,18 @@ source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 source $TEST_BASE/../runnable/lib/github-hooks.sh
 
-if does_github_repo_exist "temp-test"; then
+if does_repo_exist "DogFoodSoftware/temp-test"; then
     echo "ERROR: repo 'temp-test' exists, bailing out; test inconclusive."
     exit 0
 fi
 
-if ! create_repo "DogFoodSoftware" "temp-test"; then
+if ! create_repo "DogFoodSoftware/temp-test"; then
     echo "ERROR: could not create repo, bailing out; test inconclusive."
     exit 0
 fi
 
 # TODO: should be 'con repo init'; issue already created.
-con init --github temp-test
+con init --github DogFoodSoftware/temp-test
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
     echo "ERROR: 'con repo init --github temp-test' exitted with status '$RESULT'."
@@ -54,4 +54,4 @@ else
 	fi
     done
 fi
-delete_repo "DogFoodSoftware" "temp-test"
+delete_repo "DogFoodSoftware/temp-test"

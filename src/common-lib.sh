@@ -98,8 +98,8 @@ start_branch() {
 	# branch.)
 	git branch -q -d "$BRANCH_NAME"
 
-	echo "Use 'con checkout' to begin working locally. In future, you can use"
-	echo "'con start --checkout' to automatically checkout the branch locally."
+	echo "Use 'con $RESOURCE checkout' to begin working locally. In future, you can use"
+	echo "'con $RESOURCE start --checkout' to automatically checkout the branch locally."
     else
 	git checkout -q "$BRANCH_NAME"
     fi

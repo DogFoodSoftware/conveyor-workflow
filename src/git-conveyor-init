@@ -81,11 +81,11 @@ function setup_github_repo() {
 	echo E
 	local NAME=`echo $LABEL | cut -d# -f1`
 	local COLOR=`echo $LABEL | cut -d# -f2`
-	local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/$GITHUB_REPO/labels -d @-"
+	local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/$REPO_NAME/labels -d @-"
 	local TMP_FILE="/tmp/$RANDOM"
 	cat <<EOF | $CURL_COMMAND > $TMP_FILE
 {
-  "name": "$NAME"
+  "name": "$NAME",
   "colol": "$COLOR"
 }
 EOF
@@ -97,6 +97,7 @@ EOF
 	local JSON=`cat $TMP_FILE`
 	rm $TMP_FILE
 	echo G
+	echo $JSON
     done
     echo H
 }

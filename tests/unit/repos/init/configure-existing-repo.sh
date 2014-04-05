@@ -47,14 +47,14 @@ RESULT=$?
 if [ $RESULT -ne 0 ]; then
     echo "ERROR: 'con repo init --github temp-test' exitted with status '$RESULT'."
 else
-    echo curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/$REPO_NAME/labels -d
-    LABELS_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/$REPO_NAME/labels -d`
+    echo curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/temp-test/labels -d
+    LABELS_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/temp-test/labels`
     # Spot check
     echo $LABELS_JSON
     EXPECTED_LABELS=('change : bug' 'sched : whenever')
     for LABEL in "${EXPECTED_LABELS[@]}"; do
 	echo "I-2: $LABEL"
-	if [ `echo $LABELS_JSON | grep $LABEL | wc -l` -ne 1 ]; then
+	if [ `echo $LABELS_JSON | grep "$LABEL" | wc -l` -ne 1 ]; then
 	    echo "ERROR: did not find expected label '$LABEL'."
 	fi
     done

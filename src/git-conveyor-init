@@ -38,6 +38,9 @@ resource_do() {
     else
 	setup_github_repo "$REPO_NAME"
     fi
+
+    # TODO: use 'shell-echo.sh' functions for quite output.
+    echo "'$REPO_NAME' initialized."
 }
 
 function setup_local_repo() {
@@ -48,18 +51,8 @@ function setup_local_repo() {
     # Notice this is not a bare repo; we want to be able to do merges and
     # other git operations from the repo.
     git init --quiet .
-    cat <<EOF > README.repo
-This is a conveyor-workflow repository and is intended for use with conveyor-workflow
-porcelain. For further information, please refer to:
-
-http://dogfoodsoftware.com/documentation/conveyor-workflow
-EOF
-    git add README.repo
-    git commit --quiet -m "Initialized conveyor-workflow repo with README.repo file."
+    setup_minimal_conveyor_files
     cd ..
-
-    # TODO: use 'shell-echo.sh' functions for quite output.
-    echo "'$REPO_NAME' initialized."
 }
 
 function setup_github_repo() {
@@ -94,4 +87,26 @@ EOF
 	local JSON=`cat $TMP_FILE`
 	rm $TMP_FILE
     done
+
+    cd $CONVEYOR_HOME/workflow/data/
+    local TMP_DIR="$RANDOM"
+    mkdir $TMP_DIR
+    cd $TMP_DIR
+    git clone --quiet "https://github.com/${REPO_NAME}.git" 2>&1 | grep -v "warning: You appear to have cloned an empty repository"
+    cd `basename "$REPO_NAME"`
+    setup_minimal_conveyor_files
+    git push --quiet origin master
+    cd ../..
+    rm -rf $TMP_DIR
+}
+
+function setup_minimal_conveyor_files() {
+    cat <<EOF > README.repo
+This is a conveyor-workflow repository and is intended for use with conveyor-workflow
+porcelain. For further information, please refer to:
+
+http://dogfoodsoftware.com/documentation/conveyor-workflow
+EOF
+    git add README.repo
+    git commit --quiet -m "Initialized conveyor-workflow repo with README.repo file."
 }

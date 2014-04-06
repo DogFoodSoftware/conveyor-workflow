@@ -55,6 +55,8 @@ function init_github_test_environment() {
     mkdir test
     cd test
 
+    con init --github 'DogFoodSoftware/test-repo' > /dev/null
+
     # TODO: we should support '-q/--quiet' for the following command.  Notice
     # we use the 'working repo', without the '.git' extension because init
     # adds the extension. Users do not generally deal with the '.git'.

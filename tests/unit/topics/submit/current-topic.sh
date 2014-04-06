@@ -18,6 +18,7 @@
 #*/
 
 TEST_BASE=`dirname $0`/../../..
+TEST_BASE=`realpath $TEST_BASE`
 source $TEST_BASE/../runnable/common-lib.sh
 source $TEST_BASE/lib/cli-lib.sh
 automate_github_https

@@ -92,6 +92,9 @@ EOF
     local TMP_DIR="$RANDOM"
     mkdir $TMP_DIR
     cd $TMP_DIR
+    # We once saw the 'git clone' fail because the repo wasn't yet
+    # available... maybe.
+    sleep 2
     git clone --quiet "https://github.com/${REPO_NAME}.git" 2>&1 | grep -v "warning: You appear to have cloned an empty repository"
     cd `basename "$REPO_NAME"`
     setup_minimal_conveyor_files

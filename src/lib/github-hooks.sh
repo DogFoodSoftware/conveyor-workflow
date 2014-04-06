@@ -139,7 +139,10 @@ function get_login() {
 }
 
 function set_assignee() {
-    local ISSUE_NUMBER="$1"; shift
+    local RESOURCE_NAME="$1"; shift
+    
+    local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
+
     set_github_origin_data
     get_login
 
@@ -163,6 +166,7 @@ EOF
 	if [ x"$ASSIGNEE" == x"$GITHUB_LOGIN" ]; then
 	    echo "Assigned PR #${ISSUE_NUMBER} to $GITHUB_LOGIN."
 	else
+	    echo $JSON >&2
 	    local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
 	    echo "ERROR: Assignment seems to have failed. GitHub message: $MESSAGE." >&2
 	    exit 2

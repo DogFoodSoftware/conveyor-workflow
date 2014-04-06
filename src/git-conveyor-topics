@@ -99,16 +99,7 @@ resource_do() {
 	list)
 	    list_resources topic;;
 	start)
-	    start_branch 'topics' "$@"
-	    if is_github_clone; then
-		source $HOME/.conveyor-workflow/github
-		source $GIT_CONVEY_DIR/lib/github-hooks.sh
-
-		local ISSUE_NUMBER=`echo "$1" | cut -d'-' -f1`
-
-		set_assignee $ISSUE_NUMBER
-	    fi
-	    ;;
+	    start_branch 'topics' "$@";;
 	checkout)
 	    checkout_branch 'topics' "$@";;
 	commit)

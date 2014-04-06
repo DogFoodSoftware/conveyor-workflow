@@ -5,5 +5,9 @@
 # *   always exists.
 # * </div>
 function check_issue_exists_for() {
-    return 0; # that's bash for true
+    return 0 # that's bash for true
+}
+
+function set_assignee() {
+    return 0
 }

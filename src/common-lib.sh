@@ -14,7 +14,9 @@ start_branch() {
     local RESOURCE="$1"; shift
     # TODO: This seems a little off to me; I think it works, but structure
     # seems to imply that '--checkout' is an option of 'topics' when it is in
-    # fact an option for 'start'.
+    # fact an option for 'start'. The reason is that 'topics' is stripped from
+    # command and then re-added (ahead of the rest of the args) by the
+    # controlling script.
 
     # Process any options
     FLAGS_PARENT="topics"
@@ -91,6 +93,11 @@ start_branch() {
     else
 	echo
     fi
+
+    if [ x"$RESOURCE" == x"topics" ]; then
+	set_assignee "$RESOURCE_NAME"
+    fi
+
     if [ $FLAGS_checkout -eq $FLAGS_FALSE ]; then
 	# By default, 'start' only creates the branch on origin, so we remove
 	# the local branch. (I looked, but did not find a way to create

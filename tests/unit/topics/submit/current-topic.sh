@@ -24,7 +24,7 @@ automate_github_https
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
-init_github_test_environment `basename $0` 'https://github.com/DogFoodSoftware/test-repo.git'
+init_github_test_environment `basename $0`
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
@@ -52,3 +52,6 @@ cat <<EOF | $CURL_COMMAND > /dev/null
   "state" : "closed"
 }
 EOF
+
+source $TEST_BASE/../runnable/lib/github-hooks.sh
+delete_repo 'DogFoodSoftware/test-repo'

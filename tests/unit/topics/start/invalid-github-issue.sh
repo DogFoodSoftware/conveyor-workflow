@@ -19,15 +19,18 @@
 #*/
 
 TEST_BASE=`dirname $0`/../../..
+TEST_BASE=`realpath $TEST_BASE`
 source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
-TEST_REPO='https://github.com/DogFoodSoftware/test-repo.git'
-init_github_test_environment `basename $0` "$TEST_REPO"
+init_github_test_environment `basename $0`
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
 test_output "con topics start 100-$ISSUE_DESC" "" 'GitHub reports invalid issue number at' 1
 # Cleanup branch; actually not necessary if things function right, but just in case.
 git push -q origin :topics-1-$ISSUE_DESC 2>/dev/null
+
+source $TEST_BASE/../runnable/lib/github-hooks.sh
+delete_repo 'DogFoodSoftware/test-repo'

@@ -115,6 +115,63 @@ function delete_repo() {
     fi
 }
 
+function get_login() {
+    local FORCE_REFRESH=1 # bash false
+    if [ $# -ge 1 ]; then
+	FORCE_REFRESH="$1"; shift
+    fi
+
+    # This is an internal function, so we trust the arguments.
+    if [ $FORCE_REFRESH -eq 0 ] || [ ! -f $HOME/.conveyor-workflow/github-login ]; then
+	local USER_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/user`
+	local RESULT=$?
+	if [ $RESULT -ne 0 ]; then
+	    echo "ERROR: Could not contact github to determine user login." >&2
+	    exit 2
+	else
+	    local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+	    GITHUB_LOGIN=`echo $USER_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["login"];'`	    
+	    echo "GITHUB_LOGIN=$GITHUB_LOGIN" > $HOME/.conveyor-workflow/github-login
+	fi # github connection check
+    elif [ -f $HOME/.conveyor-workflow/github-login ]; then
+	source $HOME/.conveyor-workflow/github-login
+    fi # forced refresh check
+}
+
+function set_assignee() {
+    local ISSUE_NUMBER="$1"; shift
+    set_github_origin_data
+    get_login
+
+    if [ x"$GITHUB_LOGIN" != x"" ]; then
+	local CURL_COMMAND="curl -X PATCH -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER -d @-"
+	local TMP_FILE="/tmp/$RANDOM"
+	cat <<EOF | $CURL_COMMAND > $TMP_FILE
+{
+  "assignee": "$GITHUB_LOGIN"
+}
+EOF
+	local RESULT=$?
+	if [ $RESULT -ne 0 ]; then
+	    echo "ERROR: Could not contact github, please assign issue manually." >&2
+	    exit 2
+	fi
+	local JSON=`cat $TMP_FILE`
+	rm $TMP_FILE
+	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+	local ASSIGNEE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["assignee"]["login"];'`
+	if [ x"$ASSIGNEE" == x"$GITHUB_LOGIN" ]; then
+	    echo "Assigned PR #${ISSUE_NUMBER} to $GITHUB_LOGIN."
+	else
+	    local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
+	    echo "ERROR: Assignment seems to have failed. GitHub message: $MESSAGE." >&2
+	    exit 2
+	fi
+    else # GITHUB_LOGIN not set
+	echo "Could not set assignee; please update issue manually." >&2
+	exit 2
+    fi # GITHUB_LOGIN successfully set check
+}
 # /**
 # * </div><!-- #Implementation -->
 # */

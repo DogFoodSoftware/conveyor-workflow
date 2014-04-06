@@ -69,14 +69,14 @@ function ensure_can_fetch() {
 #*   cloned from a GitHub repository.
 #* </div>
 function is_github_clone() {
-    is_guthub_url `git config --get remote.origin.url`
+    is_github_url `git config --get remote.origin.url`
 }
 
 #* <div class="subHeader"><span><code>is_github_url()</code></span></div>
 #* <div class="p">
 #*   Tests whether the provided string appears to be a GitHub URL.
 #* </div>
-function is_guthub_url() {
+function is_github_url() {
     [[ x"$1" == x'https://github.com'* ]]
 }
 

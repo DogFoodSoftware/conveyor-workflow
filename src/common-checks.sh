@@ -96,19 +96,19 @@ function ensure_current_branch_committed() {
 
     # Check for new files.
     if [ `git ls-files --exclude-standard --others | wc -l` -gt 0 ]; then
-	echo "Current branch has unknown files; cowardly refusing $ACTION_MSG." >&2
+	echo "Current branch has unknown files; cowardly refusing $ACTION_MSG. Use '--force' to override." >&2
 	exit 1
     fi
 
     # Check for unstaged changes in tracked files in the working tree.
     if ! git diff-files --quiet --ignore-submodules --; then
-        echo "Current branch has unstaged changes; cowardly refusing to $ACTION_MSG." >&2
+        echo "Current branch has unstaged changes; cowardly refusing to $ACTION_MSG. Use '--force' to override." >&2
 	exit 1
     fi
 
     # Cherk for uncommitted changes in the cache.
     if ! git diff-index --cached --quiet HEAD --ignore-submodules --; then
-        echo "Current branch has unncommitted changes; cowardly refusing to $ACTION_MSG." >&2
+        echo "Current branch has unncommitted changes; cowardly refusing to $ACTION_MSG. Use '--force' to override." >&2
 	exit 1
     fi
 }

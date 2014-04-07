@@ -10,13 +10,10 @@ list_resources() {
     eval $EVAL
 }
 
-start_branch() {
+function start_branch() {
+    # The 'resource' is guaranteed as the first argument by the parent
+    # controller script, so it actually comes before the options.
     local RESOURCE="$1"; shift
-    # TODO: This seems a little off to me; I think it works, but structure
-    # seems to imply that '--checkout' is an option of 'topics' when it is in
-    # fact an option for 'start'. The reason is that 'topics' is stripped from
-    # command and then re-added (ahead of the rest of the args) by the
-    # controlling script.
 
     # Process any options
     FLAGS_PARENT="topics"
@@ -44,29 +41,15 @@ start_branch() {
     fi
 
     # Now time for the issue check.
-    local HOOKS='manual' # Set default hooks.
-    if is_github_clone; then
-	HOOKS='github'
-    fi
-    local HOOKS_LIB="$CONVEYOR_HOME/workflow/runnable/lib/${HOOKS}-hooks.sh"
+    load_hooks
+
     local VERIFY_MSG=''
-    if [ ! -f $HOOKS_LIB ]; then
-	echo "WARNING: Could not load '$HOOKS' hooks; skipping some issue checks."
-    else
-	source $CONVEYOR_HOME/workflow/runnable/lib/${HOOKS}-hooks.sh
-	if ! type -t check_issue_exists_for >/dev/null; then
-	    # TODO: add URL for github
-	    echo "WARNING: Found hooks '$HOOKS', but did not provide 'check_issue_exists_for'. Let us know if you're seeing this in a supported release."
-	else
-	    # The method calls 'exit', but since it's running in a backtick,
-	    # it doesn't kill the parent shell this script is running in on
-	    # it's own.
-	    VERIFY_MSG=`check_issue_exists_for "$RESOURCE" "$RESOURCE_NAME"`
-	    local RESULT=$?
-	    if [ $RESULT -ne 0 ]; then
-		exit $RESULT
-	    fi
-	fi
+    # The method calls 'exit', but since it's running in a backtick,
+    # we have to exit ourselves.
+    VERIFY_MSG=`check_issue_exists_for "$RESOURCE" "$RESOURCE_NAME"`
+    local RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+	exit $RESULT
     fi
 
     local ORIGINAL_BRANCH=`get_current_branch`
@@ -109,6 +92,54 @@ start_branch() {
 	echo "'con $RESOURCE start --checkout' to automatically checkout the branch locally."
     else
 	git checkout -q "$BRANCH_NAME"
+    fi
+}
+
+function abandon_branch() {
+    # The 'resource' is guaranteed as the first argument by the parent
+    # controller script, so it actually comes before the options.
+    local RESOURCE="$1"; shift
+
+    # Process any options
+    FLAGS_PARENT="topics"
+    DEFINE_boolean 'confirmed' false 'Skips the confirmation.' 'c'
+    FLAGS "$@" || exit $?
+    eval set -- "${FLAGS_ARGV}"
+
+    local RESOURCE_NAME="$1"; shift
+    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    local BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
+
+    local CLEAR_ASSIGNMENT=1 # '1' means 'nothing to remove' which is true for all non-topics.
+    if [ x"$RESOURCE" == x"topics" ]; then
+	# We have to deal with the issue assignment.
+	load_hooks
+	clear_assignee
+	CLEAR_ASSIGNMENT=$?
+    fi
+
+    if ! has_branch_local "$BRANCH_NAME" && ! has_branch_origin "$BRANCH_NAME" && [ $CLEAR_ASSIGNMENT -ne 0 ]; then
+	# 'bad reference' case
+	if [ $CLEAR_ASSIGNMENT -eq 1 ]; then
+	    echo "WARNING: Nothing found to abandon for '$RESOURCE-NAME'." >&2
+	else
+	    echo "ERROR: Found no branches to clear, but could not verify issue assignment." >&2
+	fi
+	exit 1
+    else # It's a good reference somewhere; since we're abandoning it, it
+	 # doesn't matter if it's local and remote or just one or the other,
+	 # as far as the user is concerned. We just remove it wherever
+
+	if has_branch_local "$BRANCH_NAME"; then
+	    git --quiet -D "$BRANCH_NAME"
+	fi
+	# Note: this has the effect of only removing 'topic' branches if the
+	# current user is the assignee for the assiated issue. This means that
+	# remote branches are never removed for non-topic branches; e.g.,
+	# release branches.
+	if has_branch_remote "$BRANCH_NAME" && [ $CLEAR_ASSIGNMENT -eq 0 ]; then
+	    git push --quiet origin :"$BRANCH_NAME"
+	fi
     fi
 }
 
@@ -444,4 +475,17 @@ function get_current_branch() {
     ORIGINAL_BRANCH=${ORIGINAL_BRANCH##refs/heads/}
     ORIGINAL_BRANCH=${ORIGINAL_BRANCH:-HEAD}
     echo "$ORIGINAL_BRANCH"
+}
+
+function load_hooks() {
+    local HOOKS='manual' # Set default hooks.
+    if is_github_clone; then
+	HOOKS='github'
+    fi
+    local HOOKS_LIB="$CONVEYOR_HOME/workflow/runnable/lib/${HOOKS}-hooks.sh"
+    if [ ! -f "$HOOKS_LIB" ]; then
+	echo "ERROR: Could not find hooks library." >&2
+	exit 2
+    fi
+    source "$HOOKS_LIB"
 }

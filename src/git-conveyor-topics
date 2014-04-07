@@ -111,7 +111,7 @@ resource_do() {
 	submit)
 	    submit_branch 'topics' "$@";;
 	abandon)
-	    echo abondon;;
+	    abondon_branch 'topics' "$@";;
 	help)
 	    if [ $# -eq 0 ]; then
 		resource_usage

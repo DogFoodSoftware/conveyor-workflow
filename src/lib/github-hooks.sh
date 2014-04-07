@@ -177,6 +177,48 @@ EOF
     fi # GITHUB_LOGIN successfully set check
 }
 
+function clear_assignee() {
+    local ASSIGNEE=`get_assignee_for "$RESOURCE_NAME"`
+    local RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+	exit $RESULT
+    fi
+    
+    get_login
+
+    if [ x"$ASSIGNEE" != x"$GITHUB_LOGIN" ]; then
+	return 1 # bash for false / failure
+    else
+	local CURL_COMMAND="curl -X PATCH -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER -d @-"
+	local TMP_FILE="/tmp/$RANDOM"
+	cat <<EOF | $CURL_COMMAND > $TMP_FILE
+{
+  "assignee": ""
+}
+EOF
+	local RESULT=$?
+	if [ $RESULT -ne 0 ]; then
+	    echo "ERROR: Could not contact github; clear issue assignment as necessary." >&2
+	    exit 2
+	fi
+	local JSON=`cat $TMP_FILE`
+	rm $TMP_FILE
+	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+	local ASSIGNEE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["assignee"]["login"];'`
+	if [ x"$ASSIGNEE" == x"" ]; then
+	    echo "Assignment cleared for issue #${ISSUE_NUMBER}."
+	else
+	    echo $JSON >&2
+	    local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
+	    echo "ERROR: Assignment clear seems to have failed. GitHub message: $MESSAGE." >&2
+	    exit 2
+	fi
+    else # GITHUB_LOGIN not set
+	echo "ERROR: Could not clear assignee; update issue as necessary." >&2
+	exit 2
+    fi # GITHUB_LOGIN successfully set check
+}
+
 function create_issue() {
     local GITHUB_REPO="$1"; shift
     local TITLE="$1"; shift

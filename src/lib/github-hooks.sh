@@ -115,6 +115,32 @@ function delete_repo() {
     fi
 }
 
+function create_issue() {
+    local GITHUB_REPO="$1"; shift
+    local TITLE="$1"; shift
+
+    local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_REPO/issues -d @-"
+    local TMP_FILE="/tmp/$RANDOM"
+    cat <<EOF | $CURL_COMMAND > $TMP_FILE
+{
+  "title": "$TITLE"
+}
+EOF
+    local RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+	echo "Could not contact github." >&2
+	return 2
+    fi
+
+    JSON=`cat $TMP_FILE`
+    if [ `echo $JSON | grep '"title"' | wc -l` -ne 1 ]; then
+	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+	local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
+	echo "Could not create issue: $MESSAGE" >&2
+	return 1
+    fi
+}
+
 # /**
 # * </div><!-- #Implementation -->
 # */

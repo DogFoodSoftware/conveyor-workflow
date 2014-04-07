@@ -30,8 +30,16 @@ function init_test_environment() {
 
 function init_github_test_environment() {
     local TEST_SCRIPT="$1"; shift
-    ORIGIN_REPO_URL="$1"; shift
+
+    local ORIGIN_REPO_URL='https://github.com/DogFoodSoftware/test-repo.git'
+
     source $HOME/.conveyor/config
+    source $HOME/.conveyor-workflow/github
+    source $TEST_BASE/../runnable/lib/github-hooks.sh
+
+    create_repo 'DogFoodSoftware/test-repo'
+    create_issue 'DogFoodSoftware/test-repo' 'Test Issue'
+
     GIT_CONVEY_HOME=$CONVEYOR_HOME/workflow
     export GIT_CONVEY_HOME
     export GIT_CONVEY_TEST_DIR="$GIT_CONVEY_HOME/data/test"
@@ -47,10 +55,12 @@ function init_github_test_environment() {
     mkdir test
     cd test
 
+    con init --github 'DogFoodSoftware/test-repo' > /dev/null
+
     # TODO: we should support '-q/--quiet' for the following command.  Notice
     # we use the 'working repo', without the '.git' extension because init
     # adds the extension. Users do not generally deal with the '.git'.
-    con sync "$ORIGIN_REPO_URL" "$WORKING_REPO_PATH" > /dev/null
+    con sync "$ORIGIN_REPO_URL" "$WORKING_REPO_PATH" > /dev/null 2>&1 | grep -v "warning: You appear to have cloned an empty repository"
 }
 
 function populate_test_environment() {

@@ -14,7 +14,7 @@
 #*   And the token has the necessary 'user' scope
 #*   And the issue has been cleaned
 #* When I type 'con topics abandon 1-foo'
-#* Then I should find the text "Local branch deleted. Branch closed on origin." on stdout
+#* Then I should find the text "Local branch deleted. No authority to close branch on origin." on stdout
 #*   And the script exits with exit code 0.
 #* </pre>
 #*/
@@ -33,7 +33,7 @@ ISSUE_DESC=`uuidgen`
 test_output "con topics start --checkout '1-$ISSUE_DESC'" '' '' 0 4
 source $TEST_BASE/../runnable/lib/github-hooks.sh
 clear_assignee "1-$ISSUE_DESC" > /dev/null
-test_output "con topics abandon 1-$ISSUE_DESC" "Local branch deleted. Already closed on origin."
+test_output "con topics abandon 1-$ISSUE_DESC" "Local branch deleted. No authority to close branch on origin."
 
 source $TEST_BASE/../runnable/lib/github-hooks.sh
 delete_repo 'DogFoodSoftware/test-repo'

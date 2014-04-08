@@ -37,6 +37,8 @@ function init_github_test_environment() {
     source $HOME/.conveyor-workflow/github
     source $TEST_BASE/../runnable/lib/github-hooks.sh
 
+    # GitHub doesn't like it when repos get created too fast.
+    sleep 2
     create_repo 'DogFoodSoftware/test-repo'
     create_issue 'DogFoodSoftware/test-repo' 'Test Issue'
 

@@ -152,6 +152,8 @@ function abandon_branch() {
 	if has_branch_origin "$BRANCH_NAME" && [ $CLEAR_ASSIGNMENT -eq 0 ]; then
 	    git push --quiet origin :"$BRANCH_NAME"
 	    echo "Branch closed on origin."
+	elif has_branch_origin "$BRANCH_NAME"; then
+	    echo "No authority to close branch on origin."
 	else
 	    echo "Already closed on origin."
 	fi

@@ -27,7 +27,6 @@ setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 init_github_test_environment `basename $0`
-TEST_REPO=https://github.com/DogFoodSoftware/test-repo.git
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`

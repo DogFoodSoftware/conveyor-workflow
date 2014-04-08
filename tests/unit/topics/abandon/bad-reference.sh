@@ -13,7 +13,7 @@
 #*   And $HOME/.conveyor-workflow/github defines GITHUB_AUTH_TOKEN
 #*   And the token has the necessary 'user' scope
 #* When I type 'con topics abandon 100-foo'
-#* Then I should find the text "WARNING: No topic branch for '100-foo' found locally or on origin." on stderr
+#* Then I should find the text "WARNING: Nothing found to abandon for '100-foo'." on stderr
 #*   And the script exits with exit code 1.
 #* </pre>
 #*/
@@ -29,7 +29,7 @@ TEST_REPO=https://github.com/DogFoodSoftware/test-repo.git
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
-test_output "con topics abandon 100-$ISSUE_DESC" '' "GitHub reports invalid issue number at " 1
+test_output "con topics abandon 100-$ISSUE_DESC" '' "WARNING: Nothing found to abandon for '100-$ISSUE_DESC'." 1
 
 source $TEST_BASE/../runnable/lib/github-hooks.sh
 delete_repo 'DogFoodSoftware/test-repo'

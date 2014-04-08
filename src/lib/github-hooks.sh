@@ -177,15 +177,30 @@ EOF
     fi # GITHUB_LOGIN successfully set check
 }
 
+function get_assignee() {
+    set_github_origin_data
+
+    local ISSUE_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
+    local RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+	echo "ERROR: Could not contact github, please assign issue manually." >&2
+	exit 2
+    fi
+    local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+    local ASSIGNEE=`echo $ISSUE_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["assignee"]["login"];'`
+    # TODO: should check for warning.
+    echo "$ASSIGNEE"
+}
+
 function clear_assignee() {
-    local ASSIGNEE=`get_assignee_for "$RESOURCE_NAME"`
+    local ASSIGNEE=`get_assignee`
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	exit $RESULT
     fi
     
     get_login
-
+    
     if [ x"$ASSIGNEE" != x"$GITHUB_LOGIN" ]; then
 	return 1 # bash for false / failure
     else
@@ -213,10 +228,7 @@ EOF
 	    echo "ERROR: Assignment clear seems to have failed. GitHub message: $MESSAGE." >&2
 	    exit 2
 	fi
-    else # GITHUB_LOGIN not set
-	echo "ERROR: Could not clear assignee; update issue as necessary." >&2
-	exit 2
-    fi # GITHUB_LOGIN successfully set check
+    fi
 }
 
 function create_issue() {

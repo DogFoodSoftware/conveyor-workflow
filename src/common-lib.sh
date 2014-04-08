@@ -121,7 +121,7 @@ function abandon_branch() {
     if ! has_branch_local "$BRANCH_NAME" && ! has_branch_origin "$BRANCH_NAME" && [ $CLEAR_ASSIGNMENT -ne 0 ]; then
 	# 'bad reference' case
 	if [ $CLEAR_ASSIGNMENT -eq 1 ]; then
-	    echo "WARNING: Nothing found to abandon for '$RESOURCE-NAME'." >&2
+	    echo "WARNING: Nothing found to abandon for '$RESOURCE_NAME'." >&2
 	else
 	    echo "ERROR: Found no branches to clear, but could not verify issue assignment." >&2
 	fi

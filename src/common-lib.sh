@@ -114,8 +114,11 @@ function abandon_branch() {
     if [ x"$RESOURCE" == x"topics" ]; then
 	# We have to deal with the issue assignment.
 	load_hooks
-	clear_assignee
+	clear_assignee "$RESOURCE_NAME" > /dev/null
 	CLEAR_ASSIGNMENT=$?
+    fi
+    if [ $CLEAR_ASSIGNMENT -eq 0 ]; then
+	echo -n "Assignment cleared. "
     fi
 
     if ! has_branch_local "$BRANCH_NAME" && ! has_branch_origin "$BRANCH_NAME" && [ $CLEAR_ASSIGNMENT -ne 0 ]; then
@@ -131,14 +134,26 @@ function abandon_branch() {
 	 # as far as the user is concerned. We just remove it wherever
 
 	if has_branch_local "$BRANCH_NAME"; then
-	    git --quiet -D "$BRANCH_NAME"
+	    # TODO: actually, we should only do this if the current branch is the topic branch we're dropping; but it usually is, so for now...
+	    git checkout --quiet master
+	    if git branch --quiet -D "$BRANCH_NAME"; then
+		echo -n "Local branch deleted. "
+	    else
+		# $? will be set to the result if 'git --quiet...'
+		echo -n "Problem deleting local branch; exit code $?."
+	    fi
+	else
+	    echo -n "No local branch found. "
 	fi
 	# Note: this has the effect of only removing 'topic' branches if the
 	# current user is the assignee for the assiated issue. This means that
 	# remote branches are never removed for non-topic branches; e.g.,
 	# release branches.
-	if has_branch_remote "$BRANCH_NAME" && [ $CLEAR_ASSIGNMENT -eq 0 ]; then
+	if has_branch_origin "$BRANCH_NAME" && [ $CLEAR_ASSIGNMENT -eq 0 ]; then
 	    git push --quiet origin :"$BRANCH_NAME"
+	    echo "Branch closed on origin."
+	else
+	    echo "Already closed on origin."
 	fi
     fi
 }
@@ -314,6 +329,7 @@ function submit_branch() {
 	    if ! is_github_configured; then exit 1; fi
 	    # Okay, now ready to do this thing.
 	    local ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
+	    source $GIT_CONVEY_DIR/lib/github-hooks.sh
 	    set_github_origin_data
 	    
 	    local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/pulls -d @-"
@@ -430,18 +446,6 @@ function check_for_new_files() {
     fi
 
     return 0
-}
-
-function set_github_origin_data() {
-    source $HOME/.conveyor-workflow/github
-    # We need the github owner and repo, which we can get by dissectin the
-    # origin url.
-    GITHUB_URL=`git config --get remote.origin.url`
-    GITHUB_OWNER=`echo $GITHUB_URL | cut -d/ -f4`
-    GITHUB_REPO=`echo $GITHUB_URL | cut -d/ -f5`
-    # The URL includes the '.git', which isn't part of the name but an
-    # underlying git convention. We want to drop it for the API calls.
-    GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
 }
 
 function figure_resource_from_branch() {

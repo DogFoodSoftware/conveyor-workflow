@@ -166,7 +166,6 @@ EOF
 	if [ x"$ASSIGNEE" == x"$GITHUB_LOGIN" ]; then
 	    echo "Assigned PR #${ISSUE_NUMBER} to $GITHUB_LOGIN."
 	else
-	    echo $JSON >&2
 	    local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
 	    echo "ERROR: Assignment seems to have failed. GitHub message: $MESSAGE." >&2
 	    exit 2
@@ -178,13 +177,15 @@ EOF
 }
 
 function get_assignee() {
-    set_github_origin_data
+    local RESOURCE_NAME="$1"; shift
+    local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
+    set_github_origin_data    
 
     local ISSUE_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "ERROR: Could not contact github, please assign issue manually." >&2
-	exit 2
+	return 2
     fi
     local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
     local ASSIGNEE=`echo $ISSUE_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["assignee"]["login"];'`
@@ -193,12 +194,15 @@ function get_assignee() {
 }
 
 function clear_assignee() {
-    local ASSIGNEE=`get_assignee`
+    local RESOURCE_NAME="$1"; shift
+    local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
+    local ASSIGNEE=`get_assignee $RESOURCE_NAME`
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	exit $RESULT
     fi
     
+    set_github_origin_data
     get_login
     
     if [ x"$ASSIGNEE" != x"$GITHUB_LOGIN" ]; then
@@ -220,11 +224,12 @@ EOF
 	rm $TMP_FILE
 	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
 	local ASSIGNEE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["assignee"]["login"];'`
-	if [ x"$ASSIGNEE" == x"" ]; then
+	if [ `echo $JSON | grep '"title"' | wc -l` -eq 1 ] && [ x"$ASSIGNEE" == x"" ]; then
 	    echo "Assignment cleared for issue #${ISSUE_NUMBER}."
+	    return 0
 	else
-	    echo $JSON >&2
 	    local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
+	    echo $JSON >&2
 	    echo "ERROR: Assignment clear seems to have failed. GitHub message: $MESSAGE." >&2
 	    exit 2
 	fi
@@ -255,6 +260,18 @@ EOF
 	echo "Could not create issue: $MESSAGE" >&2
 	return 1
     fi
+}
+
+function set_github_origin_data() {
+    source $HOME/.conveyor-workflow/github
+    # We need the github owner and repo, which we can get by dissectin the
+    # origin url.
+    GITHUB_URL=`git config --get remote.origin.url`
+    GITHUB_OWNER=`echo $GITHUB_URL | cut -d/ -f4`
+    GITHUB_REPO=`echo $GITHUB_URL | cut -d/ -f5`
+    # The URL includes the '.git', which isn't part of the name but an
+    # underlying git convention. We want to drop it for the API calls.
+    GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
 }
 
 # /**

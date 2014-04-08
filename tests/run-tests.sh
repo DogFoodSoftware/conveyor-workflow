@@ -17,7 +17,6 @@ TEST_SCRIPTS=`find $FIND_PATH -not -path "./data/*" -not -path "./lib/*" -name "
 for i in $TEST_SCRIPTS; do
     echo "Running ${i}..."
     bash $i
-    sleep 1
 done
 
 if [ -f $HOME/.conveory-workflow/implied-resources ]; then

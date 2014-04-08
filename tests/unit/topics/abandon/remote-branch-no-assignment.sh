@@ -16,7 +16,7 @@
 #*   And the local branch has been closed
 #*   And the issue assignment has been cleared
 #* When I type 'con topics abandon 1-foo'
-#* Then I should find the text "No local branch found. Branch closed on origin." on stdout
+#* Then I should find the text "No local branch found. No authority to close branch on origin." on stdout
 #*   And the script exits with exit code 0.
 #* </pre>
 #*/
@@ -28,17 +28,15 @@ setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 init_github_test_environment `basename $0`
-TEST_REPO=https://github.com/DogFoodSoftware/test-repo.git
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
 test_output "con topics start --checkout '1-$ISSUE_DESC'" '' '' 0 4
 source $TEST_BASE/../runnable/lib/github-hooks.sh
 clear_assignee "1-$ISSUE_DESC" > /dev/null
-exit 1
 git checkout --quiet master
 git branch --quiet -D topics-1-$ISSUE_DESC
-test_output "con topics abandon 1-$ISSUE_DESC" "No local branch found. Branch closed on origin."
+test_output "con topics abandon 1-$ISSUE_DESC" "No local branch found. No authority to close branch on origin."
 
 source $TEST_BASE/../runnable/lib/github-hooks.sh
-# delete_repo 'DogFoodSoftware/test-repo'
+delete_repo 'DogFoodSoftware/test-repo'

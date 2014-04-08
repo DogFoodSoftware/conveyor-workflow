@@ -93,7 +93,7 @@ EOF
 	return 2
     fi
 
-    JSON=`cat $TMP_FILE`
+    local JSON=`cat $TMP_FILE`
     if [ `echo $JSON | grep '"name"' | wc -l` -ne 1 ]; then
 	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
 	local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
@@ -107,7 +107,7 @@ EOF
 function delete_repo() {
     local REPO_NAME="$1"; shift
 
-    DELETE_JSON=`curl -X DELETE -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$REPO_NAME`
+    local DELETE_JSON=`curl -X DELETE -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$REPO_NAME`
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "Could not contact github. Bailing out." >&2
@@ -253,7 +253,7 @@ EOF
 	return 2
     fi
 
-    JSON=`cat $TMP_FILE`
+    local JSON=`cat $TMP_FILE`
     if [ `echo $JSON | grep '"title"' | wc -l` -ne 1 ]; then
 	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
 	local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`

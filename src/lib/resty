@@ -65,7 +65,7 @@ function resty() {
   _path="${_resty_host//\*/$_resty_path}"
 
   case "$method" in
-    HEAD|OPTIONS|GET|DELETE|POST|PUT|TRACE)
+    HEAD|OPTIONS|GET|DELETE|PATCH|POST|PUT|TRACE)
       eval "curlopt2=(${_resty_opts[*]})"
       dat=$( ( [ "$wantdata" = "yes" ] \
         && ( ( [ -n "$dat" ] && echo "$dat") \
@@ -133,6 +133,10 @@ function GET() {
 
 function POST() {
   resty POST "$@"
+}
+
+function PATCH() {
+  resty PATCH "$@"
 }
 
 function PUT() {

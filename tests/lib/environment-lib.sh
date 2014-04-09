@@ -41,33 +41,35 @@ function init_github_test_environment() {
     source $HOME/.conveyor-workflow/github
     source $TEST_BASE/../runnable/lib/github-hooks.sh
 
-    echo A
-    create_repo 'DogFoodSoftware/test-repo'
-    echo B
-    create_issue 'DogFoodSoftware/test-repo' 'Test Issue'
-    echo C
-
+    local TEST_REPO='DogFoodSoftware/test-repo'
     GIT_CONVEY_HOME=$CONVEYOR_HOME/workflow
     export GIT_CONVEY_HOME
     export GIT_CONVEY_TEST_DIR="$GIT_CONVEY_HOME/data/test"
     export WORKING_REPO="$TEST_SCRIPT"
     export WORKING_REPO_PATH="$GIT_CONVEY_TEST_DIR/$WORKING_REPO"
 
+    if ! does_repo_exist "$TEST_REPO"; then
+	create_repo "$TEST_REPO"
+	con init --github "$TEST_REPO" > /dev/null
+    fi
     rm -rf $WORKING_REPO_PATH
 
-    cd $GIT_CONVEY_HOME 2>/dev/null || (echo "Did not find standard conveyor-workflow install." >&2; exit 2)
+    if [ ! -d $GIT_CONVEY_HOME ]; then
+	echo "Did not find standard conveyor-workflow install." >&2
+	exit 2
+    fi
+    cd $GIT_CONVEY_HOME 2>/dev/null
     mkdir -p data
     cd data
     rm -rf test
     mkdir test
     cd test
 
-    con init --github 'DogFoodSoftware/test-repo' > /dev/null
-
     # TODO: we should support '-q/--quiet' for the following command.  Notice
     # we use the 'working repo', without the '.git' extension because init
     # adds the extension. Users do not generally deal with the '.git'.
-    con sync "$ORIGIN_REPO_URL" "$WORKING_REPO_PATH" > /dev/null 2>&1 | grep -v "warning: You appear to have cloned an empty repository" >&2
+    (con sync "$ORIGIN_REPO_URL" "$WORKING_REPO_PATH" > /dev/null 2>&1; local RESULT=$?) | grep -v "warning: You appear to have cloned an empty repository" >&2
+    return $RESULT
 }
 
 function populate_test_environment() {

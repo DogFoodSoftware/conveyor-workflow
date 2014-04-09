@@ -32,15 +32,15 @@ resource_do() {
 	# There is one exception: if we're running tests, then we will be
 	# working under the conveyor-workflow repo, and that's okay.
 	if [ x"$GIT_CONVEY_TEST_MODE" != x"0" ] || [[ x"$GIT_DIR" != x*conveyor/workflow/.git ]]; then
-	    echo "Cannot clone a conveyor-workflow repo within an existing repo: '$GIT_DIR'." >&1
+	    echo "Cannot clone a conveyor-workflow repo within an existing repo: '$GIT_DIR'." >&2
 	    exit 1
 	fi
 
 	# Else, let's attempt the clone.
 	if [ x"$LOCAL_DIR" == x"" ];then
-	    do_clone $REMOTE_URL || (echo "ERROR: Could not clone $REMOTE_URL." >&2; exit 2)
+	    do_clone $REMOTE_URL || (echo "ERROR: Could not clone $REMOTE_URL." >&2; exit 2) || exit 2	    
 	else
-	    do_clone $REMOTE_URL $LOCAL_DIR || (echo "ERROR: Could not clone $REMOTE_URL to $LOCAL_DIR." >&2; exit 2)
+	    do_clone $REMOTE_URL $LOCAL_DIR || (echo "ERROR: Could not clone $REMOTE_URL to $LOCAL_DIR." >&2; exit 2) || exit 2
 	fi
     elif [ $# -eq 0 ]; then
 	# With no arguments, we are updating the current repository. Make sure

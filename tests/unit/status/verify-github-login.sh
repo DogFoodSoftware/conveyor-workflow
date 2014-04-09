@@ -24,6 +24,7 @@ source $TEST_BASE/../runnable/lib/rest-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
+source $TEST_BASE/../runnable/lib/github-hooks.sh
 init_github_test_environment `basename $0`
 cd $WORKING_REPO_PATH
 
@@ -31,5 +32,3 @@ rm $HOME/.conveyor-workflow/github-login
 # 5 words: Connected to Github as: XXX
 test_output 'con status' '' '' 0 5
 
-source $TEST_BASE/../runnable/lib/github-hooks.sh
-delete_repo 'DogFoodSoftware/test-repo'

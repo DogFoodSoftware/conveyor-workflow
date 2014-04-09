@@ -28,3 +28,7 @@ done
 if [ -f $HOME/.conveory-workflow/implied-resources ]; then
     rm $HOME/.conveyor-workflow/implied-resource
 fi
+
+if does_repo_exist 'DogFoodSoftware/test-repo'; then
+    delete_repo 'DogFoodSoftware/test-repo'
+fi

@@ -28,9 +28,4 @@ init_github_test_environment `basename $0`
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
-test_output "con topics start 100-$ISSUE_DESC" "" 'GitHub reports invalid issue number at' 1
-# Cleanup branch; actually not necessary if things function right, but just in case.
-git push -q origin :topics-1-$ISSUE_DESC 2>/dev/null
-
-source $TEST_BASE/../runnable/lib/github-hooks.sh
-delete_repo 'DogFoodSoftware/test-repo'
+test_output "con topics start 9999999-$ISSUE_DESC" "" 'GitHub reports invalid issue number at' 1

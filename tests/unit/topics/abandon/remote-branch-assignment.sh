@@ -29,16 +29,15 @@ source $TEST_BASE/lib/start-lib.sh
 init_github_test_environment `basename $0`
 if [ $? -ne 0 ]; then 
     echo "Could not initialize test environment. Test inconclusive." >&2;
-    delete_repo 'DogFoodSoftware/test-repo'
     exit 2
 fi
+ISSUE_NUMBER=`create_issue 'DogFoodSoftware/test-repo' "$0"`
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
-test_output "con topics start --checkout '1-$ISSUE_DESC'" '' '' 0 4
+test_output "con topics start --checkout '$ISSUE_NUMBER-$ISSUE_DESC'" '' '' 0 4
 source $TEST_BASE/../runnable/lib/github-hooks.sh
 git checkout --quiet master
-git branch --quiet -D topics-1-$ISSUE_DESC
-test_output "con topics abandon 1-$ISSUE_DESC" "Assignment cleared. No local branch found. Branch closed on origin."
+git branch --quiet -D topics-$ISSUE_NUMBER-$ISSUE_DESC
+test_output "con topics abandon $ISSUE_NUMBER-$ISSUE_DESC" "Assignment cleared. No local branch found. Branch closed on origin."
 
-delete_repo 'DogFoodSoftware/test-repo'

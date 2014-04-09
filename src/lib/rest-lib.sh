@@ -25,11 +25,12 @@ function github_api {
     local RESTY_STATUS=$?
     
     if [ $RESTY_STATUS -ne 0 ]; then
-	echo "ERROR: REST call failed for '$@'." >&2
+	echo "ERROR: REST call failed for '$VERB $@'." >&2
 	local JSON=`cat $STDERR`
 	local MESSAGE=`json_extract '["message"]' "$JSON"`
 	if [ x"$MESSAGE" == x"" ]; then
-	    echo "ERROR: No message provided." >&2
+	    cat $STDOUT >&2
+	    echo "ERROR: No no no message provided. $JSON" >&2
 	else
 	    echo "ERROR: $MESSAGE" >&2
 	fi

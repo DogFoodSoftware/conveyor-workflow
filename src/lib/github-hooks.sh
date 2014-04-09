@@ -64,39 +64,15 @@ function create_repo() {
     local GITHUB_OWNER=`echo "$REPO_NAME" | cut -d'/' -f 1`
     local REPO_NAME=`echo "$REPO_NAME" | cut -d'/' -f 2`
 
-    local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/orgs/$GITHUB_OWNER/repos -d @-"
-    local TMP_FILE="/tmp/$RANDOM"
-    cat <<EOF | $CURL_COMMAND > $TMP_FILE
-{
-  "name": "$REPO_NAME"
-}
-EOF
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github." >&2
-	return 2
-    fi
-
-    local JSON=`cat $TMP_FILE`
-    if [ `echo $JSON | grep '"name"' | wc -l` -ne 1 ]; then
-	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-	local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
-	echo "Could not create repo: $MESSAGE" >&2
-	return 1
-    fi
-
-    return 0
+    github_api POST /orgs/$GITHUB_OWNER/repos "{ \"name\":\"$REPO_NAME\" }" >/dev/null
+    return $?
 }
 
 function delete_repo() {
     local REPO_NAME="$1"; shift
 
-    local DELETE_JSON=`curl -X DELETE -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$REPO_NAME`
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github. Bailing out." >&2
-	exit 2
-    fi
+    github_api DELETE "/repos/$REPO_NAME"
+    return $?
 }
 
 function get_login() {

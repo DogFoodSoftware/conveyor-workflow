@@ -102,6 +102,8 @@ function resty() {
         return $ret
       else
         [ -n "$out" ] && echo "$out"
+	# OUR FIX: a DELETE result may legitimately have no output
+	return 0
       fi
       ;;
     http://*|https://*)

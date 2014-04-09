@@ -12,7 +12,13 @@ fi
 
 cd $TEST_DIR
 
-TEST_SCRIPTS=`find $FIND_PATH -not -path "./data/*" -not -path "./lib/*" -name "*.sh" -not -name "$SELF" -not -name ".#*"`
+TEST_SCRIPTS=`find $FIND_PATH -not -path "./data/*" -not -path "*/lib/*" -name "*.sh" -not -name "$SELF" -not -name ".#*"`
+
+# cleanup any dangling test-repo
+source $TEST_DIR/../runnable/lib/github-hooks.sh
+if does_repo_exist 'DogFoodSoftware/test-repo'; then
+    delete_repo 'DogFoodSoftware/test-repo'
+fi
 
 for i in $TEST_SCRIPTS; do
     echo "Running ${i}..."
@@ -21,4 +27,8 @@ done
 
 if [ -f $HOME/.conveory-workflow/implied-resources ]; then
     rm $HOME/.conveyor-workflow/implied-resource
+fi
+
+if does_repo_exist 'DogFoodSoftware/test-repo'; then
+    delete_repo 'DogFoodSoftware/test-repo'
 fi

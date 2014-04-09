@@ -88,6 +88,8 @@ fi
 
 source "$HOME/.conveyor/config"
 source "$GIT_CONVEY_DIR/lib/shflags"
+source "$GIT_CONVEY_DIR/lib/resty"
+source "$GIT_CONVEY_DIR/lib/rest-lib.sh"
 source "$GIT_CONVEY_DIR/common-checks.sh"
 source "$GIT_CONVEY_DIR/common-lib.sh"
 FLAGS_PARENT="git conveyor"

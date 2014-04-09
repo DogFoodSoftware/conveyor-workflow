@@ -24,12 +24,15 @@ source $TEST_BASE/lib/cli-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
+source $TEST_BASE/../runnable/lib/github-hooks.sh
 init_github_test_environment `basename $0`
+if [ $? -ne 0 ]; then 
+    echo "Could not initialize test environment. Test inconclusive." >&2;
+    exit 2
+fi
 TEST_REPO=https://github.com/DogFoodSoftware/test-repo.git
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
-test_output "con topics abandon 100-$ISSUE_DESC" '' "WARNING: Nothing found to abandon for '100-$ISSUE_DESC'." 1
+test_output "con topics abandon 999999-$ISSUE_DESC" '' "WARNING: Nothing found to abandon for '999999-$ISSUE_DESC'." 1
 
-source $TEST_BASE/../runnable/lib/github-hooks.sh
-delete_repo 'DogFoodSoftware/test-repo'

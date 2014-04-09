@@ -1,7 +1,11 @@
 # /**
 # * <div id="Implementation" class="grid_12 blurbSummary">
 # * <div class="blurbTitle">Implementation</div>
-
+# */
+source $HOME/.conveyor/config
+source $CONVEYOR_HOME/workflow/runnable/lib/resty
+source $CONVEYOR_HOME/workflow/runnable/lib/rest-lib.sh
+# /**
 # * <div class="subHeader"><span><code>check_issue_exists()</code></span><div>
 # * <div class="p">
 # *   TODO: Make configurable; single branch or multi-branch. Default is multi.
@@ -19,22 +23,15 @@ function check_issue_exists_for() {
     local ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
     set_github_origin_data
 
-    local ISSUE_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
+    local STATE=`github_query '["state"]' GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER 2> /dev/null`
     local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github to verify task. Bailing out." >&2
-	exit 2
-    fi
-    # Now we need to extract the status and verify the issue is open.
-
-    local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-    local MESSAGE=`echo $ISSUE_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
-    if [ "$MESSAGE" == 'Not Found' ]; then
+    if [ `last_rest_status` -eq 404 ]; then
 	echo "GitHub reports invalid issue number at $GITHUB_URL." >&2
 	exit 1
+    elif [ $RESULT -ne 0 ]; then
+	echo "ERROR: failed to retrive issue. ($RESULT)" >&2
+	exit 2
     fi
-    # Else, assume we have an issue
-    local STATE=`echo $ISSUE_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["state"];'`
     case "$STATE" in
 	open|OPEN)
 	    echo "Issue is verified at $GITHUB_URL."
@@ -58,13 +55,9 @@ function check_issue_exists_for() {
 function does_repo_exist() {
     local REPO_NAME="$1"; shift
 
-    local GITHUB_RESPONSE=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$REPO_NAME`
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github to verify repo available. Bailing out." >&2
-	exit 2
-    fi
-    [ `echo $GITHUB_RESPONSE | grep '"id":' | wc -l` -eq 1 ]
+    # Redirect to hide standard failure messages if repo does not exist.
+    local REPO_ID=`github_query '["id"]' GET /repos/$REPO_NAME 2> /dev/null`
+    [ x"$REPO_ID" != x"" ]
 }
 
 # /**
@@ -80,39 +73,15 @@ function create_repo() {
     local GITHUB_OWNER=`echo "$REPO_NAME" | cut -d'/' -f 1`
     local REPO_NAME=`echo "$REPO_NAME" | cut -d'/' -f 2`
 
-    local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/orgs/$GITHUB_OWNER/repos -d @-"
-    local TMP_FILE="/tmp/$RANDOM"
-    cat <<EOF | $CURL_COMMAND > $TMP_FILE
-{
-  "name": "$REPO_NAME"
-}
-EOF
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github." >&2
-	return 2
-    fi
-
-    local JSON=`cat $TMP_FILE`
-    if [ `echo $JSON | grep '"name"' | wc -l` -ne 1 ]; then
-	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-	local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
-	echo "Could not create repo: $MESSAGE" >&2
-	return 1
-    fi
-
-    return 0
+    github_api POST /orgs/$GITHUB_OWNER/repos "{ \"name\":\"$REPO_NAME\" }" >/dev/null
+    return $?
 }
 
 function delete_repo() {
     local REPO_NAME="$1"; shift
 
-    local DELETE_JSON=`curl -X DELETE -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$REPO_NAME`
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github. Bailing out." >&2
-	exit 2
-    fi
+    github_api DELETE "/repos/$REPO_NAME"
+    return $?
 }
 
 function get_login() {
@@ -123,16 +92,12 @@ function get_login() {
 
     # This is an internal function, so we trust the arguments.
     if [ $FORCE_REFRESH -eq 0 ] || [ ! -f $HOME/.conveyor-workflow/github-login ]; then
-	local USER_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/user`
-	local RESULT=$?
-	if [ $RESULT -ne 0 ]; then
-	    echo "ERROR: Could not contact github to determine user login." >&2
-	    exit 2
-	else
-	    local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-	    GITHUB_LOGIN=`echo $USER_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["login"];'`	    
+	GITHUB_LOGIN=`github_query '["login"]' GET /user`
+	local QUERY_STATUS=$?
+	if [ $QUERY_STATUS -eq 0 ]; then
 	    echo "GITHUB_LOGIN=$GITHUB_LOGIN" > $HOME/.conveyor-workflow/github-login
-	fi # github connection check
+	fi
+	return $QUERY_STATUS
     elif [ -f $HOME/.conveyor-workflow/github-login ]; then
 	source $HOME/.conveyor-workflow/github-login
     fi # forced refresh check
@@ -240,26 +205,12 @@ function create_issue() {
     local GITHUB_REPO="$1"; shift
     local TITLE="$1"; shift
 
-    local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_REPO/issues -d @-"
-    local TMP_FILE="/tmp/$RANDOM"
-    cat <<EOF | $CURL_COMMAND > $TMP_FILE
-{
-  "title": "$TITLE"
-}
-EOF
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github." >&2
-	return 2
+    NUMBER=`github_query '["number"]' POST /repos/$GITHUB_REPO/issues "{\"title\": \"$TITLE\"}"`
+    local API_RESULT=$?
+    if [ $API_RESULT -ne 0 ]; then
+	return $API_RESULT
     fi
-
-    local JSON=`cat $TMP_FILE`
-    if [ `echo $JSON | grep '"title"' | wc -l` -ne 1 ]; then
-	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-	local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
-	echo "Could not create issue: $MESSAGE" >&2
-	return 1
-    fi
+    echo $NUMBER
 }
 
 function set_github_origin_data() {

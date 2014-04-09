@@ -495,3 +495,23 @@ function load_hooks() {
     fi
     source "$HOOKS_LIB"
 }
+
+function do_clone() {
+    local TMP_FILE="/tmp/$RANDOM"
+    git clone --quiet $@ 2> $TMP_FILE
+    local CLONE_RESULT=$?
+    local TRIES=1
+    while [ $CLONE_RESULT -ne 0 ] && [ $TRIES -lt 10 ]; do
+	sleep $TRIES
+	git clone --quiet $@ 2> $TMP_FILE
+	CLONE_RESULT=$?
+	TRIES=$(($TRIES + 1))
+    done
+    if [ $CLONE_RESULT -ne 0 ]; then
+	echo "Unable to clone repo at: '$CLONE_URL'." >&2
+	cat $TMP_FILE >&2
+	rm $TMP_FILE
+	return 1
+    fi
+    rm $TMP_FILE
+}

@@ -28,15 +28,18 @@ setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 init_github_test_environment `basename $0`
+if [ $? -ne 0 ]; then 
+    echo "Could not initialize test environment. Test inconclusive." >&2;
+    exit 2
+fi
 TEST_REPO=https://github.com/DogFoodSoftware/test-repo.git
+ISSUE_NUMBER=`create_issue 'DogFoodSoftware/test-repo' "$0"`
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
-test_output "con topics start --checkout '1-$ISSUE_DESC'" '' '' 0 4
+test_output "con topics start --checkout '$ISSUE_NUMBER-$ISSUE_DESC'" '' '' 0 4
 source $TEST_BASE/../runnable/lib/github-hooks.sh
-clear_assignee "1-$ISSUE_DESC" > /dev/null
-git push --quiet origin :topics-1-$ISSUE_DESC
-test_output "con topics abandon 1-$ISSUE_DESC" "Local branch deleted. Already closed on origin."
+clear_assignee "$ISSUE_NUMBER-$ISSUE_DESC" > /dev/null
+git push --quiet origin :topics-$ISSUE_NUMBER-$ISSUE_DESC
+test_output "con topics abandon $ISSUE_NUMBER-$ISSUE_DESC" "Local branch deleted. Already closed on origin."
 
-source $TEST_BASE/../runnable/lib/github-hooks.sh
-delete_repo 'DogFoodSoftware/test-repo'

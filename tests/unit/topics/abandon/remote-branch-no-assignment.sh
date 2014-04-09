@@ -28,6 +28,11 @@ setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 init_github_test_environment `basename $0`
+if [ $? -ne 0 ]; then 
+    echo "Could not initialize test environment. Test inconclusive." >&2;
+    delete_repo 'DogFoodSoftware/test-repo'
+    exit 2
+fi
 cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
@@ -38,5 +43,4 @@ git checkout --quiet master
 git branch --quiet -D topics-1-$ISSUE_DESC
 test_output "con topics abandon 1-$ISSUE_DESC" "No local branch found. No authority to close branch on origin."
 
-source $TEST_BASE/../runnable/lib/github-hooks.sh
 delete_repo 'DogFoodSoftware/test-repo'

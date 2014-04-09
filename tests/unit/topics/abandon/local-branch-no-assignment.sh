@@ -28,6 +28,11 @@ setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 init_github_test_environment `basename $0`
+if [ $? -ne 0 ]; then 
+    echo "Could not initialize test environment. Test inconclusive." >&2;
+    delete_repo 'DogFoodSoftware/test-repo'
+    exit 2
+fi
 TEST_REPO=https://github.com/DogFoodSoftware/test-repo.git
 cd $WORKING_REPO_PATH
 
@@ -38,5 +43,4 @@ clear_assignee "1-$ISSUE_DESC" > /dev/null
 git push --quiet origin :topics-1-$ISSUE_DESC
 test_output "con topics abandon 1-$ISSUE_DESC" "Local branch deleted. Already closed on origin."
 
-source $TEST_BASE/../runnable/lib/github-hooks.sh
 delete_repo 'DogFoodSoftware/test-repo'

@@ -92,12 +92,17 @@ EOF
     local TMP_DIR="$RANDOM"
     mkdir $TMP_DIR
     cd $TMP_DIR
-    # We once saw the 'git clone' fail because the repo wasn't yet
-    # available... maybe.
-    sleep 2
     local CLONE_URL="https://github.com/${REPO_NAME}.git"
     local TMP_FILE="/tmp/$RANDOM"
     git clone --quiet "$CLONE_URL" 2> $TMP_FILE
+    local CLONE_RESULT=$?
+    local TRIES=1
+    while [ $? -ne 0 ] && [ $TRIES -lt 5 ]; do
+	sleep 2
+	git clone --quiet "$CLONE_URL" 2> $TMP_FILE
+	CLONE_RESULT=$?
+	TRIES=$(($TRIES + 1))
+    done
     if [ $? -ne 0 ]; then
 	echo "Unable to clone repo at: '$CLONE_URL'." >&2
 	cat $TMP_FILE >&2

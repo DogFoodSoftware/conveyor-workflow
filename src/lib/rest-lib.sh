@@ -25,7 +25,7 @@ function github_api {
     local RESTY_STATUS=$?
     
     if [ $RESTY_STATUS -ne 0 ]; then
-	echo "ERROR: REST call failed for '$VERB $@'." >&2
+	echo "ERROR: REST call failed for '$VERB $@'. ("`last_rest_status`")" >&2
 	local JSON=`cat $STDERR`
 	local MESSAGE=`json_extract '["message"]' "$JSON"`
 	if [ x"$MESSAGE" == x"" ]; then

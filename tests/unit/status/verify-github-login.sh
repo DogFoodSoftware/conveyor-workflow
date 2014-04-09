@@ -19,16 +19,17 @@
 TEST_BASE=`dirname $0`/../..
 TEST_BASE=`realpath $TEST_BASE`
 source $TEST_BASE/lib/cli-lib.sh
+source $TEST_BASE/../runnable/lib/resty
+source $TEST_BASE/../runnable/lib/rest-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 init_github_test_environment `basename $0`
 cd $WORKING_REPO_PATH
 
-OUTPUT=`test_output 'con status | grep "Connected to GitHub as:"' 'Connected to GitHub' '' 0 4 0`
-if [ ${#OUTPUT} -le 24 ]; then
-    echo "ERROR: Expected non-empty GitHub login name."
-fi
+rm $HOME/.conveyor-workflow/github-login
+# 5 words: Connected to Github as: XXX
+test_output 'con status' '' '' 0 5
 
 source $TEST_BASE/../runnable/lib/github-hooks.sh
 delete_repo 'DogFoodSoftware/test-repo'

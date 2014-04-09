@@ -123,16 +123,10 @@ function get_login() {
 
     # This is an internal function, so we trust the arguments.
     if [ $FORCE_REFRESH -eq 0 ] || [ ! -f $HOME/.conveyor-workflow/github-login ]; then
-	local USER_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/user`
-	local RESULT=$?
-	if [ $RESULT -ne 0 ]; then
-	    echo "ERROR: Could not contact github to determine user login." >&2
-	    exit 2
-	else
-	    local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-	    GITHUB_LOGIN=`echo $USER_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["login"];'`	    
+	GITHUB_LOGIN=`github_query '["login"]' GET /user`
+	if [ $? -eq 0 ]; then
 	    echo "GITHUB_LOGIN=$GITHUB_LOGIN" > $HOME/.conveyor-workflow/github-login
-	fi # github connection check
+	fi
     elif [ -f $HOME/.conveyor-workflow/github-login ]; then
 	source $HOME/.conveyor-workflow/github-login
     fi # forced refresh check

@@ -66,24 +66,29 @@ test_output() {
 	[ "$NO_EXPECTED_STDOUT" != "${FLAGS_TRUE}" ]; then
 	# Tested this detects failure by exiting immediately from help mode.
 	echo "ERROR: '$COMMAND' did not produce any text on stdout as expected."
+	echo "ERROR: STDERR - $ERROUT"
     elif [ x"$OUTPUT" != x"" ] &&
 	[ "$NO_EXPECTED_STDOUT" == "${FLAGS_TRUE}" ]; then
 	echo -e "ERROR: '$COMMAND' was not expected to produce output, but got:\n$OUTPUT"
+	echo "ERROR: STDERR - $ERROUT"
     elif [[ "$OUTPUT" != "$EXPECTED_STDOUT_START"* ]]; then
 	# Tested this detects failure by modifying the output of usage,
 	# resource_usage, and resource_help.
 	echo -e "ERROR: '$COMMAND' output did not start with expected:\n'$EXPECTED_STDOUT_START'; got:\n'$OUTPUT'"
+	echo "ERROR: STDERR - $ERROUT"
     fi
 
     OUTPUT_ARRAY=( $OUTPUT )
     WORD_COUNT=${#OUTPUT_ARRAY[@]}
     if [[ ( x"$MIN_WORDS" != x"" ) && ( $WORD_COUNT -lt $MIN_WORDS ) ]]; then
-	echo "ERROR: '$COMMAND' output was expected to output at least ${MIN_WORDS}, but instead got $WORD_COUNT." >&2
+	echo "ERROR: '$COMMAND' output was expected to output at least ${MIN_WORDS}, but instead got $WORD_COUNT."
+	echo "ERROR: STDERR - $ERROUT"
     fi
 
     if [ x"$ERROUT" == x"" ] &&
 	[ x"$NO_EXPECTED_STDERR" != x"$FLAGS_TRUE" ]; then
 	echo "ERROR: '$COMMAND' did not produce any text on stderr as expected."
+	echo "ERROR: STDERR - $ERROUT"
     elif [ x"$ERROUT" != x"" ] &&
 	[ "$NO_EXPECTED_STDERR" == "$FLAGS_TRUE" ]; then
 	echo -e "ERROR: '$COMMAND' was not expected to produce error output, but got:\n$ERROUT"

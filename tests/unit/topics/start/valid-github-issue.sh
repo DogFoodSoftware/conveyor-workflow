@@ -22,6 +22,8 @@
 TEST_BASE=`dirname $0`/../../..
 TEST_BASE=`realpath $TEST_BASE`
 source $TEST_BASE/lib/cli-lib.sh
+source $TEST_BASE/../runnable/lib/resty
+source $TEST_BASE/../runnable/lib/rest-lib.sh
 setup_path $TEST_BASE/../runnable
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
@@ -37,22 +39,11 @@ if [ ! -f $HOME/.conveyor-workflow/github-login ]; then
 else
     source $HOME/.conveyor-workflow/github
     source $HOME/.conveyor-workflow/github-login
-    
-    JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/test-repo/issues/1`
-    RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "ERROR: Could not get issue from github; test inonclusive."
-    else
-	PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-	ASSIGNEE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["assignee"]["login"];'`
-	if [ x"$ASSIGNEE" != x"$GITHUB_LOGIN" ]; then
-	    echo "ERROR: Expected assignee '$GITHUB_LOGIN', but got '$ASSIGNEE'."
-	fi 
-    fi
+    ASSIGNEE=`github_query '["assignee"]["login"]' GET /repos/DogFoodSoftware/test-repo/issues/1`
+    if [ x"$ASSIGNEE" != x"$GITHUB_LOGIN" ]; then
+	echo "ERROR: Expected assignee '$GITHUB_LOGIN', but got '$ASSIGNEE'."
+    fi 
 fi # $HOME/.conveyor-workflow/github-login exists
-
-# Cleanup branch.
-git push -q origin :topics-1-$ISSUE_DESC
 
 source $TEST_BASE/../runnable/lib/github-hooks.sh
 delete_repo 'DogFoodSoftware/test-repo'

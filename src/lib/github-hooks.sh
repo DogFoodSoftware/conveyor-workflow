@@ -19,22 +19,11 @@ function check_issue_exists_for() {
     local ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
     set_github_origin_data
 
-    local ISSUE_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github to verify task. Bailing out." >&2
+    local STATE=`github_query '["state"]' GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
+    if [ $? -ne 0 ]; then
+	echo "ERROR: failed to retrive issue." >&2
 	exit 2
     fi
-    # Now we need to extract the status and verify the issue is open.
-
-    local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-    local MESSAGE=`echo $ISSUE_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
-    if [ "$MESSAGE" == 'Not Found' ]; then
-	echo "GitHub reports invalid issue number at $GITHUB_URL." >&2
-	exit 1
-    fi
-    # Else, assume we have an issue
-    local STATE=`echo $ISSUE_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["state"];'`
     case "$STATE" in
 	open|OPEN)
 	    echo "Issue is verified at $GITHUB_URL."
@@ -58,13 +47,8 @@ function check_issue_exists_for() {
 function does_repo_exist() {
     local REPO_NAME="$1"; shift
 
-    local GITHUB_RESPONSE=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$REPO_NAME`
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "Could not contact github to verify repo available. Bailing out." >&2
-	exit 2
-    fi
-    [ `echo $GITHUB_RESPONSE | grep '"id":' | wc -l` -eq 1 ]
+    local REPO_ID=`github_query '["id"]' GET /repos/$REPO_NAME`
+    [ x"$REPO_ID" != x"" ]
 }
 
 # /**
@@ -124,9 +108,11 @@ function get_login() {
     # This is an internal function, so we trust the arguments.
     if [ $FORCE_REFRESH -eq 0 ] || [ ! -f $HOME/.conveyor-workflow/github-login ]; then
 	GITHUB_LOGIN=`github_query '["login"]' GET /user`
-	if [ $? -eq 0 ]; then
+	local QUERY_STATUS=$?
+	if [ $QUERY_STATUS -eq 0 ]; then
 	    echo "GITHUB_LOGIN=$GITHUB_LOGIN" > $HOME/.conveyor-workflow/github-login
 	fi
+	return $QUERY_STATUS
     elif [ -f $HOME/.conveyor-workflow/github-login ]; then
 	source $HOME/.conveyor-workflow/github-login
     fi # forced refresh check

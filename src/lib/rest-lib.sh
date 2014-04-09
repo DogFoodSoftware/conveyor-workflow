@@ -13,44 +13,29 @@
 source $HOME/.conveyor/config
 source $CONVEYOR_HOME/workflow/runnable/lib/resty
 
-# Override the Resty 'verb' methods to implement the error handling.
-function HEAD() {
-    common_resty_handler HEAD "$@"
-}
-
-function OPTIONS() {
-    common_resty_handler OPTIONS "$@"
-}
-
-function GET() {
-    common_resty_handler GET "$@"
-}
-
-function POST() {
-    common_resty_handler POST "$@"
-}
-
-function PUT() {
-    common_resty_handler PUT "$@"
-}
-
-function DELETE() {
-    common_resty_handler DELETE "$@"
-}
-
-function PATCH() {
-    common_resty_handler PATCH "$@"
-}
-
-function common_resty_handler() {
+# GitHub API wrapper
+function github_api {
     local VERB="$1"; shift
-    
     local HEADER_OUT="headerout-$RANDOM"
-
-    # Everything from '-D' on gets passed to curl. Some of the $@ may get
-    # passed to curl to.
-    resty $VERB "$@" -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow'
+    local STDOUT="stdout-$RANDOM"
+    local STDERR="stderr-$RANDOM"
+    source $HOME/.conveyor-workflow/github
+    resty https://api.github.com* 2> /dev/null
+    $VERB "$@" -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow' -u $GITHUB_AUTH_TOKEN:x-oauth-basic > $STDOUT 2> $STDERR
     local RESTY_STATUS=$?
+    
+    if [ $RESTY_STATUS -ne 0 ]; then
+	echo "ERROR: REST call failed for '$@'." >&2
+	local JSON=`cat $STDERR`
+	local MESSAGE=`json_extract '["message"]' "$JSON"`
+	if [ x"$MESSAGE" == x"" ]; then
+	    echo "ERROR: No message provided." >&2
+	else
+	    echo "ERROR: $MESSAGE" >&2
+	fi
+    else
+	cat $STDOUT
+    fi
 
     if [ -f $HEADER_OUT ]; then
 	# Extract common data element:
@@ -63,35 +48,12 @@ function common_resty_handler() {
 	echo "ERROR: No headers found." >&2
     fi
 
-    if [ $RESTY_STATUS -ne 0 ]; then
-	echo "ERROR: REST call failed for '$@'." >&2
+    if [ -f $STDOUT ]; then
+	rm $STDOUT
     fi
-
-    return $RESTY_STATUS
-}
-
-# Git Specific wrapper
-function github_api {
-    resty https://api.github.com 2> /dev/null
-    local VERB="$1"; shift
-    local STDOUT="stdout-$RANDOM"
-    source $HOME/.conveyor-workflow/github
-    $VERB "$@" -u $GITHUB_AUTH_TOKEN:x-oauth-basic > $STDOUT
-    local RESTY_STATUS=$?
-    
-    if [ $RESTY_STATUS -ne 0 ]; then
-	local JSON=`cat $STDOUT`
-	local MESSAGE=`json_extract '["message"]' $JSON`
-	if [ x"$MESSAGE" == x"" ]; then
-	    echo "ERROR: No message provided." >&2
-	else
-	    echo "ERROR: $MESSAGE" >&2
-	fi
-    else
-	cat $STDOUT
+    if [ -f $STDERR ]; then
+	rm $STDERR
     fi
-    
-    rm $STDOUT
 
     return $RESTY_STATUS
 }
@@ -110,7 +72,7 @@ function json_extract {
     local JSON="$1"; shift
 
     local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-    echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data'$EXTRACT_SPEC';'
+    echo "$JSON" | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data'$EXTRACT_SPEC';'
 }
 
 #/**

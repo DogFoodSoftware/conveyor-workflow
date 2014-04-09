@@ -1,7 +1,11 @@
 # /**
 # * <div id="Implementation" class="grid_12 blurbSummary">
 # * <div class="blurbTitle">Implementation</div>
-
+# */
+source $HOME/.conveyor/config
+source $CONVEYOR_HOME/workflow/runnable/lib/resty
+source $CONVEYOR_HOME/workflow/runnable/lib/rest-lib.sh
+# /**
 # * <div class="subHeader"><span><code>check_issue_exists()</code></span><div>
 # * <div class="p">
 # *   TODO: Make configurable; single branch or multi-branch. Default is multi.
@@ -19,9 +23,13 @@ function check_issue_exists_for() {
     local ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
     set_github_origin_data
 
-    local STATE=`github_query '["state"]' GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
-    if [ $? -ne 0 ]; then
-	echo "ERROR: failed to retrive issue." >&2
+    local STATE=`github_query '["state"]' GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER 2> /dev/null`
+    local RESULT=$?
+    if [ `last_rest_status` -eq 404 ]; then
+	echo "GitHub reports invalid issue number at $GITHUB_URL." >&2
+	exit 1
+    elif [ $RESULT -ne 0 ]; then
+	echo "ERROR: failed to retrive issue. ($RESULT)" >&2
 	exit 2
     fi
     case "$STATE" in
@@ -47,7 +55,8 @@ function check_issue_exists_for() {
 function does_repo_exist() {
     local REPO_NAME="$1"; shift
 
-    local REPO_ID=`github_query '["id"]' GET /repos/$REPO_NAME`
+    # Redirect to hide standard failure messages if repo does not exist.
+    local REPO_ID=`github_query '["id"]' GET /repos/$REPO_NAME 2> /dev/null`
     [ x"$REPO_ID" != x"" ]
 }
 

@@ -41,9 +41,10 @@ function github_api {
     if [ -f $HEADER_OUT ]; then
 	# Extract common data element:
 	# - numerical status
-	REST_LIB_STATUS=`cat $HEADER_OUT | grep '^Status:' | cut -d' ' -f 2`
+	local REST_LIB_STATUS=`cat $HEADER_OUT | grep '^Status:' | cut -d' ' -f 2`
 	# - remaning calls
-	REST_LIB_RATE_LEFT=`cat $HEADER_OUT | grep '^X-RateLimet-Remaining:' | cut -d: -f 2`
+	local REST_LIB_RATE_LEFT=`cat $HEADER_OUT | grep '^X-RateLimit-Remaining:' | cut -d' ' -f 2`
+	echo -e "REST_LIB_STATUS=$REST_LIB_STATUS\nREST_LIB_RATE_LEFT=$REST_LIB_RATE_LEFT" > $HOME/.conveyor-workflow/last-rest-data
 	rm $HEADER_OUT
     else
 	echo "ERROR: No headers found." >&2
@@ -63,9 +64,12 @@ function github_query {
     local EXTRACT_SPEC="$1"; shift
 
     local JSON=`github_api "$@"`
-    if [ $? -eq 0 ]; then
+    local RESULT=$?
+    if [ $RESULT -eq 0 ]; then
 	json_extract "$EXTRACT_SPEC" "$JSON"
     fi
+
+    return $RESULT
 }
 
 function json_extract {
@@ -74,6 +78,15 @@ function json_extract {
 
     local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
     echo "$JSON" | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data'$EXTRACT_SPEC';'
+}
+
+function last_rest_status() {
+    if [ -f $HOME/.conveyor-workflow/last-rest-data ]; then
+	source $HOME/.conveyor-workflow/last-rest-data
+	echo $REST_LIB_STATUS
+    else
+	echo '-1'
+    fi
 }
 
 #/**

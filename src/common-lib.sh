@@ -209,7 +209,7 @@ function commit_branch() {
     local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
 
     if [ x"$FLAGS_message" == x'' ]; then
-	echo "Must supply commit message. Use option '-m' after 'commit'." >&2
+	echo "Commit message required. Use option '-m' after 'commit'." >&2
 	exit 1
     fi
 
@@ -219,6 +219,9 @@ function commit_branch() {
     else
 	check_for_new_files # This forces an exit if new files are found.
 	# With no new files, we assume '-a' for git.
+	# local MESSAGE=`echo "$FLAGS_message" | sed -e "s/[']/\\&/"`
+	# echo "$MESSAGE"
+	# git commit -q -am "$MESSAGE"
 	git commit -q -am "$FLAGS_message"
     fi
 }

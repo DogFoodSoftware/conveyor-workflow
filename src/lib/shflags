@@ -742,6 +742,7 @@ _flags_parseGetopt()
         ;;
 
       ${__FLAGS_TYPE_STRING})
+        _flags_arg_=`echo "${_flags_arg_}" | sed 's/['"'"']/'"'"'"'"'"'"'"'"'/g'`
         eval "FLAGS_${_flags_name_}='${_flags_arg_}'"
         ;;
     esac
@@ -764,7 +765,9 @@ _flags_parseGetopt()
   # give user back non-flag arguments
   FLAGS_ARGV=''
   while [ $# -gt 0 ]; do
-    FLAGS_ARGV="${FLAGS_ARGV:+${FLAGS_ARGV} }'$1'"
+    # interior single quotes need escaping
+    local TMP_ARG=`echo "$1" | sed 's/['"'"']/'"'"'"'"'"'"'"'"'/g'`
+    FLAGS_ARGV="${FLAGS_ARGV:+${FLAGS_ARGV} }'$TMP_ARG'"
     shift
   done
 

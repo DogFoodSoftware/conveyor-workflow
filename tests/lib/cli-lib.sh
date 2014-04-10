@@ -52,11 +52,14 @@ test_output() {
     else
 	NO_EXPECTED_STDERR=${FLAGS_FALSE}
     fi
+    TMP_OUT="/tmp/$RANDOM"
     TMP_FILE="/tmp/$RANDOM"
 
 #    if ! eval 'OUTPUT=`$COMMAND 2>$TMP_FILE | sed -n 1p`'; then
-    eval 'OUTPUT=`$COMMAND 2>$TMP_FILE`'
+#    eval 'OUTPUT=`$COMMAND 2>$TMP_FILE`'
+    eval $COMMAND > $TMP_OUT 2>$TMP_FILE    
     RESULT=$?
+    local OUTPUT=`cat $TMP_OUT`
     if [ $RESULT != $EXPECTED_EXIT_CODE ]; then
 	echo "ERROR: expected exit code '$EXPECTED_EXIT_CODE', but got '$RESULT' for '$COMMAND'."
     fi
@@ -97,6 +100,7 @@ test_output() {
     fi
 
     rm $TMP_FILE
+    rm $TMP_OUT
 
     if [ $ECHO_OUTPUT -eq 0 ]; then
 	echo $OUTPUT

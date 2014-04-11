@@ -103,20 +103,23 @@ function get_login() {
     fi # forced refresh check
 }
 
+# Attempts self-verification.
 function set_assignee() {
-    local RESOURCE_NAME="$1"; shift
-    
-    local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
-
+    local ISSUE_NUMBER="$1"; shift
     set_github_origin_data
-    get_login
+    if [ $# -gt 0 ]; then
+	local GITHUB_ACCOUNT_TO_ASSIGN="$1"; shift
+    else
+	get_login
+	local GITHUB_ACCOUNT_TO_ASSIGN="$GITHUB_LOGIN"
+    fi
 
-    if [ x"$GITHUB_LOGIN" != x"" ]; then
+    if [ x"$GITHUB_ACCOUNT_TO_ASSIGN" != x"" ]; then
 	local CURL_COMMAND="curl -X PATCH -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER -d @-"
 	local TMP_FILE="/tmp/$RANDOM"
 	cat <<EOF | $CURL_COMMAND > $TMP_FILE
 {
-  "assignee": "$GITHUB_LOGIN"
+  "assignee": "$GITHUB_ACCOUNT_TO_ASSIGN"
 }
 EOF
 	local RESULT=$?
@@ -128,15 +131,15 @@ EOF
 	rm $TMP_FILE
 	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
 	local ASSIGNEE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["assignee"]["login"];'`
-	if [ x"$ASSIGNEE" == x"$GITHUB_LOGIN" ]; then
-	    echo "Assigned PR #${ISSUE_NUMBER} to $GITHUB_LOGIN."
+	if [ x"$ASSIGNEE" == x"$GITHUB_ACCOUNT_TO_ASSIGN" ]; then
+	    echo "Assigned PR #${ISSUE_NUMBER} to $GITHUB_ACCOUNT_TO_ASSIGN."
 	else
 	    local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
 	    echo "ERROR: Assignment seems to have failed. GitHub message: $MESSAGE." >&2
 	    exit 2
 	fi
     else # GITHUB_LOGIN not set
-	echo "Could not set assignee; please update issue manually." >&2
+	echo "No assignee could be determined; please update issue manually." >&2
 	exit 2
     fi # GITHUB_LOGIN successfully set check
 }

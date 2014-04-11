@@ -4,11 +4,11 @@
 #* <pre>
 #* Feature: topics start
 #*
-#* Scenario: 'con topics start 1-foo' is checked against GitHub repo and found to be available.
+#* Scenario: Start an available issue.
 #*
 #* Given 'conveyor-workflow' is installed
 #*   And the current repository has been cloned from GitHub
-#*   And that repo has an open issue #1
+#*   And that repo has an open, unassigned issue #1
 #*   And $HOME/.conveyor-workflow/github is in place
 #*   And $HOME/.conveyor-workflow/github defines GITHUB_AUTH_TOKEN
 #*   And the token has the necessary 'user' scope

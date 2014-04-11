@@ -78,7 +78,7 @@ function start_branch() {
     fi
 
     if [ x"$RESOURCE" == x"topics" ]; then
-	set_assignee "$RESOURCE_NAME"
+	set_assignee `echo $RESOURCE_NAME | cut -d'-' -f1`
     fi
 
     if [ $FLAGS_checkout -eq $FLAGS_FALSE ]; then

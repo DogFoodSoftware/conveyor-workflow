@@ -50,7 +50,7 @@ function start_branch() {
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	exit $RESULT
-    else # then we check assignment
+    elif [ x"`type -t get_assignee`" == x"function" ]; then # we check assignment
 	local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
 	local CURRENT_ASSIGNEE=`get_assignee $ISSUE_NUMBER`
 	if [ x"$CURRENT_ASSIGNEE" != x"" ]; then

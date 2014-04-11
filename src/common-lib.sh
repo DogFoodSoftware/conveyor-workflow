@@ -130,7 +130,6 @@ function abandon_branch() {
 	local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
 	local CURRENT_ASSIGNEE GET_ASSIGNEE_RESULT
 	CURRENT_ASSIGNEE=`get_assignee $ISSUE_NUMBER 2> /dev/null`
-	get_assignee $ISSUE_NUMBER 2>/dev/null
 	GET_ASSIGNEE_RESULT=$?
 	if [ $GET_ASSIGNEE_RESULT -eq 1 ]; then
 	    ASSIGNMENT_REPORT="WARNING: Nothing found to abandon for '$RESOURCE_NAME'."

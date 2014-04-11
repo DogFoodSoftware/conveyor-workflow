@@ -123,21 +123,42 @@ function abandon_branch() {
     local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
     local BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
 
-    local CLEAR_ASSIGNMENT=1 # '1' means 'nothing to remove' which is true for all non-topics.
+    local ASSIGNMENT_REPORT=""
     if [ x"$RESOURCE" == x"topics" ]; then
 	# We have to deal with the issue assignment.
 	load_hooks
-	clear_assignee "$RESOURCE_NAME" > /dev/null
-	CLEAR_ASSIGNMENT=$?
-    fi
-    if [ $CLEAR_ASSIGNMENT -eq 0 ]; then
+	local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
+	local CURRENT_ASSIGNEE GET_ASSIGNEE_RESULT
+	CURRENT_ASSIGNEE=`get_assignee $ISSUE_NUMBER 2> /dev/null`
+	get_assignee $ISSUE_NUMBER 2>/dev/null
+	GET_ASSIGNEE_RESULT=$?
+	if [ $GET_ASSIGNEE_RESULT -eq 1 ]; then
+	    ASSIGNMENT_REPORT="WARNING: Nothing found to abandon for '$RESOURCE_NAME'."
+	elif [ $GET_ASSIGNEE_RESULT -ne 0 ]; then
+	    ASSIGNMENT_REPORT="WARNING: Could not retrieve assignment information. Please update assignment manually."   
+	else
+	    get_login
+	    if [ x"$CURRENT_ASSIGNEE" != x"$GITHUB_LOGIN" ]; then
+		ASSIGNMENT_REPORT="WARNING: Issue #$ISSUE_NUMBER assigned to $CURRENT_ASSIGNEE. Assignment left as is."
+	    else
+		clear_assignee "$RESOURCE_NAME" > /dev/null
+		local CLEAR_ASSIGNEE_RESULT=$?
+		if [ $CLEAR_ASSIGNEE_RESULT -eq 1 ]; then
+		    ASSIGNMENT_REPORT="WARNING: Issue $ISSUE_NUMBER seems to exist and is assigned to you ($CURRENT_ASSIGNEE), but the request to clear indicates the issue could not be found. Please address assignment manually."
+		elif [ $CLEAR_ASSIGNEE_RESULT -eq 2 ]; then
+		    ASSIGNMENT_REPORT="WARNING: Issue $ISSUE_NUMBER seems to exist and is assigned to you ($CURRENT_ASSIGNEE), but the request to clear the assignment failed. Please address assignment manually."
+		fi
+	    fi
+	fi
+    fi # if [ x"$RESOURCE" == x"topics" ]
+    if [ x"$ASSIGNMENT_REPORT" == x"" ]; then
 	echo -n "Assignment cleared. "
     fi
 
-    if ! has_branch_local "$BRANCH_NAME" && ! has_branch_origin "$BRANCH_NAME" && [ $CLEAR_ASSIGNMENT -ne 0 ]; then
+    if ! has_branch_local "$BRANCH_NAME" && ! has_branch_origin "$BRANCH_NAME" && [ x"$ASSIGNMENT_REPORT" != x"" ]; then
 	# 'bad reference' case
-	if [ $CLEAR_ASSIGNMENT -eq 1 ]; then
-	    echo "WARNING: Nothing found to abandon for '$RESOURCE_NAME'." >&2
+	if [ x"$ASSIGNMENT_REPORT" != x"" ]; then
+	    echo "$ASSIGNMENT_REPORT" >&2
 	else
 	    echo "ERROR: Found no branches to clear, but could not verify issue assignment." >&2
 	fi
@@ -162,7 +183,7 @@ function abandon_branch() {
 	# current user is the assignee for the assiated issue. This means that
 	# remote branches are never removed for non-topic branches; e.g.,
 	# release branches.
-	if has_branch_origin "$BRANCH_NAME" && [ $CLEAR_ASSIGNMENT -eq 0 ]; then
+	if has_branch_origin "$BRANCH_NAME" && [ x"$ASSIGNMENT_REPORT" == x"" ]; then
 	    git push --quiet origin :"$BRANCH_NAME"
 	    echo "Branch closed on origin."
 	elif has_branch_origin "$BRANCH_NAME"; then

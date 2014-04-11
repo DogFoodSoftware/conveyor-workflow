@@ -128,11 +128,19 @@ function set_assignee() {
 }
 
 function get_assignee() {
-    local RESOURCE_NAME="$1"; shift
-    local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
+    local ISSUE_NUMBER="$1"; shift
     set_github_origin_data    
 
-    local ASSIGNEE=`github_query '["assignee"]["login"]' GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
+    local ASSIGNEE QUERY_RESULT
+    ASSIGNEE=`github_query '["assignee"]["login"]' GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
+    QUERY_RESULT=$?
+    if [ $QUERY_RESULT -ne 0 ]; then
+	if [ `last_rest_status` -eq 404 ]; then
+	    return 1
+	else
+	    return $QUERY_RESULT
+	fi
+    fi
 
     echo "$ASSIGNEE"
 }
@@ -140,7 +148,8 @@ function get_assignee() {
 function clear_assignee() {
     local RESOURCE_NAME="$1"; shift
     local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
-    local ASSIGNEE=`get_assignee $RESOURCE_NAME`
+    local ASSIGNEE # must be declared separate or 'local' sets $? to 0
+    ASSIGNEE=`get_assignee $ISSUE_NUMBER`
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	exit $RESULT

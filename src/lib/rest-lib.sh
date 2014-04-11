@@ -63,8 +63,9 @@ function github_api {
 function github_query {
     local EXTRACT_SPEC="$1"; shift
 
-    local JSON=`github_api "$@"`
-    local RESULT=$?
+    local JSON RESULT
+    JSON=`github_api "$@"`
+    RESULT=$?
     if [ $RESULT -eq 0 ]; then
 	json_extract "$EXTRACT_SPEC" "$JSON"
     fi

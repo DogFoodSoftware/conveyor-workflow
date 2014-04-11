@@ -50,6 +50,19 @@ function start_branch() {
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	exit $RESULT
+    else # then we check assignment
+	local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
+	local CURRENT_ASSIGNEE=`get_assignee $ISSUE_NUMBER`
+	if [ x"$CURRENT_ASSIGNEE" != x"" ]; then
+	    get_login
+	    if [ x"$GITHUB_LOGIN" != x"$CURRENT_ASSIGNEE" ]; then
+		echo "Issue #$ISSUE_NUMBER exists, but has been assigned to '$CURRENT_ASSIGNEE'." >&2
+		exit 1
+	    else
+		echo "WARNING: You ($CURRENT_ASSIGNEE) are already assigned to this issue." >&2
+		# But maybe they're starting a new branch, so we go on.
+	    fi
+	fi
     fi
 
     local ORIGINAL_BRANCH=`get_current_branch`

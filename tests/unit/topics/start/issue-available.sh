@@ -38,4 +38,4 @@ if [ $? -ne 0 ]; then echo "ERROR: Could not create issue; test inconclusive." >
 unset GITHUB_AUTH_TOKEN
 
 ISSUE_DESC=`uuidgen`
-test_output "con topics start $ISSUE_NUMBER-$ISSUE_DESC" "" "Issue #$ISSUE-NUMBER exists but has been assigned to '$TEST_ACCOUNT_NAME'." 1
+test_output "con topics start $ISSUE_NUMBER-$ISSUE_DESC" "" "Issue #$ISSUE_NUMBER exists, but has been assigned to '$TEST_ACCOUNT_NAME'." 1

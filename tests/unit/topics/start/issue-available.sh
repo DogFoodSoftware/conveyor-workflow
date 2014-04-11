@@ -32,7 +32,9 @@ source $HOME/.conveyor-workflow/github-authentication-default-test
 ISSUE_NUMBER=`create_issue "DogFoodSoftware/test-repo" "$0"`
 TEST_ACCOUNT_NAME="$GITHUB_ACCOUNT_NAME"
 if [ $? -ne 0 ]; then echo "ERROR: Could not create issue; test inconclusive." >&2; exit 2; fi
+echo A
 set_assignee $ISSUE_NUMBER "$TEST_ACCOUNT_NAME" > /dev/null
+echo B
 if [ $? -ne 0 ]; then echo "ERROR: Could not create issue; test inconclusive." >&2; exit 2; fi
 unset GITHUB_AUTH_TOKEN
 
@@ -60,7 +62,9 @@ test_output "con topics start $ISSUE_NUMBER-$ISSUE_DESC" "" "Issue #$ISSUE_NUMBE
 
 ISSUE_NUMBER=`create_issue "DogFoodSoftware/test-repo" "$0"`
 if [ $? -ne 0 ]; then echo "ERROR: Could not create issue; test inconclusive." >&2; exit 2; fi
+echo C
 set_assignee $ISSUE_NUMBER > /dev/null
+echo D
 if [ $? -ne 0 ]; then echo "ERROR: Could not create issue; test inconclusive." >&2; exit 2; fi
 
 ISSUE_DESC=`uuidgen`

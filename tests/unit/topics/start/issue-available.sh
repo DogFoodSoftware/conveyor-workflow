@@ -28,15 +28,18 @@ source $TEST_BASE/lib/start-lib.sh
 source $TEST_BASE/../runnable/lib/github-hooks.sh
 init_github_test_environment `basename $0`
 cd $WORKING_REPO_PATH
+TEAM_ID=`add_team "DogFoodSoftware" "AutomatedTest" "push" '["DogFoodSoftware/test-repo"]'`
+if [ $? -ne 0 ]; then echo "ERROR: Could not add team; test inconclusive." >&2; exit 2; fi
+add_team_member "$TEAM_ID" $(source $HOME/.conveyor-workflow/github-authentication-default-test; echo $GITHUB_ACCOUNT_NAME)
+if [ $? -ne 0 ]; then echo "ERROR: Could not add collaborator; test inconclusive." >&2; exit 2; fi
 source $HOME/.conveyor-workflow/github-authentication-default-test
-ISSUE_NUMBER=`create_issue "DogFoodSoftware/test-repo" "$0"`
-TEST_ACCOUNT_NAME="$GITHUB_ACCOUNT_NAME"
+rm -f $HOME/.conveyor-workflow/github-login
+ISSUE_NUMBER=`create_issue "DogFoodSoftware/test-repo" "${0} A"`
 if [ $? -ne 0 ]; then echo "ERROR: Could not create issue; test inconclusive." >&2; exit 2; fi
-echo A
-set_assignee $ISSUE_NUMBER "$TEST_ACCOUNT_NAME" > /dev/null
-echo B
-if [ $? -ne 0 ]; then echo "ERROR: Could not create issue; test inconclusive." >&2; exit 2; fi
+set_assignee $ISSUE_NUMBER
+if [ $? -ne 0 ]; then echo "ERROR: Could not assign issue; test inconclusive." >&2; exit 2; fi
 unset GITHUB_AUTH_TOKEN
+rm -f $HOME/.conveyor-workflow/github-login
 
 ISSUE_DESC=`uuidgen`
 test_output "con topics start $ISSUE_NUMBER-$ISSUE_DESC" "" "Issue #$ISSUE_NUMBER exists, but has been assigned to '$TEST_ACCOUNT_NAME'." 1
@@ -60,7 +63,7 @@ test_output "con topics start $ISSUE_NUMBER-$ISSUE_DESC" "" "Issue #$ISSUE_NUMBE
 #* </pre>
 #*/
 
-ISSUE_NUMBER=`create_issue "DogFoodSoftware/test-repo" "$0"`
+ISSUE_NUMBER=`create_issue "DogFoodSoftware/test-repo" "${0} B"`
 if [ $? -ne 0 ]; then echo "ERROR: Could not create issue; test inconclusive." >&2; exit 2; fi
 echo C
 set_assignee $ISSUE_NUMBER > /dev/null

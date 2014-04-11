@@ -89,11 +89,12 @@ function get_login() {
     if [ $# -ge 1 ]; then
 	FORCE_REFRESH="$1"; shift
     fi
+    local QUERY_STATUS
 
     # This is an internal function, so we trust the arguments.
     if [ $FORCE_REFRESH -eq 0 ] || [ ! -f $HOME/.conveyor-workflow/github-login ]; then
 	GITHUB_LOGIN=`github_query '["login"]' GET /user`
-	local QUERY_STATUS=$?
+	QUERY_STATUS=$?
 	if [ $QUERY_STATUS -eq 0 ]; then
 	    echo "GITHUB_LOGIN=$GITHUB_LOGIN" > $HOME/.conveyor-workflow/github-login
 	fi
@@ -105,25 +106,22 @@ function get_login() {
 
 function set_assignee() {
     local ISSUE_NUMBER="$1"; shift
+    local GITHUB_ACCOUNT_TO_ASSIGN ASSIGNEE
     set_github_origin_data
-    if [ $# -gt 0 ]; then
-	local GITHUB_ACCOUNT_TO_ASSIGN="$1"; shift
-    else
-	get_login
-	local GITHUB_ACCOUNT_TO_ASSIGN="$GITHUB_LOGIN"
-    fi
+    get_login
+    GITHUB_ACCOUNT_TO_ASSIGN="$GITHUB_LOGIN"
 
     if [ x"$GITHUB_ACCOUNT_TO_ASSIGN" != x"" ]; then
-	local ASSIGNEE=`github_query '["assignee"]["login"]' PATCH /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER '{"assignee": "'$GITHUB_ACCOUNT_TO_ASSIGN'"}'`
+	ASSIGNEE=`github_query '["assignee"]["login"]' PATCH /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER '{"assignee": "'$GITHUB_ACCOUNT_TO_ASSIGN'"}'`
 	if [ x"$ASSIGNEE" == x"$GITHUB_ACCOUNT_TO_ASSIGN" ]; then
 	    echo "Assigned PR #${ISSUE_NUMBER} to $GITHUB_ACCOUNT_TO_ASSIGN."
 	else
-	    echo "Assignment request claims to have succeeded, but got unexpected assignee: '$ASSIGNEE'." >&2
-	    exit 2
+	    echo "WARNING: Assignment request claims to have succeeded, but got unexpected assignee: '$ASSIGNEE'." >&2
+	    return 2
 	fi
     else # GITHUB_LOGIN not set
 	echo "No assignee could be determined; please update issue manually." >&2
-	exit 2
+	return 2
     fi # GITHUB_LOGIN successfully set check
 }
 
@@ -211,6 +209,40 @@ function set_github_origin_data() {
     # The URL includes the '.git', which isn't part of the name but an
     # underlying git convention. We want to drop it for the API calls.
     GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
+}
+
+function add_team {
+    local ORG="$1"; shift
+    local TEAM_NAME="$1"; shift
+    local PERMISSION="$1"; shift
+    local REPO_NAMES="$1"; shift
+
+    local TEAM_ID QUERY_STATUS
+
+    TEAM_ID=`github_query '["id"]' POST /orgs/$ORG/teams '{"name": "'$TEAM_NAME'", "permission": "'$PERMISSION'", "repo_names": '$REPO_NAMES'}'`
+    QUERY_STATUS=$?
+    echo "$TEAM_ID"
+    return $QUERY_STATUS
+}
+
+function add_team_member {
+    local TEAM_ID="$1"; shift
+    local MEMBER="$1"; shift
+
+    # AHH... this is super hacky. The problem is that when you PUT or POST,
+    # curl dosen't fill out the Content-Length headers and this confuses
+    # GitHub. http://stackoverflow.com/questions/21698009/github-api-502-error. Because
+    # this goes through Resty, just adding "", without the '-d' gets lost in
+    # the shuffle, so we explicitly have to use '-d ""' which gets passed to
+    # curl.
+    github_api PUT /teams/${TEAM_ID}/members/$MEMBER -d ""
+}
+
+function add_collaborator {
+    local REPO_NAME="$1"; shift
+    local COLLABORATOR="$1"; shift
+
+    github_api PUT /repos/${REPO_NAME}/collaborators/$COLLABORATOR
 }
 
 # /**

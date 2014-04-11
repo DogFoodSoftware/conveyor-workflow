@@ -21,7 +21,11 @@ function github_api {
     local STDERR="stderr-$RANDOM"
     source $HOME/.conveyor-workflow/github
     resty https://api.github.com* 2> /dev/null
-    $VERB "$@" -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow' -u $GITHUB_AUTH_TOKEN:x-oauth-basic > $STDOUT 2> $STDERR
+    if [ $# -eq 1 ]; then
+	$VERB "$@" -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow' -u $GITHUB_AUTH_TOKEN:x-oauth-basic > $STDOUT 2> $STDERR
+    else 
+	$VERB "$@" -H 'Content-Type: application/json' -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow' -u $GITHUB_AUTH_TOKEN:x-oauth-basic > $STDOUT 2> $STDERR
+    fi
     local RESTY_STATUS=$?
     
     if [ $RESTY_STATUS -ne 0 ]; then

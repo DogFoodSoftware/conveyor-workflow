@@ -16,6 +16,7 @@ source $CONVEYOR_HOME/workflow/runnable/lib/resty
 # GitHub API wrapper
 function github_api {
     local VERB="$1"; shift
+    local RESTY_STATUS JSON MESSAGE REST_LIB_STATUS REST_LIB_RATE_LEFT
     local HEADER_OUT="headerout-$RANDOM"
     local STDOUT="stdout-$RANDOM"
     local STDERR="stderr-$RANDOM"
@@ -26,12 +27,12 @@ function github_api {
     else 
 	$VERB "$@" -H 'Content-Type: application/json' -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow' -u $GITHUB_AUTH_TOKEN:x-oauth-basic > $STDOUT 2> $STDERR
     fi
-    local RESTY_STATUS=$?
+    RESTY_STATUS=$?
     
     if [ $RESTY_STATUS -ne 0 ]; then
 	echo "ERROR: REST call failed for '$VERB $@'. ("`last_rest_status`")" >&2
-	local JSON=`cat $STDERR`
-	local MESSAGE=`json_extract '["message"]' "$JSON"`
+	JSON=`cat $STDERR`
+	MESSAGE=`json_extract '["message"]' "$JSON"`
 	if [ x"$MESSAGE" == x"" ]; then
 	    cat $STDOUT >&2
 	    echo "ERROR: No no no message provided. $JSON" >&2
@@ -45,9 +46,9 @@ function github_api {
     if [ -f $HEADER_OUT ]; then
 	# Extract common data element:
 	# - numerical status
-	local REST_LIB_STATUS=`cat $HEADER_OUT | grep '^Status:' | cut -d' ' -f 2`
+	REST_LIB_STATUS=`cat $HEADER_OUT | grep '^Status:' | cut -d' ' -f 2`
 	# - remaning calls
-	local REST_LIB_RATE_LEFT=`cat $HEADER_OUT | grep '^X-RateLimit-Remaining:' | cut -d' ' -f 2`
+	REST_LIB_RATE_LEFT=`cat $HEADER_OUT | grep '^X-RateLimit-Remaining:' | cut -d' ' -f 2`
 	echo -e "REST_LIB_STATUS=$REST_LIB_STATUS\nREST_LIB_RATE_LEFT=$REST_LIB_RATE_LEFT" > $HOME/.conveyor-workflow/last-rest-data
 	rm $HEADER_OUT
     else

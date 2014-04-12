@@ -1,12 +1,12 @@
 list_resources() {
     local RESOURCE="$1"; shift
-    local FORMAT
+    local FORMAT EVAL
     if [ x"${FLAGS_mark}" == x"${FLAGS_FALSE}" ]; then
 	FORMAT='echo -n " "; echo "  %(refname:short)";'
     else
 	FORMAT='if [ `git branch | grep "^*" | cut -d" " -f2 ` == %(refname:short) ]; then echo -n "*"; else echo -n " "; fi; BRANCH=%(refname:short); TOPIC=${BRANCH:$((${#RESOURCE} + 1))}; echo " $TOPIC";'
     fi
-    local EVAL=`git for-each-ref --shell --format="$FORMAT" refs/heads/$RESOURCE-*`
+    EVAL=`git for-each-ref --shell --format="$FORMAT" refs/heads/$RESOURCE-*`
     eval $EVAL
 }
 
@@ -22,8 +22,10 @@ function start_branch() {
     eval set -- "${FLAGS_ARGV}"
 
     local RESOURCE_NAME="$1"; shift
-    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    local BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
+    local SINGULAR_RESOURCE BRANCH_NAME VERIFY_MSG RESULT ISSUE_NUMBER CURRENT_ASSIGNEE ORIGINAL_BRANCH 
+
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
     
     # Now we check that the branch name conforms. There's one generic test,
     # then we hand it off to the callback defined in the resource handler
@@ -43,16 +45,16 @@ function start_branch() {
     # Now time for the issue check.
     load_hooks
 
-    local VERIFY_MSG=''
+    VERIFY_MSG=''
     # The method calls 'exit', but since it's running in a backtick,
     # we have to exit ourselves.
     VERIFY_MSG=`check_issue_exists_for "$RESOURCE" "$RESOURCE_NAME"`
-    local RESULT=$?
+    RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	exit $RESULT
     elif [ x"`type -t get_assignee`" == x"function" ]; then # we check assignment
-	local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
-	local CURRENT_ASSIGNEE=`get_assignee $ISSUE_NUMBER`
+	ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
+	CURRENT_ASSIGNEE=`get_assignee $ISSUE_NUMBER`
 	if [ x"$CURRENT_ASSIGNEE" != x"" ]; then
 	    get_login
 	    if [ x"$GITHUB_LOGIN" != x"$CURRENT_ASSIGNEE" ]; then
@@ -65,10 +67,10 @@ function start_branch() {
 	fi
     fi
 
-    local ORIGINAL_BRANCH=`get_current_branch`
+    ORIGINAL_BRANCH=`get_current_branch`
     # The name is acceptable; create the branch.
     git checkout -q -b "$BRANCH_NAME"
-    local RESULT=$?
+    RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "Git reported an error creating topic branch '$BRANCH_NAME'. Bailing out." >&2
 	git checkout $ORIGINAL_BRANCH
@@ -76,7 +78,7 @@ function start_branch() {
     fi
     git push -q origin "$BRANCH_NAME"
     git checkout -q $ORIGINAL_BRANCH
-    local RESULT=$?
+    RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	echo "Git reported an error pushing topic branch '$BRANCH_NAME' to origin." >&2
 	echo "Deleting local topic branch and bailing out." >&2
@@ -120,15 +122,15 @@ function abandon_branch() {
     eval set -- "${FLAGS_ARGV}"
 
     local RESOURCE_NAME="$1"; shift
-    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    local BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
+    local SINGULAR_RESOURCE BRANCH_NAME ASSIGNMENT_REPORT ISSUE_NUMBER CURRENT_ASSIGNEE GET_ASSIGNEE_RESULT CLEAR_ASSIGNEE_RESULT
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
 
-    local ASSIGNMENT_REPORT=""
+    ASSIGNMENT_REPORT=""
     if [ x"$RESOURCE" == x"topics" ]; then
 	# We have to deal with the issue assignment.
 	load_hooks
-	local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
-	local CURRENT_ASSIGNEE GET_ASSIGNEE_RESULT
+	ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
 	CURRENT_ASSIGNEE=`get_assignee $ISSUE_NUMBER 2> /dev/null`
 	GET_ASSIGNEE_RESULT=$?
 	if [ $GET_ASSIGNEE_RESULT -eq 1 ]; then
@@ -141,7 +143,7 @@ function abandon_branch() {
 		ASSIGNMENT_REPORT="WARNING: Issue #$ISSUE_NUMBER assigned to $CURRENT_ASSIGNEE. Assignment left as is."
 	    else
 		clear_assignee "$RESOURCE_NAME" > /dev/null
-		local CLEAR_ASSIGNEE_RESULT=$?
+		CLEAR_ASSIGNEE_RESULT=$?
 		if [ $CLEAR_ASSIGNEE_RESULT -eq 1 ]; then
 		    ASSIGNMENT_REPORT="WARNING: Issue $ISSUE_NUMBER seems to exist and is assigned to you ($CURRENT_ASSIGNEE), but the request to clear indicates the issue could not be found. Please address assignment manually."
 		elif [ $CLEAR_ASSIGNEE_RESULT -eq 2 ]; then
@@ -206,8 +208,9 @@ checkout_branch() {
     eval set -- "${FLAGS_ARGV}"
 
     local RESOURCE_NAME="$1"; shift
-    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    local BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
+    local SINGULAR_RESOURCE BRANCH_NAME
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    BRANCH_NAME=`verify_branch_inputs "$RESOURCE" "$RESOURCE_NAME"`
 
     if [ $FLAGS_force -ne $FLAGS_TRUE ]; then
 	ensure_current_branch_committed "checkout $SINGULAR_RESOURCE '$RESOURCE_NAME'"
@@ -238,8 +241,9 @@ function commit_branch() {
     FLAGS "$@" || exit $?
     eval set -- "${FLAGS_ARGV}"
 
-    local RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
-    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    local SINGULAR_RESOURCE BRANCH_NAME
+    RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
 
     if [ x"$FLAGS_message" == x'' ]; then
 	echo "Commit message required. Use option '-m' after 'commit'." >&2
@@ -262,8 +266,9 @@ function commit_branch() {
 function publish_branch() {
     local RESOURCE="$1"; shift
     local RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
-    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    local BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
+    local SINGULAR_RESOURCE BRANCH_NAME
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
 
     # Check branch exists on origin. This goes first because it establishes
     # the conanical, fundamental, and necessary existence of the topic branch
@@ -295,16 +300,17 @@ function publish_branch() {
 function delete_branch() {
     local RESOURCE="$1"; shift
     local RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
-    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    local BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
+    local SINGULAR_RESOURCE BRANCH_NAME LOCAL_HASH RESULT
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
 
     ensure_has_branch_local "$BRANCH_NAME"
     ensure_can_fetch "delete $SINGULAR_RESOURCE '$RESOURCE_NAME'"
     if [ `git rev-parse "$BRANCH_NAME"` != `git rev-parse "remotes/origin/$BRANCH_NAME"` ]; then
 	# We're not quite cooked yet, if the local branch head is in the
 	# remote branch history, then it's us that's behind.
-	local LOCAL_HASH=`git rev-parse "$BRANCH_NAME"`
-	local RESULT=`git branch -r --contains $LOCAL_HASH | grep "origin/$BRANCH_NAME" | wc -l`
+	LOCAL_HASH=`git rev-parse "$BRANCH_NAME"`
+	RESULT=`git branch -r --contains $LOCAL_HASH | grep "origin/$BRANCH_NAME" | wc -l`
 	if [ $RESULT -eq 0 ]; then
 	    echo "${SINGULAR_RESOURCE^} '$RESOURCE_NAME' has local changes. Please publish or abandon." >&2
 	    exit 1
@@ -323,8 +329,9 @@ function delete_branch() {
 function submit_branch() {
     local RESOURCE="$1"; shift
     local RESOURCE_NAME=`process_default_resource_name "$RESOURCE" "$1"`; shift
-    local SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
-    local BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
+    local SINGULAR_RESOURCE BRANCH_NAME LOCAL_HASH RESULT ISSUE_NUMBER PR_NUMBER
+    SINGULAR_RESOURCE=`determine_singular_resource "$RESOURCE"`
+    BRANCH_NAME="${RESOURCE}-${RESOURCE_NAME}"
 
     ensure_has_branch_local "$BRANCH_NAME"
     ensure_can_fetch "submit $SINGULAR_RESOURCE '$RESOURCE_NAME'"
@@ -332,8 +339,8 @@ function submit_branch() {
 	# For submission, we require the local and remote branches to be
 	# exactly the same, but we do distinguish which is out of sync with
 	# witch in order to give the user better feedback.
-	local LOCAL_HASH=`git rev-parse "$BRANCH_NAME"`
-	local RESULT=`git branch -r --contains $LOCAL_HASH | grep "origin/$BRANCH_NAME" | wc -l`
+	LOCAL_HASH=`git rev-parse "$BRANCH_NAME"`
+	RESULT=`git branch -r --contains $LOCAL_HASH | grep "origin/$BRANCH_NAME" | wc -l`
 	if [ $RESULT -eq 0 ]; then
 	    echo "${SINGULAR_RESOURCE^} '$RESOURCE_NAME' has local changes. You must 'publish' before submitting." >&2
 	    exit 1
@@ -366,25 +373,18 @@ function submit_branch() {
 	    # Now check that we have the necessary connection inf.
 	    if ! is_github_configured; then exit 1; fi
 	    # Okay, now ready to do this thing.
-	    local ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
+	    ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
 	    source $GIT_CONVEY_DIR/lib/github-hooks.sh
-	    set_github_origin_data
-	    
-	    local CURL_COMMAND="curl -X POST -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/pulls -d @-"
-	    local TMP_FILE="/tmp/$RANDOM"
-	    cat <<EOF | $CURL_COMMAND > $TMP_FILE
-{
-  "title": "Pull request for issue #$ISSUE_NUMBER",
-  "body": "Fixes #${ISSUE_NUMBER}. Generated by conveyor-workflow.",
-  "head": "$BRANCH_NAME",
-  "base": "master"
-}
-EOF
-	    local PR_JSON=`cat $TMP_FILE`
-	    rm $TMP_FILE
-	    local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-	    local PR_NUMBER=`echo $PR_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["number"];'`
-	    echo "Created PR #${PR_NUMBER}."
+	    PR_NUMBER=`create_pull_request $ISSUE_NUMBER "$BRANCH_NAME"`
+	    RESULT=$?
+	    if [ $RESULT -ne 0 ]; then
+		echo "Error creating PR." >&2
+		return $RESULT
+	    elif [ x"$PR_NUMBER" == x"" ]; then
+		echo "No error reported, but no PR number received." >&2
+	    else
+		echo "Created PR #${PR_NUMBER}."
+	    fi
 	else
 	    echo "Do not yet know how to submit work for non-GitHub repositories. Come back later..." >&2
 	    exit 2
@@ -395,11 +395,11 @@ EOF
 
 function process_default_resource_name() {
     local RESOURCE="$1"; shift
-    local RESOURCE_NAME;
+    local RESOURCE_NAME BRANCH_NAME
     if [ x"$1" != x"" ]; then
 	RESOURCE_NAME="$1"; shift
     else
-	local BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
+	BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 	# Defaut to current branch, which must match the stated resource.
 	if [[ "$BRANCH_NAME" != "${RESOURCE}-"* ]]; then
 	    echo "Mis-matched resource on default target. Cannot operate on branch '$BRANCH' as '$RESOURCE' resource." >&2
@@ -534,9 +534,11 @@ function load_hooks() {
 
 function do_clone() {
     local TMP_FILE="/tmp/$RANDOM"
+    local CLONE_RESULT TRIES
+
     git clone --quiet $@ 2> $TMP_FILE
-    local CLONE_RESULT=$?
-    local TRIES=1
+    CLONE_RESULT=$?
+    TRIES=1
     while [ $CLONE_RESULT -ne 0 ] && [ $TRIES -lt 10 ]; do
 	sleep $TRIES
 	git clone --quiet $@ 2> $TMP_FILE
@@ -546,8 +548,8 @@ function do_clone() {
     if [ $CLONE_RESULT -ne 0 ]; then
 	echo "Unable to clone repo at: '$CLONE_URL'." >&2
 	cat $TMP_FILE >&2
-	rm $TMP_FILE
-	return 1
     fi
     rm $TMP_FILE
+
+    return $CLONE_RESULT
 }

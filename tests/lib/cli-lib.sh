@@ -4,7 +4,8 @@ FLAGS_TRUE=0
 FLAGS_FALSE=1
 
 setup_path() {
-    RUNNABLE_PATH="$1"
+    local RUNNABLE_PATH="$1"
+    local RESULT
 
     # Git expects to find 'conveyor-workflow' on the PATH. So we check to see if it
     # is, and if not, we add it.
@@ -19,9 +20,10 @@ setup_path() {
 
 test_output() {
     # Mandatory args
-    COMMAND="$1"; shift
-    EXPECTED_STDOUT_START="$1"; shift
-    EXPECTED_STDERR_START="$1"; shift
+    local COMMAND="$1"; shift
+    local EXPECTED_STDOUT_START="$1"; shift
+    local EXPECTED_STDERR_START="$1"; shift
+    local EXPECTED_EXIT_CODE NO_EXPECTED_STDERR NO_EXPECTED_STDOUT MIN_WORDS ECHO_OUTPUT TMP_OUT TMP_FILE RESULT ERROUT OUTPUT OUTPUT_ARRAY WORD_COUNT
 
     # Optional args.
     if [ $# -ge 1 ]; then
@@ -108,13 +110,13 @@ test_output() {
 }
 
 test_help() {
-    COMMAND="$1"; shift
-    EXPECTED_STDOUT_START="$1"; shift
+    local COMMAND="$1"; shift
+    local EXPECTED_STDOUT_START="$1"; shift
     test_output "$COMMAND" "$EXPECTED_STDOUT_START" "" 0
 }
 
 test_significant_output() {
-    COMMAND="$1"; shift
+    local COMMAND="$1"; shift
     test_output "$COMMAND" "" "" 0 5
 }
 

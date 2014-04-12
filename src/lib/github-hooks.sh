@@ -255,7 +255,12 @@ function get_team_id() {
     # Strangely, the array filter does not collapse the array; it's necessary
     # re-value the array... Something's off.
     echo "$JSON" | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); function match($var) { return $var["name"] == "'$TEAM_NAME'"; }; $data=array_values(array_filter($data, "match")); print count($data) == 0 ? "" : $data[0]["id"];'
-#    echo "$JSON" | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); function match($var) { $foo="'$TEAM_NAME'"; print "FOO: $foo:".$var["name"].":".($var["name"] == $foo); return $var["name"] == $foo; }; $data=array_filter($data, "match"); if ($data.length == 0) { print "bb"; } else { print "aa".$data[0]["id"]; }'
+}
+
+function delete_team() {
+    local TEAM_ID="$1"; shift
+
+    github_api DELETE /teams/$TEAM_ID
 }
 
 function is_member_of_team() {

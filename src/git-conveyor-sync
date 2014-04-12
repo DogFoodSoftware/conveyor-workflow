@@ -22,13 +22,14 @@ resource_do() {
     # First, let's determine whether we're in clone or update mode.
     if [ $# -eq 1 ] || [ $# -eq 2 ]; then # Clone it is.
 	local REMOTE_URL="$1"; shift
+	local LOCAL_DIR GIT_DIR EXIT ORIGINAL_BRANCH BRANCH_LIST BRANCH_PREFIXES
 	if [ $# -eq 1 ]; then
-	    local LOCAL_DIR="$1"; shift
+	    LOCAL_DIR="$1"; shift
 	fi
 
 	# We don't support clones within repos, so let's make sure we're not
 	# already in a repo.
-	local GIT_DIR=`git rev-parse --git-dir`
+	GIT_DIR=`git rev-parse --git-dir`
 	# There is one exception: if we're running tests, then we will be
 	# working under the conveyor-workflow repo, and that's okay.
 	if [ x"$GIT_CONVEY_TEST_MODE" != x"0" ] || [[ x"$GIT_DIR" != x*conveyor/workflow/.git ]]; then
@@ -45,14 +46,14 @@ resource_do() {
     elif [ $# -eq 0 ]; then
 	# With no arguments, we are updating the current repository. Make sure
 	# we're in a repository.
-	local GIT_DIR=`git rev-parse --git-dir`
+	GIT_DIR=`git rev-parse --git-dir`
 	if [ x"$GIT_DIR" == x"" ]; then
 	    echo "Attempted update outside of git directory." >&2
 	    exit 1
 	fi
 	# Now make sure that there are no uncommitted changes...
 	git update-index -q --refresh
-	local EXIT=0
+	EXIT=0
 	if ! git diff-files --quiet --; then
 	    echo "Found unstaged files in repo." >&2
 	    EXIT=1
@@ -66,15 +67,15 @@ resource_do() {
 	    exit $EXIT
 	fi
 	# Okay, we are clean, time to move ahead.
-	local ORIGINAL_BRANCH=`get_current_branch`
+	ORIGINAL_BRANCH=`get_current_branch`
 	trap "git checkout -q $ORIGINAL_BRANCH" EXIT
 	git fetch -p -q
 	if [ $FLAGS_allbranches -ne $FLAGS_TRUE ]; then
 	    update_branch "$ORIGINAL_BRANCH" "$ORIGINAL_BRANCH"
 	else # attempt all branches
 	    update_master "$ORIGINAL_BRANCH"
-	    local BRANCH_LIST="git for-each-ref --shell --format='%(refname:short)' refs/heads"
-	    local BRANCH_PREFIXES="topics- releases-"
+	    BRANCH_LIST="git for-each-ref --shell --format='%(refname:short)' refs/heads"
+	    BRANCH_PREFIXES="topics- releases-"
 	    for PREFIX in $BRANCH_PREFIXES; do
 		for BRANCH in `$BRANCH_LIST/${PREFIX}*`; do
 		    # Git spits out the branches quoted.
@@ -96,8 +97,9 @@ resource_do() {
 function update_branch() {
     local BRANCH="$1"; shift
     local ORIGINAL_BRANCH="$1"; shift
+    local CURRENT_BRANCH RESOURCE RESOURCE_SINGULAR RESOURCE_NAME RESOURCE_REF SWITCH_ALERT
 
-    local CURRENT_BRANCH=$(git symbolic-ref -q HEAD)
+    CURRENT_BRANCH=$(git symbolic-ref -q HEAD)
     CURRENT_BRANCH=${CURRENT_BRANCH##refs/heads/}
     CURRENT_BRANCH=${CURRENT_BRANCH:-HEAD}
 
@@ -113,11 +115,11 @@ function update_branch() {
 	fi
     else # The branch does not exist on origin; closed or abandoned?
 	# Remember, 'master' has already been synced.
-	local RESOURCE=`figure_resource_from_branch "$BRANCH"`
-	local RESOURCE_SINGULAR="${RESOURCE%s}"
-	local RESOURCE_NAME=`figure_resource_name_from_branch "$BRANCH"`
-	local RESOURCE_REF=""
-	local SWITCH_ALERT=""
+	RESOURCE=`figure_resource_from_branch "$BRANCH"`
+	RESOURCE_SINGULAR="${RESOURCE%s}"
+	RESOURCE_NAME=`figure_resource_name_from_branch "$BRANCH"`
+	RESOURCE_REF=""
+	SWITCH_ALERT=""
 	if [ x"$BRANCH" == x"$ORIGINAL_BRANCH" ]; then
 	    RESOURCE_REF="Current ${RESOURCE_SINGULAR}"
 	    SWITCH_ALERT=" Switched to master release."

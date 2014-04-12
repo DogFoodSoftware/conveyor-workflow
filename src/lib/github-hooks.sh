@@ -89,11 +89,12 @@ function get_login() {
     if [ $# -ge 1 ]; then
 	FORCE_REFRESH="$1"; shift
     fi
+    local QUERY_STATUS
 
     # This is an internal function, so we trust the arguments.
     if [ $FORCE_REFRESH -eq 0 ] || [ ! -f $HOME/.conveyor-workflow/github-login ]; then
 	GITHUB_LOGIN=`github_query '["login"]' GET /user`
-	local QUERY_STATUS=$?
+	QUERY_STATUS=$?
 	if [ $QUERY_STATUS -eq 0 ]; then
 	    echo "GITHUB_LOGIN=$GITHUB_LOGIN" > $HOME/.conveyor-workflow/github-login
 	fi
@@ -104,64 +105,49 @@ function get_login() {
 }
 
 function set_assignee() {
-    local RESOURCE_NAME="$1"; shift
-    
-    local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
-
+    local ISSUE_NUMBER="$1"; shift
+    local GITHUB_ACCOUNT_TO_ASSIGN ASSIGNEE
     set_github_origin_data
     get_login
+    GITHUB_ACCOUNT_TO_ASSIGN="$GITHUB_LOGIN"
 
-    if [ x"$GITHUB_LOGIN" != x"" ]; then
-	local CURL_COMMAND="curl -X PATCH -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER -d @-"
-	local TMP_FILE="/tmp/$RANDOM"
-	cat <<EOF | $CURL_COMMAND > $TMP_FILE
-{
-  "assignee": "$GITHUB_LOGIN"
-}
-EOF
-	local RESULT=$?
-	if [ $RESULT -ne 0 ]; then
-	    echo "ERROR: Could not contact github, please assign issue manually." >&2
-	    exit 2
-	fi
-	local JSON=`cat $TMP_FILE`
-	rm $TMP_FILE
-	local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-	local ASSIGNEE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["assignee"]["login"];'`
-	if [ x"$ASSIGNEE" == x"$GITHUB_LOGIN" ]; then
-	    echo "Assigned PR #${ISSUE_NUMBER} to $GITHUB_LOGIN."
+    if [ x"$GITHUB_ACCOUNT_TO_ASSIGN" != x"" ]; then
+	ASSIGNEE=`github_query '["assignee"]["login"]' PATCH /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER '{"assignee": "'$GITHUB_ACCOUNT_TO_ASSIGN'"}'`
+	if [ x"$ASSIGNEE" == x"$GITHUB_ACCOUNT_TO_ASSIGN" ]; then
+	    echo "Assigned PR #${ISSUE_NUMBER} to $GITHUB_ACCOUNT_TO_ASSIGN."
 	else
-	    local MESSAGE=`echo $JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["message"];'`
-	    echo "ERROR: Assignment seems to have failed. GitHub message: $MESSAGE." >&2
-	    exit 2
+	    echo "WARNING: Assignment request claims to have succeeded, but got unexpected assignee: '$ASSIGNEE'." >&2
+	    return 2
 	fi
     else # GITHUB_LOGIN not set
-	echo "Could not set assignee; please update issue manually." >&2
-	exit 2
+	echo "No assignee could be determined; please update issue manually." >&2
+	return 2
     fi # GITHUB_LOGIN successfully set check
 }
 
 function get_assignee() {
-    local RESOURCE_NAME="$1"; shift
-    local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
+    local ISSUE_NUMBER="$1"; shift
     set_github_origin_data    
 
-    local ISSUE_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
-    local RESULT=$?
-    if [ $RESULT -ne 0 ]; then
-	echo "ERROR: Could not contact github, please assign issue manually." >&2
-	return 2
+    local ASSIGNEE QUERY_RESULT
+    ASSIGNEE=`github_query '["assignee"]["login"]' GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER`
+    QUERY_RESULT=$?
+    if [ $QUERY_RESULT -ne 0 ]; then
+	if [ `last_rest_status` -eq 404 ]; then
+	    return 1
+	else
+	    return $QUERY_RESULT
+	fi
     fi
-    local PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
-    local ASSIGNEE=`echo $ISSUE_JSON | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); print $data["assignee"]["login"];'`
-    # TODO: should check for warning.
+
     echo "$ASSIGNEE"
 }
 
 function clear_assignee() {
     local RESOURCE_NAME="$1"; shift
     local ISSUE_NUMBER=`echo $RESOURCE_NAME | cut -d'-' -f1`
-    local ASSIGNEE=`get_assignee $RESOURCE_NAME`
+    local ASSIGNEE # must be declared separate or 'local' sets $? to 0
+    ASSIGNEE=`get_assignee $ISSUE_NUMBER`
     local RESULT=$?
     if [ $RESULT -ne 0 ]; then
 	exit $RESULT
@@ -223,6 +209,65 @@ function set_github_origin_data() {
     # The URL includes the '.git', which isn't part of the name but an
     # underlying git convention. We want to drop it for the API calls.
     GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
+}
+
+function add_team {
+    local ORG="$1"; shift
+    local TEAM_NAME="$1"; shift
+    local PERMISSION="$1"; shift
+    local REPO_NAMES="$1"; shift
+
+    local TEAM_ID QUERY_STATUS
+
+    TEAM_ID=`github_query '["id"]' POST /orgs/$ORG/teams '{"name": "'$TEAM_NAME'", "permission": "'$PERMISSION'", "repo_names": '$REPO_NAMES'}'`
+    QUERY_STATUS=$?
+    echo "$TEAM_ID"
+    return $QUERY_STATUS
+}
+
+function add_team_member {
+    local TEAM_ID="$1"; shift
+    local MEMBER="$1"; shift
+
+    # AHH... this is super hacky. The problem is that when you PUT or POST,
+    # curl dosen't fill out the Content-Length headers and this confuses
+    # GitHub. http://stackoverflow.com/questions/21698009/github-api-502-error. Because
+    # this goes through Resty, just adding "", without the '-d' gets lost in
+    # the shuffle, so we explicitly have to use '-d ""' which gets passed to
+    # curl.
+    github_api PUT /teams/${TEAM_ID}/members/$MEMBER -d ""
+}
+
+function add_collaborator {
+    local REPO_NAME="$1"; shift
+    local COLLABORATOR="$1"; shift
+
+    github_api PUT /repos/${REPO_NAME}/collaborators/$COLLABORATOR
+}
+
+function get_team_id() {
+    local ORG="$1"; shift
+    local TEAM_NAME="$1"; shift
+    local JSON PHP_BIN
+
+    JSON=`github_api GET /orgs/$ORG/teams`
+    PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+    # Strangely, the array filter does not collapse the array; it's necessary
+    # re-value the array... Something's off.
+    echo "$JSON" | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); function match($var) { return $var["name"] == "'$TEAM_NAME'"; }; $data=array_values(array_filter($data, "match")); print count($data) == 0 ? "" : $data[0]["id"];'
+}
+
+function delete_team() {
+    local TEAM_ID="$1"; shift
+
+    github_api DELETE /teams/$TEAM_ID
+}
+
+function is_member_of_team() {
+    local TEAM_ID="$1"; shift
+    local MEMBER_NAME="$1"; shift
+
+    [ `github_api GET /teams/${TEAM_ID}/members | grep '"login": *"'$MEMBER_NAME'"' | wc -l` -eq 1 ]
 }
 
 # /**

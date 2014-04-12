@@ -35,4 +35,3 @@ cd $WORKING_REPO_PATH
 
 ISSUE_DESC=`uuidgen`
 test_output "con topics abandon 999999-$ISSUE_DESC" '' "WARNING: Nothing found to abandon for '999999-$ISSUE_DESC'." 1
-

@@ -18,6 +18,7 @@ TEST_SCRIPTS=`find $FIND_PATH -not -path "./data/*" -not -path "*/lib/*" -name "
 source $TEST_DIR/../runnable/lib/github-hooks.sh
 if does_repo_exist 'DogFoodSoftware/test-repo'; then
     delete_repo 'DogFoodSoftware/test-repo'
+    delete_team 'DogFoodSoftware' 'AutomatedTest'
 fi
 
 for i in $TEST_SCRIPTS; do
@@ -31,4 +32,5 @@ fi
 
 if does_repo_exist 'DogFoodSoftware/test-repo'; then
     delete_repo 'DogFoodSoftware/test-repo'
+    delete_team 'DogFoodSoftware' 'AutomatedTest'
 fi

@@ -245,6 +245,26 @@ function add_collaborator {
     github_api PUT /repos/${REPO_NAME}/collaborators/$COLLABORATOR
 }
 
+function get_team_id() {
+    local ORG="$1"; shift
+    local TEAM_NAME="$1"; shift
+    local JSON PHP_BIN
+
+    JSON=`github_api GET /orgs/$ORG/teams`
+    PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+    # Strangely, the array filter does not collapse the array; it's necessary
+    # re-value the array... Something's off.
+    echo "$JSON" | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); function match($var) { return $var["name"] == "'$TEAM_NAME'"; }; $data=array_values(array_filter($data, "match")); print count($data) == 0 ? "" : $data[0]["id"];'
+#    echo "$JSON" | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); function match($var) { $foo="'$TEAM_NAME'"; print "FOO: $foo:".$var["name"].":".($var["name"] == $foo); return $var["name"] == $foo; }; $data=array_filter($data, "match"); if ($data.length == 0) { print "bb"; } else { print "aa".$data[0]["id"]; }'
+}
+
+function is_member_of_team() {
+    local TEAM_ID="$1"; shift
+    local MEMBER_NAME="$1"; shift
+
+    [ `github_api GET /teams/${TEAM_ID}/members | grep '"login": *"'$MEMBER_NAME'"' | wc -l` -eq 1 ]
+}
+
 # /**
 # * </div><!-- #Implementation -->
 # */

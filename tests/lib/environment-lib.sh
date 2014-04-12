@@ -72,6 +72,33 @@ function init_github_test_environment() {
     return $RESULT
 }
 
+function init_github_team_member() {
+    local ORG="$1"; shift
+    local REPO="$1"; shift
+    local MEMBER_NAME TEAM_ID
+
+    # Bash is funny... this echos from a subshell so we can extract the
+    # variable without overwriting the value in our own shell.
+    MEMBER_NAME=$(source $HOME/.conveyor-workflow/github-authentication-default-test; echo $GITHUB_ACCOUNT_NAME)
+    TEAM_ID=`get_team_id "DogFoodSoftware" "AutomatedTest"`
+    if [ x"$TEAM_ID" == x"" ]; then
+	TEAM_ID=`add_team "$ORG" "AutomatedTest" "push" '["'$REPO'"]'`
+	if [ $? -ne 0 ]; then 
+	    echo "ERROR: Could not add team; test inconclusive." >&2
+	    # Yes, that's an exit, not a return. If we can't setup the team
+	    # members, then the test is bound to fail.
+	    exit 2
+	fi
+    fi
+    if ! is_member_of_team "$TEAM_ID" "$MEMBER_NAME"; then
+	add_team_member "$TEAM_ID" "$MEMBER_NAME"
+	if [ $? -ne 0 ]; then 
+	    echo "ERROR: Could not add collaborator; test inconclusive." >&2
+	    exit 2
+	fi
+    fi
+}
+
 function populate_test_environment() {
     cd $GIT_CONVEY_TEST_DIR 2>/dev/null || (echo "Did not find standard conveyor-workflow data dir." >&2; exit 2)
     cd $WORKING_REPO_PATH 2>/dev/null || (echo "Did not find working repo: '$WORKING_REPO_PATH'." >&2; exit 2)

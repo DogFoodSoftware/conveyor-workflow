@@ -22,7 +22,7 @@ function github_api {
     source $HOME/.conveyor-workflow/github
     resty https://api.github.com* 2> /dev/null
     if [ $# -eq 1 ]; then
-	$VERB "$@" -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow' -u $GITHUB_AUTH_TOKEN:x-oauth-basic > $STDOUT 2> $STDERR
+	$VERB "$@" -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow' -u $GITHUB_AUTH_TOKEN:x-oauth-basic -m 4 > $STDOUT 2> $STDERR
     else 
 	$VERB "$@" -H 'Content-Type: application/json' -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow' -u $GITHUB_AUTH_TOKEN:x-oauth-basic > $STDOUT 2> $STDERR
     fi

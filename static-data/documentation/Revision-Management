@@ -3,8 +3,8 @@
     <div class="grid_3 alpha">
       <div class="subHeader"><span>Project Managers</span></div>
       <ol style="text-indent: -2em">
-	<li>Create issues / topics.</li>
-	<li>Track changes.</li>
+	<li>Manage issues.</li>
+	<li>Track progress.</li>
       </ol>
     </div><!-- developers blurb -->
     <div class="grid_3">
@@ -36,36 +36,55 @@
 <div id="Basic-Model" class="blurbSummary grid_12">
   <div class="blurbTitle">Basic Model</div>
   <div class="p">
-    The conveyor-workflow model makes use of two resources: <code>topics</code>
+    The conveyor-workflow revolves primarily around two
+    resources: <code>topics</code>
     and <code>releases</code>. <code>Topics</code> isolate
     changes. <code>Releases</code> are meant for actual internal or public
     use.
   </div>
   <div class="p">
-    The conveyor-workflow model envisions four primary roles: project managers,
-    developers, merge masters, and operations. In practice, a single
-    individual may handle multiple or all of the roles, or multiple
-    individuals may act in each role. Your own process may involve other
-    roles, such as QA and client which support and augment the basic model
-    described here.
+    The conveyor-workflow model includes four roles: project managers,
+    developers, merge masters, and operations.<span data-perspcetive="detail">
+    In practice, a single individual may handle multiple or all of the roles,
+    or multiple individuals may act in each role.</span> Your own process may
+    involve other roles, such as QA and client which support and augment the
+    basic model described here.
   </div>
+  <div class="subHeader"><span>Central Repo</span></div>
   <div class="p">
-    While entirely compatible with standard git, conveyor-workflow itself treats the
-    origin server as the central repository, referred to as 'origin', and the
-    local checkout as a dependent copy.
+    You may continue to make use of gits federated repo model in development,
+    but as far as the conveyor-workflow commands and process are concerned,
+    the 'origin' repository is <em>the</em> central repository and your local
+    copy is a 'working repository'. In practice, this means that
+    conveyor-workflow commands will automatically resolve some conflicts in
+    favor of the origin repo.
   </div>
+  <div class="subHeader"><span>Project Manager</span></div>
   <div class="p">
     Activity starts with the project manager who
-    creates <code>topics</code>. Topics may, but need not be, captured in an
-    external issue DB, such as GitHub's issue tracker. <code>con
-    start</code> creates a topic branch in the origin repository.
+    creates <code>issues</code>. In most cases, conveyor-workflow will use the
+    isuse database to suggest next steps for team members and automatically
+    manage issue assignment and status.
   </div>
+  <div class="subHeader"><span>Developer</span></div>
   <div class="p">
-    A developer may then <code>con checkout</code> the topic branch, do
+    Anyone that makes changes to project artifacts is a developer in the
+    broad sense. When a developer start works on an issue, conveyor-workflow
+    creates topic branches and<span data-perspective="detailed">&mdash;and in
+    most
+    cases&mdash;</span><span data-perspective="!detailed"> </span>automaticall
+    manages 
+
+ then <code>con checkout</code> the topic branch, do
     work, and commit changes locally with <code>con
     commit</code>. TODO: further discussion awaits experimentation with
     flowing through git.
   </div>
+  <div class="subHeader"><span></span></div>
+
+
+
+
   <div class="p">
     When a submitted <code>topic</code> is accepted, the changes are merged
     back to the original source branch. If the source branch was already part
@@ -80,6 +99,11 @@
     from <code>master</code> branch. These release versions generally move
     through a testing phase before finally being promoted to a production
     runtime environment.
+  </div>
+  <div class="subHeader"><span>Git Compatible</span></div>
+  <div class="p">
+    Conveyor-workflow is entirely compatible with standard git. Feel to use
+    whatever git commands you like.
   </div>
 </div><!-- #Basic-Model.blurbSummary -->
 <div id="Release-Cycle" class="blurbSummary grid_12">

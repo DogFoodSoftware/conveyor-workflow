@@ -86,14 +86,47 @@
   <div class="subHeader"><span>Why</span></div>
   <div class="p">
     Our 'why' model is simiarly simple and we again define three options:
-    'bug', 'question', and 'change'.
+    'bug', 'question', and 'change'. The 'why' gives us or second level
+    ordering, to wit:
+    <ol>
+      <li>bugs <em>should</em> be addressed before</li>
+      <li>questions <em>should</em> be answered before</li>
+      <li>changes are implemented.</li> 
+    </ol>
+    Projects are free do define additional 'why' labels, but all why labels
+    must map onto one of the three fundamental types.
   </div>
   <div data-perspective="detailed">
+    Again, these three options may seem anemic compared to most systems, and
+    again, the idea is that if you look at how issues are actually processed,
+    you don't need anything more than this. Code correctness is always
+    paramount and uncertaintity needs to be dispelled because changes should
+    only be implemnted on stable code with clear direction.
   </div>
   <div class="subHeader"><span>Who</span></div>
   <div class="p">
+    The 'who' is actually where it gets a bit more complicated. Also note that
+    here, any custom types are considered distinct and are not mapped to the
+    standard types here. In other words, whereas the standard 'when' and 'why'
+    types are considered fundamental, the standard 'who' types are merely
+    suggestive and may even be ammended and deleted for any given project.
   </div>
   <div data-perspective="detailed">
+  </div>
+  <div class="subHeader" data-perspective="detailed"><span>Custom When/Why/Who Values</span></div>
+  <div class="p" data-perspective="detailed">
+    In general, custom when and why values <em>should</em> be avoided. We
+    require that custom issues map onto one of the fundamental types so that
+    general conveyor-flow logic can deal with them, and in practice we've
+    never personally experienced a situation that, in our opinion, needs
+    anything else. In practice, anything additional just introduces more
+    cognitive load in issue specification without clear benefit.
+  </div>
+  <div class="p" data-perspective="detailed">
+    'Who' designations are often and properly extended. Again, if you don't
+    need further details you shouldn't make difference for the sake of
+    difference, but if you have more than type of 'code developer', for
+    example, then you should designate the specific skills.
   </div>
   <div class="subHeader" data-perspective="operations detailed"><span>Technical Specification</span></div>
   <div class="p" data-perspective="operations detailed">

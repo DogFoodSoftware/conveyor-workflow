@@ -95,7 +95,6 @@ source "$GIT_CONVEY_DIR/common-lib.sh"
 FLAGS_PARENT="git conveyor"
 
 DEFINE_boolean verbose false 'be verbose => show git commands' 'v'
-DEFINE_boolean setresource false 'set implied resource' 's'
 DEFINE_boolean test false 'run in test mode'
 
 FLAGS "$@" || exit $?
@@ -114,29 +113,6 @@ fi
 #*   establish the semantics of teh arguments.
 #* </div>
 #*/
-# Handle the 'set resource' case.
-if [ $FLAGS_setresource -eq $FLAGS_TRUE ]; then
-    if [ $# -eq 0 ]; then # clear implied resource, if it exists.
-	if [ -f $HOME/.conveyor-workflow/implied-resource ]; then
-	    rm -f $HOME/.conveyor-workflow/implied-resource
-	    echo "Implied resource cleared."
-	fi
-    elif [ $# -eq 1 ]; then # set implied resource.
-	case "$1" in
-	    topics|releases|issues)
-		echo "$1" > $HOME/.conveyor-workflow/implied-resource
-		echo "Resource set as '$1'.";;
-	    *)
-		echo "Unknown resource '$1'." >&2
-		exit 1;;
-	esac
-    else
-	echo "You may only supply a single supplied resource: topics, releases, or issues." >&2
-	exit 1
-    fi
-    exit 0 # If we successfully set resource, then we're done.
-fi # 'set-resources' handling
-
 if [ x"$1" == x"help" ]; then
     shift
     if [ $# -eq 0 ]; then
@@ -154,13 +130,25 @@ if [ x"$1" == x"help" ]; then
     exit 0
 fi
 
-# We've handled the special cases, now we handle actual requests.
+
 if [ -f $HOME/.conveyor-workflow/implied-resource ]; then
     RESOURCE=`cat $HOME/.conveyor-workflow/implied-resource`
     source "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE"
-    if ! action_check "$1"; then
-	rm -f $HOME/.conveyor-workflow/implied-resource
-	RESOURCE="$1"; shift
+    if [ x`type -t action_check` != x'function' ]; then
+	echo "WARNING: 'action_check' function not defined for '$RESOURCE'." >&2
+	# Nothing else to do.
+    else
+	if ! action_check "$1" && ! con --verify "$1" >/dev/null; then
+	    echo "ERROR: Cannot understand '$1' as action, resource, or global." >&2
+	    exit 1
+	elif con --verifyresource "$1" >/dev/null; then
+	    rm -f $HOME/.conveyor-workflow/implied-resource
+	    RESOURCE="$1"; shift
+	    echo "WARNING: understood '$1' as resource; implied resource reset." >&2
+	elif con --verifyglobal "$1" >/dev/null; then
+	    RESOURCE="$1"; shift # and nothing else
+	# else, it's an action of the implied resource, which is just fine
+	fi
     fi
 else
     RESOURCE="$1"; shift

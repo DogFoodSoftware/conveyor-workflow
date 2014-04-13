@@ -17,6 +17,10 @@ resource_usage() {
     echo "Use 'con sync' to checkout a local working directory."
 }
 
+function action_check() {
+    [ x"$1" == x"" ]
+}
+
 resource_do() {
     FLAGS_PARENT=""
     DEFINE_boolean github false 'Sets up repo on github.' ''

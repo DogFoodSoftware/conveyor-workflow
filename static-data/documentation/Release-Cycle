@@ -1,0 +1,74 @@
+<div id="Ovierview" class="blurbSummary grid_12">
+  <div class="p">
+    The release cycle aims at making high quality code available to for public
+    use, providing a defined support process for released code, and assisting
+    users to transition to the next generation at the end of the release
+    cycle.
+  </div>
+</div>
+<div id="Release Stages" class="blurbSummary grid_12">
+  <div class="blurbTitle">Release Stages</div>
+  <div class="subHeader"><span>Initiating a Release</span></div>
+  <div class="p">
+    A release cycle is initiated by a sysadmin because it is the sysadmins who
+    are ultimately responsible for released code. The actual initialization
+    consists of issuing the <code>con releases start</code> command.
+  </div>
+  <div class="p">
+    At that point, conveyor will create the relevant tracking branch and
+    deploy the code to a testing environment. The release is now said to be
+    "in testing".
+  </div>
+  <div class="p" data-pespective="operations detail">
+    The tracking branch always begins with the <code>releases-</code> prefix
+    followed by the year and month the release was initiated,
+    '<code>-thru-</code>, followed by the least year and month of planned
+    support for the release, followed by an optional release name /
+    description. A <code>.release-status</code> file is also created in the
+    repository home directory. This file is managed by conveyor-workflow.
+  </div>
+  <div class="subHeader"><span>Testing Stage</span></div>
+  <div class="p">
+    A release branch in the testing stage, or simply 'in testing', has been
+    marked for but not yet cleard for public release. Releases in testing are
+    generally subjected to more extensive automated tests as well as final
+    human verification procedures.<span data-perspective="operations
+    detailed"> The testing status is reflected by setting
+    the <code>RELEASE_STATUS</code> variable in
+    the <code>.release-status</code> file to '<code>TESTING</code>'.</span>
+  </div>
+  <div class="subHeader"><span>Support Stage</span></div>
+  <div class="p">
+    A release branch in the support stage has been made available for general
+    use. We may say this code is 'generally available', or
+    'released'. All code released within a particular release
+    branch <em>must</em> be backward compatible aund <em>should</em> be
+    forward compatible as well.
+  </div>
+  <div class="subHeader"><span>Sunsetting a Release</span></div>
+  <div class="p">
+    When a release is no longer supported, the release history is archived and
+    the branch itself is deleted. Prior to sunsetting, sysadmins are
+    responible for verifying the availability and functionality of an
+    available transition branch.<span data-perspective="detailed"> Because the
+    branch itself is deleted, users may want to refer to release tags rather
+    than specific branches when defining runtime environments.</span>
+  </div>
+</div><!-- #Release-Cycle.blurbSummary -->
+<div id="Design-Considerations" class="blurbSummary grid_12"
+     data-perspective="operations detailed">
+  <div class="blurbTitle">Design Considerations</div>
+  <div class="p">
+    This model easily supports projects with a single active release, as well
+    as those with multiple active releases, demos, custom versions, internal
+    releases, etc. Your own process may inject additional (sub-)stages into
+    the release process as well.
+  </div>
+  <div class="p">
+    While there's nothing to stop one from cutting a release from a branch
+    other than <code>master</code>, this isn't a supported
+    operation. Conveyor-workflow may work with such non-standard source
+    release branches, but we have not necessarily designed or tested for such
+    a case.
+  </div>
+</div><!-- #Design-Considerations -->

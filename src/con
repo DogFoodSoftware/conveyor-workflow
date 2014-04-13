@@ -5,7 +5,7 @@
 # awhile.
 
 # Handle the 'set resource' case.
-if [ x"$1" == x"-s" ]; then
+if [ x"$1" == x"-s" ] || [ x"$1" == x"--setresource" ]; then
     shift
     if [ $# -eq 0 ]; then # clear implied resource, if it exists.
 	if [ -f $HOME/.conveyor-workflow/implied-resource ]; then

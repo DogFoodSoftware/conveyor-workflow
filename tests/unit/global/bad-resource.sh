@@ -15,4 +15,4 @@
 
 source `dirname $0`/../../lib/cli-lib.sh
 
-test_output "con foo" "usage: con <resource|global action>" "Unknown resource: 'foo'." 1
+test_output "con foo" "usage: con <resource|global action>" "ERROR: Cannot understand 'foo' as action, resource, or global." 1

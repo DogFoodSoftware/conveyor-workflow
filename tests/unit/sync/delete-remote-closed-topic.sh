@@ -26,7 +26,7 @@ init_test_environment `basename $0`
 cd $WORKING_REPO_PATH
 
 git checkout -q master
-con topics start --checkout 1-foo >/dev/null
+con topics start --checkout 1-foo >/dev/null 2>&1
 touch 'foo'
 git add foo > /dev/null
 con topics commit -m "added file foo" >/dev/null

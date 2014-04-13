@@ -139,12 +139,12 @@ if [ -f $HOME/.conveyor-workflow/implied-resource ]; then
 	# Nothing else to do.
     else
 	if ! action_check "$1" && ! con --verify "$1" >/dev/null; then
-	    echo "ERROR: Cannot understand '$1' as action, resource, or global." >&2
+	    usage "ERROR: Cannot understand '$1' as action, resource, or global."
 	    exit 1
 	elif con --verifyresource "$1" >/dev/null; then
 	    rm -f $HOME/.conveyor-workflow/implied-resource
 	    RESOURCE="$1"; shift
-	    echo "WARNING: understood '$1' as resource; implied resource reset." >&2
+	    echo "WARNING: understood '$RESOURCE' as resource; implied resource reset." >&2
 	elif con --verifyglobal "$1" >/dev/null; then
 	    RESOURCE="$1"; shift # and nothing else
 	# else, it's an action of the implied resource, which is just fine

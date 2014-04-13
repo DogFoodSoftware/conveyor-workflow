@@ -1,0 +1,37 @@
+<div id="Ovierview" class="blurbSummary grid_12">
+  <div class="p">
+    The topic cycle defines the process of creating one or more changesets
+    related to one or more <code>issues</code>. The goal is to isolate
+    in-progress changes so that when the cumalitive change comes back to the
+    source
+    branch<span data-perspective="detailed">&mdash;typically <code>master</code>&mdash;</span><span data-perspective="!detailed"> </span>functionality
+    and correct behavior is maintained.
+  </div>
+</div>
+<div id="Topic-Stages" class="blurbSummary grid_12">
+  <div class="blurbTitle">Topic Stages</div>
+  <div class="subHeader"><span>Initiating a Topic</span></div>
+  <div class="p">
+    A release cycle is initiated by a developer who is responsible for the
+    topic changes. The actual initialization consists of issuing the <code>con
+    topics start</code> command.
+  </div>
+  <div class="p" data-pespective="operations detail">
+    The tracking branch always begins with the <code>topics-</code> prefix
+    followed by one or more involved <code>issues</code>, followed by an
+    optional user description. A <code>.topic-status</code> is also created to
+    help manage the meta-data related to the <code>topics</code> item.
+  </div>
+  <div class="subHeader"><span>Development Stage</span></div>
+  <div class="p">
+    Develop, test, and (optionally) publish incremental changes.
+  </div>
+  <div class="subHeader"><span>Submitted Stage</span></div>
+  <div class="p">
+    TODO
+  </div>
+  <div class="subHeader"><span>Closing the Topic</span></div>
+  <div class="p">
+    TODO
+  </div>
+</div><!-- #Topic-Stages -->

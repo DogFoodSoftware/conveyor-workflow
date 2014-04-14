@@ -38,21 +38,11 @@ fi
 echo "foo" > bar
 git add bar
 if ! test_output 'con topics commit -m "added bar"' '' '' 0; then
-    exit 1
+    exit 2
 fi
 if ! test_output 'con topics publish' 'Published topic' '' 0; then
-    exit 1
+    exit 2
 fi
-OUTPUT=`test_output 'con topics submit' 'Created PR #' '' 0 3 0`
-PR_NUMBER=${OUTPUT:12}
-PR_NUMBER=${PR_NUMBER:0:$((${#PR_NUMBER} - 1))}
-if ! [[ "$PR_NUMBER" =~ ^-?[0-9]+$ ]]; then
-    echo "ERROR: Expected PR number, but got: ${PR_NUMBER}."
-    exit 1
+if ! test_output 'con topics submit' 'Created PR #' '' 0; then
+    exit 2
 fi
-# Cleanup branch.
-git push -q origin :topics-$ISSUE_NUMBER-$ISSUE_DESC
-# Close PR and Issue
-set_github_origin_data
-github_api PATCH /repos/$GITHUB_OWNER/$GITHUB_REPO/pulls/$PR_NUMBER '{"state" : "closed"}' > /dev/null
-github_api PATCH /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER '{"state" : "closed"}' > /dev/null

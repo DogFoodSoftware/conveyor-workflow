@@ -390,12 +390,13 @@ function submit_branch() {
 		return $RESULT
 	    elif [ x"$PR_NUMBER" == x"" ]; then
 		echo "No error reported, but no PR number received." >&2
+		return 2
 	    else
 		echo "Created PR #${PR_NUMBER}."
 	    fi
 	else
 	    echo "Do not yet know how to submit work for non-GitHub repositories. Come back later..." >&2
-	    exit 2
+	    return 2
 	fi
     fi # if fetch_and_merge master...;
     # If that fais, then there's nothing for us to do.

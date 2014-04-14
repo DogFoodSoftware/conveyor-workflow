@@ -35,10 +35,15 @@ function github_api {
 	MESSAGE=`json_extract '["message"]' "$JSON"`
 	if [ x"$MESSAGE" == x"" ]; then
 	    cat $STDOUT >&2
-	    echo "ERROR: No no no message provided. $JSON" >&2
+	    echo "ERROR: No message provided. $JSON" >&2
 	else
 	    echo "ERROR: $MESSAGE" >&2
 	fi
+	local LOG_FILE=$HOME/.conveyor-workflow/rest-lib.log
+	echo `date +'%Y-%m-%d %H:%M:%S.%N'`" ERROR: REST call failed for '$VERB $@'. ("`last_rest_status`")" >> $LOG_FILE
+	echo "---------------" >> $LOG_FILE
+	echo "$JSON" >> $LOG_FILE
+	echo "---------------" >> $LOG_FILE
     else
 	cat $STDOUT
     fi

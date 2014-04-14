@@ -288,10 +288,17 @@ function publish_branch() {
     ensure_current_branch_committed "publish $SINGULAR_RESOURCE '$RESOURCE_NAME'"
     # Check that we can sync local branch with origin (if necessary).
     # TODO
-    # Push the changes.
-    if ! git push -q origin "$BRANCH_NAME"; then
+    # Push the changes. The '-u' might helps github:
+    # https://github.com/github/hub/issues/189
+    if ! git push -u -q origin "$BRANCH_NAME" >/dev/null; then
 	echo "Apparent error while attempting to push changes to origin." >&2
 	exit 2
+    fi
+    git fetch -q
+    if [ `git rev-parse "$BRANCH_NAME"` != `git rev-parse "remotes/origin/$BRANCH_NAME"` ]; then
+	echo "YAAA" >> $HOME/.conveyor-workflow/rest-lib.log
+#    else
+#	echo "POOO" >> $HOME/.conveyor-workflow/rest-lib.log
     fi
     
     echo "Published $SINGULAR_RESOURCE '$RESOURCE_NAME'."
@@ -366,6 +373,7 @@ function submit_branch() {
     if fetch_and_merge master "$SINGULAR_RESOURCE" "$RESOURCE_NAME"; then
 	# We're good to generate the PR.
 	git checkout -q "$BRANCH_NAME"
+	git branch -q -D _test-merge
 	# OK, it's possible that the remote branch has been updated since we
 	# first checked, but that will always be the case. We don't try to be
 	# thread safe.

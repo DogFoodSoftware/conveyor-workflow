@@ -16,6 +16,10 @@ resource_usage() {
     echo
 }
 
+function action_check() {
+    [ x"$1" == x"" ]
+}
+
 resource_do() {
     git status
     if is_github_clone; then

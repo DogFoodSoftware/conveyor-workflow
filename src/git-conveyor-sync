@@ -13,6 +13,10 @@ resource_usage() {
     echo
 }
 
+function action_check() {
+    [ x"$1" == x"" ]
+}
+
 resource_do() {
     FLAGS_PARENT=""
     DEFINE_boolean allbranches false 'Attempts to synchronize all local branches.' ''

@@ -1,3 +1,58 @@
 #!/bin/bash
 
+# Normally, we'd use 'shflags' here, but we can't seem to do patial flag
+# progessing... even though something like it has been emprically working for
+# awhile.
+
+# Handle the 'set resource' case.
+if [ x"$1" == x"-s" ] || [ x"$1" == x"--setresource" ]; then
+    shift
+    if [ $# -eq 0 ]; then # clear implied resource, if it exists.
+	if [ -f $HOME/.conveyor-workflow/implied-resource ]; then
+	    rm -f $HOME/.conveyor-workflow/implied-resource
+	    echo "Implied resource cleared."
+	fi
+    elif [ $# -eq 1 ]; then # set implied resource.
+	case "$1" in
+	    topics|releases|issues)
+		echo "$1" > $HOME/.conveyor-workflow/implied-resource
+		echo "Resource set as '$1'.";;
+	    *)
+		echo "Unknown resource '$1'." >&2
+		exit 1;;
+	esac
+    else
+	echo "You may only supply a single supplied resource: topics, releases, or issues." >&2
+	exit 1
+    fi
+    exit 0 # If we successfully set resource, then we're done.
+    # 'set-resources' handling
+elif [ x"$1" == x"--verify" ] || [ x"$1" == x"--verifyresource" ] || [ x"$1" == x"--verifyglobal" ]; then
+    OPTION="$1"; shift
+    case "$1" in
+	'')
+	    echo "ERROR: '--verify(*)' requires value." >&2
+	    exit 1;;
+	topics|releases|issues|repos)
+	    if [ "$OPTION" == "--verify" ] || [ "$OPTION" == "--verifyresource" ]; then
+		echo "Resource '$1' is valid."
+		exit 0
+	    else
+		echo "'$1' is not a valid global action."
+		exit 1
+	    fi;;
+	status|sync|init)
+	    if [ "$OPTION" == "--verify" ] || [ "$OPTION" == "--verifyglobal" ]; then
+		echo "Global action '$1' is valid."
+		exit 0
+	    else
+		echo "'$1' is not a valid resource."
+		exit 1
+	    fi;;
+	*)
+	    echo "Resource '$1' is invalid."
+	    exit 1;;
+    esac
+fi
+# else
 git conveyor "$@"

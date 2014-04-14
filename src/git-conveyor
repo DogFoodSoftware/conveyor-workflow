@@ -48,116 +48,14 @@ global_help() {
     echo
 }
 
-# /**
-#  * <div class="subHeader"><span>usage()</span></div>
-#  * <div class="p">
-#  *   Prints usage information for the <code>conveyor-workflow</code> script. Takes a
-#  *   single optional argument, which is interpretted as a string containing
-#  *   additional information about whyt he usage is being displayed. The error
-#  *   is printed to <code>stderr</code>.
-#  * </div>
-#  */
-usage() {
-    if [ x"$1" != x"" ]; then
-	echo $1 >&2
-	echo >&2
-    fi
-
-    echo "usage: con <resource|global action>"
-    echo
-    echo "Available resources:"
-    echo "   topics    Manage topics / topic branches."
-    echo "   releases  Manage releases."
-    echo
-    echo "Available global actions:"
-    echo "   sync      Clones and synchronizes local repo with origin."
-    echo "   -s        Set implied resource."
-    echo "   help      Prints this help."
-    echo
-    global_help
-}
-
-if [ $# -lt 1 ]; then
-    usage "Please indicate resource."
-    exit 1
-fi
-
-#/**
-#  * <div class="subHeader"><span>Options Parsing</span></div>
-#  */
-
 source "$HOME/.conveyor/config"
 source "$GIT_CONVEY_DIR/lib/shflags"
 source "$GIT_CONVEY_DIR/lib/resty"
 source "$GIT_CONVEY_DIR/lib/rest-lib.sh"
 source "$GIT_CONVEY_DIR/common-checks.sh"
 source "$GIT_CONVEY_DIR/common-lib.sh"
-FLAGS_PARENT="git conveyor"
 
-DEFINE_boolean verbose false 'be verbose => show git commands' 'v'
-DEFINE_boolean test false 'run in test mode'
-
-FLAGS "$@" || exit $?
-eval set -- "${FLAGS_ARGV}"
-
-if [ $FLAGS_test -eq $FLAGS_TRUE ]; then
-    export GIT_CONVEY_TEST_MODE=$FLAGS_TRUE
-fi
-
-#/**
-#* <div class="subHeader"><span>Main Logic</span></div>
-#* <div class="p">
-#*   Normally, we would process the arguments into named variables as a first
-#*   step. In this case, the processing differences between 'implied
-#*   resources' and 'explicit resources' means we have to do some work to
-#*   establish the semantics of teh arguments.
-#* </div>
-#*/
-if [ x"$1" == x"help" ]; then
-    shift
-    if [ $# -eq 0 ]; then
-	usage
-    else
-	RESOURCE="$1"; shift
-	source "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE"
-	if [ $# -eq 0 ]; then
-	    resource_usage
-	else
-	    ACTION="$1"; shift
-	    resource_help $ACTION
-	fi
-    fi
-    exit 0
-fi
-
-
-if [ -f $HOME/.conveyor-workflow/implied-resource ]; then
-    RESOURCE=`cat $HOME/.conveyor-workflow/implied-resource`
-    source "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE"
-    if [ x`type -t action_check` != x'function' ]; then
-	echo "WARNING: 'action_check' function not defined for '$RESOURCE'." >&2
-	# Nothing else to do.
-    else
-	if ! action_check "$1" && ! con --verify "$1" >/dev/null; then
-	    usage "ERROR: Cannot understand '$1' as action, resource, or global."
-	    exit 1
-	elif con --verifyresource "$1" >/dev/null; then
-	    rm -f $HOME/.conveyor-workflow/implied-resource
-	    RESOURCE="$1"; shift
-	    echo "WARNING: understood '$RESOURCE' as resource; implied resource reset." >&2
-	elif con --verifyglobal "$1" >/dev/null; then
-	    RESOURCE="$1"; shift # and nothing else
-	# else, it's an action of the implied resource, which is just fine
-	fi
-    fi
-else
-    RESOURCE="$1"; shift
-fi
-
-if [ ! -f "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE" ]; then
-    usage "Unknown resource: '$RESOURCE'."
-    exit 1
-fi
+RESOURCE="$1"; shift
 source "$GIT_CONVEY_DIR/git-conveyor-$RESOURCE"
 
 resource_do "$@"

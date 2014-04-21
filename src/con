@@ -14,7 +14,7 @@ if [ x"$1" == x"-s" ] || [ x"$1" == x"--setresource" ]; then
 	fi
     elif [ $# -eq 1 ]; then # set implied resource.
 	case "$1" in
-	    topics|releases|issues)
+	    topics|releases|issues|repos)
 		echo "$1" > $HOME/.conveyor-workflow/implied-resource
 		echo "Resource set as '$1'.";;
 	    *)
@@ -136,9 +136,22 @@ else
     RESOURCE="$1"; shift
 fi
 
-if [ ! -f "$CON_HOME/git-conveyor-$RESOURCE" ]; then
+if [ ! -f "$CON_HOME/git-conveyor-$RESOURCE" ] && [ ! -f "$CON_HOME/conveyor-$RESOURCE" ]; then
     usage "Unknown resource: '$RESOURCE'."
     exit 1
 fi
 
-git conveyor "$RESOURCE" "$@"
+case "$RESOURCE" in
+    topics|releases)
+	git conveyor "$RESOURCE" "$@"
+	;;
+    *)
+	if [ -f "$CON_HOME/conveyor-$RESOURCE" ]; then
+	    source "$CON_HOME/conveyor-$RESOURCE"
+	    process "$@"
+	else
+	    echo "ERROR: Unknown resource '$RESOURCE'." >&2
+	    exit 1
+	fi
+	;;
+esac

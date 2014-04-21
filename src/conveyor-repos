@@ -1,0 +1,43 @@
+function process() {
+    local VERB="$1"; shift
+
+    case "$VERB" in
+	create-test)
+	    create_test_repo;;
+	delete-test)
+	    delete_test_repo;;
+    esac
+}
+
+function create_test_repo() {
+    source $HOME/.conveyor/config
+    source $HOME/.conveyor-workflow/github
+    TEST_BASE=$CONVEYOR_HOME/workflow/tests
+    source $CONVEYOR_HOME/workflow/tests/lib/environment-lib.sh
+    
+    local DATA_DIR=$CONVEYOR_HOME/workflow/data/
+    cd $DATA_DIR
+    if [ -e manual-test-repo ]; then
+	echo "ERROR: '$DATA_DIR/manual-test-repo' exists. Use 'con repos delete-test' to clear." >&2
+	return 1
+    fi
+    mkdir manual-test-repo
+    cd manual-test-repo
+    init_github_test_environment 'manual-test-repo'
+    echo "Test directory initialized. Execute:"
+    echo "cd $DATA_DIR/manual-test-repo"
+}
+
+function delete_test_repo() {
+    source $HOME/.conveyor/config
+    source $HOME/.conveyor-workflow/github
+    TEST_BASE=$CONVEYOR_HOME/workflow/tests
+    local DATA_DIR=$CONVEYOR_HOME/workflow/data/
+    
+    if [ ! -d "$DATA_DIR/manual-test-repo" ]; then # nothing to do
+	return 0
+    fi
+    # else
+    cd $DATA_DIR
+    rm -rf 'manual-test-repo'
+}

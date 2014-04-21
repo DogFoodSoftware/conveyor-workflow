@@ -15,15 +15,12 @@ function create_test_repo() {
     TEST_BASE=$CONVEYOR_HOME/workflow/tests
     source $CONVEYOR_HOME/workflow/tests/lib/environment-lib.sh
     
-    local DATA_DIR=$CONVEYOR_HOME/workflow/data/
-    cd $DATA_DIR
+    local DATA_DIR=$CONVEYOR_HOME/workflow/data/test
     if [ -e manual-test-repo ]; then
 	echo "ERROR: '$DATA_DIR/manual-test-repo' exists. Use 'con repos delete-test' to clear." >&2
 	return 1
     fi
-    mkdir manual-test-repo
-    cd manual-test-repo
-    GIT_CONVEY_TEST_MODE=0 # bash for true
+    export GIT_CONVEY_TEST_MODE=0 #bash for true
     init_github_test_environment 'manual-test-repo' 'manual-test-repo'
     echo "Test directory initialized. Execute:"
     echo "cd $DATA_DIR/manual-test-repo"
@@ -33,8 +30,13 @@ function delete_test_repo() {
     source $HOME/.conveyor/config
     source $HOME/.conveyor-workflow/github
     TEST_BASE=$CONVEYOR_HOME/workflow/tests
-    local DATA_DIR=$CONVEYOR_HOME/workflow/data/
+    local DATA_DIR=$CONVEYOR_HOME/workflow/data/test
+    source $CONVEYOR_HOME/workflow/runnable/lib/github-hooks.sh
     
+    if does_repo_exist 'DogFoodSoftware/manual-test-repo'; then
+	delete_repo 'DogFoodSoftware/manual-test-repo'
+    fi
+
     if [ ! -d "$DATA_DIR/manual-test-repo" ]; then # nothing to do
 	return 0
     fi

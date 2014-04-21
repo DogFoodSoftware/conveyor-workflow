@@ -41,13 +41,12 @@ function init_github_test_environment() {
 	TEST_REPO='DogFoodSoftware/test-repo'
     fi
 
-    ORIGIN_REPO_URL='https://github.com/DogFoodSoftware/test-repo.git'
+    ORIGIN_REPO_URL="https://github.com/${TEST_REPO}.git"
 
     source $HOME/.conveyor/config
     source $HOME/.conveyor-workflow/github
     source $TEST_BASE/../runnable/lib/github-hooks.sh
 
-    TEST_REPO='DogFoodSoftware/test-repo'
     GIT_CONVEY_HOME=$CONVEYOR_HOME/workflow
     export GIT_CONVEY_HOME
     export GIT_CONVEY_TEST_DIR="$GIT_CONVEY_HOME/data/test"

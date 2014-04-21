@@ -142,7 +142,7 @@ if [ ! -f "$CON_HOME/git-conveyor-$RESOURCE" ] && [ ! -f "$CON_HOME/conveyor-$RE
 fi
 
 case "$RESOURCE" in
-    topics|releases)
+    topics|releases|sync|init)
 	git conveyor "$RESOURCE" "$@"
 	;;
     *)

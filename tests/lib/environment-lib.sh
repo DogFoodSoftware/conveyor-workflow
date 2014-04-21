@@ -35,6 +35,11 @@ function init_test_environment() {
 function init_github_test_environment() {
     local TEST_SCRIPT="$1"; shift
     local ORIGIN_REPO_URL TEST_REPO
+    if [ $# -gt 0 ]; then
+	TEST_REPO="DogFoodSoftware/$1"; shift
+    else
+	TEST_REPO='DogFoodSoftware/test-repo'
+    fi
 
     ORIGIN_REPO_URL='https://github.com/DogFoodSoftware/test-repo.git'
 

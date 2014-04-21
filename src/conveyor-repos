@@ -23,7 +23,8 @@ function create_test_repo() {
     fi
     mkdir manual-test-repo
     cd manual-test-repo
-    init_github_test_environment 'manual-test-repo'
+    GIT_CONVEY_TEST_MODE=0 # bash for true
+    init_github_test_environment 'manual-test-repo' 'manual-test-repo'
     echo "Test directory initialized. Execute:"
     echo "cd $DATA_DIR/manual-test-repo"
 }

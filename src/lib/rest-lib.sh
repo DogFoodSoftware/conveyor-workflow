@@ -94,6 +94,9 @@ function json_extract {
 function last_rest_status() {
     if [ -f $HOME/.conveyor-workflow/last-rest-data ]; then
 	source $HOME/.conveyor-workflow/last-rest-data
+	if [ x"$REST_LIB_STATUS" == x"" ]; then
+	    REST_LIB_STATUS='-1' # unknown
+	fi
 	echo $REST_LIB_STATUS
     else
 	echo '-1'

@@ -14,7 +14,7 @@ if [ x"$1" == x"-s" ] || [ x"$1" == x"--setresource" ]; then
 	fi
     elif [ $# -eq 1 ]; then # set implied resource.
 	case "$1" in
-	    topics|releases|issues)
+	    topics|releases|issues|repos)
 		echo "$1" > $HOME/.conveyor-workflow/implied-resource
 		echo "Resource set as '$1'.";;
 	    *)
@@ -33,7 +33,7 @@ elif [ x"$1" == x"--verify" ] || [ x"$1" == x"--verifyresource" ] || [ x"$1" == 
 	'')
 	    echo "ERROR: '--verify(*)' requires value." >&2
 	    exit 1;;
-	topics|releases|issues|repos)
+	topics|releases|issues|repos|status)
 	    if [ "$OPTION" == "--verify" ] || [ "$OPTION" == "--verifyresource" ]; then
 		echo "Resource '$1' is valid."
 		exit 0
@@ -124,9 +124,12 @@ if [ -f $HOME/.conveyor-workflow/implied-resource ]; then
 	    usage "ERROR: Cannot understand '$1' as action, resource, or global."
 	    exit 1
 	elif con --verifyresource "$1" >/dev/null; then
-	    rm -f $HOME/.conveyor-workflow/implied-resource
 	    RESOURCE="$1"; shift
-	    echo "WARNING: understood '$RESOURCE' as resource; implied resource reset." >&2
+	    echo "RESOURCE: $RESOURCE"
+	    if [ "$RESOURCE" != "init" ] && [ "$RESOURCE" != "status" ]; then
+		rm -f $HOME/.conveyor-workflow/implied-resource
+		echo "WARNING: understood '$RESOURCE' as resource; implied resource reset." >&2
+	    fi
 	elif con --verifyglobal "$1" >/dev/null; then
 	    RESOURCE="$1"; shift # and nothing else
 	# else, it's an action of the implied resource, which is just fine
@@ -136,9 +139,22 @@ else
     RESOURCE="$1"; shift
 fi
 
-if [ ! -f "$CON_HOME/git-conveyor-$RESOURCE" ]; then
+if [ ! -f "$CON_HOME/git-conveyor-$RESOURCE" ] && [ ! -f "$CON_HOME/conveyor-$RESOURCE" ]; then
     usage "Unknown resource: '$RESOURCE'."
     exit 1
 fi
 
-git conveyor "$RESOURCE" "$@"
+case "$RESOURCE" in
+    topics|releases|sync|init|status)
+	git conveyor "$RESOURCE" "$@"
+	;;
+    *)
+	if [ -f "$CON_HOME/conveyor-$RESOURCE" ]; then
+	    source "$CON_HOME/conveyor-$RESOURCE"
+	    process "$@"
+	else
+	    echo "ERROR: Unknown resource '$RESOURCE'." >&2
+	    exit 1
+	fi
+	;;
+esac

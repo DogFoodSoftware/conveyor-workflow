@@ -49,7 +49,7 @@ function check_issue_exists_for() {
     return 0
 }
 
-#* <div class="subHeader"><span><code>does_github_repo_exist()</code></span></div>
+#* <div class="subHeader"><span><code>does_repo_exist()</code></span></div>
 #* <div class="p">
 #*   Tests whether the provided string appears to be a GitHub URL.
 #* </div>

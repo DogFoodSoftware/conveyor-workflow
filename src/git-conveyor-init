@@ -77,7 +77,22 @@ function setup_github_repo() {
     for LABEL in "${LABELS[@]}"; do
 	local NAME=`echo $LABEL | cut -d# -f1`
 	local COLOR=`echo $LABEL | cut -d# -f2`
+
 	github_api POST "/repos/$REPO_NAME/labels" "{\"name\": \"$NAME\", \"color\": \"$COLOR\" }"
+    done
+    # We now clear out the (at the time of writing) default GitHub issue
+    # labels. Notice we DO NOT clear all labels. See
+    # https://github.com/DogFoodSoftware/conveyor-workflow/issues/125
+    local GITHUB_DEFAULT_LABELS=(
+	'bug'
+	'duplicate'
+	'enhancement'
+	'help wanted'
+	'invalid'
+	'question'
+	'wontfix');
+    for LABEL in "${GITHUB_DEFAULT_LABELS[@]}"; do
+	github_api DELETE "/repos/$REPO_NAME/labels/$LABEL"
     done
 
     cd $CONVEYOR_HOME/workflow/data/

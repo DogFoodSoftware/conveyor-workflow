@@ -160,4 +160,22 @@
     In practice, a simple "when" is the better top level view. It's clear and
     gives clear direction to processors.
   </div>
+  <div class="subHeader"><span>Who</span></div>
+  <div class="p">
+    Earlier versions of the issue specification used <code>who<code> rather
+    than <code>what<code> and talked about writers rather than writing. This
+    was initially done to put individuals into the process. It was changed for
+    two reasons which collectively outweiged the benefits of <code>who</code>.
+  </div>
+  <div class="p">
+    First, <code>what</code> avoids limiting individuals. Dividing issues
+    by <code>who</code> seems like a much harder question, at least for some
+    individuals. "Who am I?" is existentially more weighty and fraught than
+    "what can I do?"
+  </div>
+  <div class="p">
+    Second, the 'what' tends to be clearer and more concise than
+    'who'. Compare "php code" with "php developer" and "help documentation"
+    with "help documentation writer".
+  </div>
 </div><!-- #Non-Topics -->

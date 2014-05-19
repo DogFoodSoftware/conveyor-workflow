@@ -77,13 +77,25 @@
     paramount and uncertaintity needs to be dispelled because changes should
     only be implemnted on stable code with clear direction.
   </div>
-  <div class="subHeader"><span>Who</span></div>
+  <div class="subHeader"><span>What</span></div>
   <div class="p">
-    The 'who' is actually where it gets a bit more complicated. Also note that
-    here, any custom types are considered distinct and are not mapped to the
-    standard types here. In other words, whereas the standard 'when' and 'why'
-    types are considered fundamental, the standard 'who' types are merely
-    suggestive and may even be ammended and deleted for any given project.
+    'What' simply declare what the output of the issue is. This is meant as a
+    first order division to allow processors to focus on a group of issues
+    which match their skill set. It is not meant to be entirely descriptive of
+    the issue requirements. That is <code>what: php code</code> means you at
+    least need to know PHP, but it doesn't say enough to know whether any
+    particular PHP developer is equipped to handle the issue or not.
+  </div>
+  <div class="p">
+    Unlike <code>when</code> and <code>why</code> we expect
+    the <code>what</code> values to often be editted and in general, conveyor
+    logic does not make decisions based on these values apart from simple
+    matching. Notice the convention is to use plurals for value labels.
+  </div>
+  <div class="p">
+    The <code>what: issues</code> label <em>should</em> should be accompanied
+    with a second <code>what</code> specifier indicating the artififact that
+    the to-be-created issue will generate.
   </div>
   <div data-perspective="detailed">
   </div>
@@ -122,16 +134,19 @@
       </li>
       <li>what
 	<ul>
-	  <li><code>who: user support writer</code></li>
-	  <li><code>who: user direct support</code></li>
-	  <li><code>who: technical designer</code></li>
-	  <li><code>who: technical writer</code></li>
+	  <li><code>what: issues</code></li>
+	  <li><code>what: help documentation</code></li>
+	  <li><code>what: technical documentation</code></li>
+	  <li><code>what: use cases</code></li>
 
-	  <li><code>who: code developer</code></li>
+	  <li><code>what: technical designs</code></li>
+	  <li><code>what: technical writer</code></li>
 
-	  <li><code>who: ui designer</code></li>
-	  <li><code>who: graphics and style</code></li>
-	  <li><code>who: sysadmin</code></li>
+	  <li><code>what: code developer</code></li>
+
+	  <li><code>what: ui designer</code></li>
+	  <li><code>what: graphics and style</code></li>
+	  <li><code>what: sysadmin</code></li>
 	</ul>
       </li>
     </ul>

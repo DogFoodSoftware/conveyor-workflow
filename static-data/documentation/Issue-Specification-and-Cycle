@@ -90,7 +90,8 @@
     Unlike <code>when</code> and <code>why</code> we expect
     the <code>what</code> values to often be editted and in general, conveyor
     logic does not make decisions based on these values apart from simple
-    matching. Notice the convention is to use plurals for value labels.
+    matching. Notice the convention is to use plural or collective for value
+    labels.
   </div>
   <div class="p">
     The <code>what: issues</code> label <em>should</em> should be accompanied
@@ -129,24 +130,22 @@
 	<ul>
 	  <li><code>why: bug</code></li>
 	  <li><code>why: change</code></li>
-	  <li><code>why: question</code></li>
 	</ul>
       </li>
       <li>what
 	<ul>
 	  <li><code>what: issues</code></li>
-	  <li><code>what: help documentation</code></li>
-	  <li><code>what: technical documentation</code></li>
+	  <li><code>what: decisions</code></li>
 	  <li><code>what: use cases</code></li>
-
-	  <li><code>what: technical designs</code></li>
-	  <li><code>what: technical writer</code></li>
-
-	  <li><code>what: code developer</code></li>
-
-	  <li><code>what: ui designer</code></li>
-	  <li><code>what: graphics and style</code></li>
-	  <li><code>what: sysadmin</code></li>
+	  <li><code>what: technical documentation</code></li>
+	  <li><code>what: help documentation</code></li>
+	  <li><code>what: system design</code></li>
+	  <li><code>what: REST services</code></li>
+	  <li><code>what: client JavaScript</code></li>
+	  <li><code>what: graphic designs</code></li>
+	  <li><code>what: graphic assets</code></li>
+	  <li><code>what: verification</code></li>
+	  <li><code>what: operation actions</code></li>
 	</ul>
       </li>
     </ul>

@@ -46,12 +46,18 @@ if [ $RESULT -ne 0 ]; then
     echo "ERROR: 'con repo init --github temp-test' exitted with status '$RESULT'."
 else
     LABELS_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/temp-test/labels`
-    # Spot check
-    EXPECTED_LABELS=('change : bug' 'sched : whenever')
-    for LABEL in "${EXPECTED_LABELS[@]}"; do
+    source $TEST_BASE/../src/lib/standard-issue-labels.sh
+    for LABEL in "${LABELS[@]}"; do
+	LABEL=`echo $LABEL | cut -d'#' -f1`
 	if [ `echo $LABELS_JSON | grep "$LABEL" | wc -l` -ne 1 ]; then
 	    echo "ERROR: did not find expected label '$LABEL'."
 	fi
     done
+    # Now verify that only the standard labels are present.
+    EXPECTED_COUNT=${#LABELS[@]}
+    ACTUAL_COUNT=`echo $LABELS_JSON | grep -o '"name":' | wc -l`
+    if [ $EXPECTED_COUNT -ne $ACTUAL_COUNT ]; then
+	echo "ERROR: expected $EXPECTED_COUNT labels but found $ACTUAL_COUNT."
+    fi
 fi
 delete_repo "DogFoodSoftware/temp-test"

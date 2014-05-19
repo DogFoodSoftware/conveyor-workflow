@@ -1,0 +1,18 @@
+LABELS=(
+    'when : now#ffff00'
+    'when : whenever#bfffbf'    
+    'when : not yet#ffbfff'
+    'why : bug#ff0000'
+    'why : change#bfffff'
+    'what : issues#0000ff'
+    'what : decisions#0000ff'
+    'what : use cases#bfbfff'
+    'what : technical documentation#bfbfff'
+    'what : help documentation#bfbfff'
+    'what : system design#bfbfff'
+    'what : REST services#bfbfff'
+    'what : client JavaScript#bfbfff'
+    'what : graphic designs#bfbfff'
+    'what : graphic assets#bfbfff'
+    'what : operation actions#bfbfff'
+    'what : verification#00ff00')

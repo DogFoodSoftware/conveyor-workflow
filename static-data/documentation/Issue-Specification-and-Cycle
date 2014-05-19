@@ -32,10 +32,10 @@
 <div id="Issue-Specification" class="blurbSummary grid_12">
   <div class="blurbTitle">Issue Specification</div>
   <div class="p">
-    In order to be considered fully specified (created), an issue must
-    define <em>when</em> the issue needs to be tackled, <code>why</code>
-    needs to be done, and <em>who</em> needs to do the
-    doing. Issues <em>should</em> when possible further specify the general
+    In order to be considered fully specified, an issue must
+    define <em>when</em> the issue needs to be tackled, <code>why</code> it
+    needs to be done, and <em>what</em> needs to be
+    done. Issues <em>should</em> when possible further specify the general
     work category, as defined by the particular project.
   </div>
   <div class="p">
@@ -46,42 +46,16 @@
   <div class="subHeader"><span>When</span></div>
   <div class="p">
     In the standard system, we define three possible values for 'when' an
-    issue should be tackled: now, whenever, and not yet. Individual projects
-    are free to define further labels that carry meaning within the
-    project. All labels must map onto one of these three fundamental types.
+    issue should be tackled: <code>now</code>, <code>whenever</code>,
+    and <code>not yet</code>. While these <em>may</em> be modified we believe
+    that for for most projects these will be will be sufficient.
   </div>
   <div class="p">
-    The 'not yet' designation is useful to mark issues which have been
-    started, and may be fully specified, but are for whatever reason are not
-    ready for implementation. Specifically, a developer <em>should</em> deal
-    with 'now' issues before 'whenever' issues, but <em>must not</em> deal
-    with 'not yet' issues.
-  </div>
-  <div class="p" data-perspective="detailed">
-    The 'when' maps more or less onto the 'priority' and 'value' that you might
-    find in other systems. The problem with a priority or value based model is
-    that information isn't directly actionable. To be fair, the 'when' doesn't
-    itself fully specify the 'optimal order of address' for issues, but it
-    does give us a clear first order sort. Another way to say this is that
-    it's much clearer how to extract priority from this first level ordering
-    of 'when' than it is to go the other way.
-  </div>
-  <div class="p" data-perspective="detailed">
-    'Value' based issue systems are somewhat better than priority, but in
-    practice tend to get used in a way that again fails to give us a clear
-    order of operations. The bigger problem with 'value' is the question of
-    "value to whom?" Most often, this is taken as customer value, but this is
-    problematic because it leads to development concerns being continually
-    sidetracked in favor of user visible issues.
-  </div>
-  <div class="p" data-perspective="detailed">
-    In practice, the 'when' designation is really what we want. It gives us
-    clear next steps for the issues. Furthermore, the three categories turn
-    out to be enough. In practice, developers shouldn't care about anything
-    other than 'now' or 'later'. Whether or not an issue is 'critical',
-    'high', 'medium', or 'low' priority is idea that planners may&mdash;and
-    should&mdash;deal with, but as far as the issue life cycle goes, 'when'
-    turns out to be far more useful.
+    <code>now</code> are the urgent items. <code>whenever</code> items are
+    available for processing, but not urgent. Generally, workers are
+    encouraged through structure and incentive to focus on <code>now</code>
+    items over <code>whenever</code> items. <code>not yet</code> items are
+    still being specified and are not themselves available for processing.
   </div>
   <div class="subHeader"><span>Why</span></div>
   <div class="p">
@@ -113,7 +87,7 @@
   </div>
   <div data-perspective="detailed">
   </div>
-  <div class="subHeader" data-perspective="detailed"><span>Custom When/Why/Who Values</span></div>
+  <div class="subHeader" data-perspective="detailed"><span>Custom When/Why/What Values</span></div>
   <div class="p" data-perspective="detailed">
     In general, custom when and why values <em>should</em> be avoided. We
     require that custom issues map onto one of the fundamental types so that
@@ -123,29 +97,67 @@
     cognitive load in issue specification without clear benefit.
   </div>
   <div class="p" data-perspective="detailed">
-    'Who' designations are often and properly extended. Again, if you don't
+    'What' designations are often and properly extended. Again, if you don't
     need further details you shouldn't make difference for the sake of
     difference, but if you have more than type of 'code developer', for
     example, then you should designate the specific skills.
   </div>
   <div class="subHeader" data-perspective="operations detailed"><span>Technical Specification</span></div>
   <div class="p" data-perspective="operations detailed">
-    The what, why, who designations are tracked by the folliwing labels:
+    The what, why, what designations are tracked by the folliwing labels:
     <ul>
-      <li><code>when: now</code></li>
-      <li><code>when: whenever</code></li>
-      <li><code>when: not yet</code></li>
-      <li><code>why: bug</code></li>
-      <li><code>why: change</code></li>
-      <li><code>why: question</code></li>
-      <li><code>who: user writer</code></li>
-      <li><code>who: technical writer</code></li>
-      <li><code>who: user advocate</code></li>
-      <li><code>who: technical designer</code></li>
-      <li><code>who: ui designer</code></li>
-      <li><code>who: code developer</code></li>
-      <li><code>who: graphics developer</code></li>
-      <li><code>who: sysadmin</code></li>
+      <li>when
+	<ul>
+	  <li><code>when: now</code></li>
+	  <li><code>when: whenever</code></li>
+	  <li><code>when: not yet</code></li>
+	</ul>
+      </li>
+      <li>why
+	<ul>
+	  <li><code>why: bug</code></li>
+	  <li><code>why: change</code></li>
+	  <li><code>why: question</code></li>
+	</ul>
+      </li>
+      <li>what
+	<ul>
+	  <li><code>who: user support writer</code></li>
+	  <li><code>who: user direct support</code></li>
+	  <li><code>who: technical designer</code></li>
+	  <li><code>who: technical writer</code></li>
+
+	  <li><code>who: code developer</code></li>
+
+	  <li><code>who: ui designer</code></li>
+	  <li><code>who: graphics and style</code></li>
+	  <li><code>who: sysadmin</code></li>
+	</ul>
+      </li>
     </ul>
   </div>
 </div><!-- #Topic-Specification -->
+<div id="Non-Topics" class="blurbSummary grid_12" data-perspective="detailed">
+  <div class="blurbTitle">Non-Topics</div>
+  <div class="subHeader"><span>Priority and Value</span></div>
+  <div class="p">
+    Many readers may find the lack of any "priority" or "value" dimension
+    surprising. In general, these are the most common and typically central
+    attributes in issue management systems.
+  </div>
+  <div class="p">
+    The problem with these attributes is that they are not immediately
+    actionable. High priority / value issues may be delayed for valid
+    reasons. It may make sense to firt tackle low value / priority issues that
+    are also low hanging.
+  </div>
+  <div class="p">
+    These values must be interpretted under some external set of rules which
+    are not immediately obvious; that is, they require a-priori and ex-app
+    knowledge. You need to the know the value to whom? Priority based on what?
+  </div>
+  <div class="p">
+    In practice, a simple "when" is the better top level view. It's clear and
+    gives clear direction to processors.
+  </div>
+</div><!-- #Non-Topics -->

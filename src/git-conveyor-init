@@ -71,7 +71,8 @@ function setup_github_repo() {
 	exit 1
     fi
     # There is an existing repository, let's configure it.
-    local LABELS=('change : bug#ff0000' 'sched : whenever#e0e0e0')
+    local LABELS
+    source $GIT_CONVEY_DIR/lib/standard-issue-labels.sh
     local LABEL
     for LABEL in "${LABELS[@]}"; do
 	local NAME=`echo $LABEL | cut -d# -f1`

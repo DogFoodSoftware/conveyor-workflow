@@ -47,8 +47,9 @@ if [ $RESULT -ne 0 ]; then
 else
     LABELS_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/temp-test/labels`
     # Spot check
-    EXPECTED_LABELS=('change : bug' 'sched : whenever')
-    for LABEL in "${EXPECTED_LABELS[@]}"; do
+    source $TEST_BASE/../src/lib/standard-issue-labels.sh
+    for LABEL in "${LABELS[@]}"; do
+	LABEL=`echo $LABEL | cut -d'#' -f1`
 	if [ `echo $LABELS_JSON | grep "$LABEL" | wc -l` -ne 1 ]; then
 	    echo "ERROR: did not find expected label '$LABEL'."
 	fi

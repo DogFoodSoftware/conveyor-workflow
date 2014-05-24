@@ -6,12 +6,17 @@ function process() {
 	    create_test_repo;;
 	delete-test)
 	    delete_test_repo;;
+	*)
+	    echo "Unknown verb '$VERB'." >&2
+	    return 1;;
     esac
 }
 
 function create_test_repo() {
     source $HOME/.conveyor/config
     source $HOME/.conveyor-workflow/github
+    # This is a bit of a kludge; should pull the repo management stuff into a
+    # non-test library and use it in the test code rather than vice-a-versa.
     TEST_BASE=$CONVEYOR_HOME/workflow/tests
     source $CONVEYOR_HOME/workflow/tests/lib/environment-lib.sh
     

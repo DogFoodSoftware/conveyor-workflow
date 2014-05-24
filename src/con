@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# For Windows, we need to change '\' to '/'.
+export GIT_CONVEY_DIR=$(dirname "$(echo "$0" | sed -e 's|\\|/|g')")
+
+source "$HOME/.conveyor/config"
+source "$GIT_CONVEY_DIR/lib/resty"
+source "$GIT_CONVEY_DIR/lib/rest-lib.sh"
+source "$GIT_CONVEY_DIR/common-checks.sh"
+source "$GIT_CONVEY_DIR/common-lib.sh"
+
 # Normally, we'd use 'shflags' here, but we can't seem to do patial flag
 # progessing... even though something like it has been emprically working for
 # awhile.
@@ -22,7 +31,7 @@ if [ x"$1" == x"-s" ] || [ x"$1" == x"--setresource" ]; then
 		exit 1;;
 	esac
     else
-	echo "You may only supply a single supplied resource: topics, releases, or issues." >&2
+	echo "You may only supply a single supplied resource: topics, releases,  issues, or repos." >&2
 	exit 1
     fi
     exit 0 # If we successfully set resource, then we're done.
@@ -54,14 +63,11 @@ elif [ x"$1" == x"--verify" ] || [ x"$1" == x"--verifyresource" ] || [ x"$1" == 
 	    exit 1;;
     esac
 fi
-# else
-
-
+# ... else it's a <resource> [<action>] style command.
 
 #/**
 #  * <div class="subHeader"><span>Options Parsing</span></div>
 #  */
-
 source "$HOME/.conveyor/config"
 CON_HOME=`which con`
 CON_HOME=`dirname "$CON_HOME"`
@@ -71,7 +77,6 @@ if [ $# -lt 1 ]; then
     usage "Please indicate resource."
     exit 1
 fi
-
 
 FOUND_SOMETHING=0
 while [ $# -gt 0 ] && [ $FOUND_SOMETHING -eq 0 ]; do

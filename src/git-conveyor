@@ -32,7 +32,7 @@
 export GIT_CONVEY_DIR=$(dirname "$(echo "$0" | sed -e 's|\\|/|g')")
 
 # Regularize getopt parsing across Linux platforms.
-export POSIXLY_CORRECT=1
+# export POSIXLY_CORRECT=1
 
 source "$HOME/.conveyor/config"
 source "$GIT_CONVEY_DIR/lib/shflags"

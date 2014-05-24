@@ -27,3 +27,5 @@ test_output 'con --setresource issues' "Resource set as 'issues'." '' 0
 test_output 'con -s topics' "Resource set as 'topics'." '' 0
 test_output 'con -s releases' "Resource set as 'releases'." '' 0
 test_output 'con -s issues' "Resource set as 'issues'." '' 0
+
+con -s >/dev/null

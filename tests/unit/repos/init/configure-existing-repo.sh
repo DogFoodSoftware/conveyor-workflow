@@ -40,7 +40,7 @@ if ! create_repo "DogFoodSoftware/temp-test"; then
 fi
 
 # TODO: should be 'con repo init'; issue already created.
-con init --github DogFoodSoftware/temp-test > /dev/null
+con repos init --github DogFoodSoftware/temp-test > /dev/null
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
     echo "ERROR: 'con repo init --github temp-test' exitted with status '$RESULT'."

@@ -33,3 +33,4 @@ if ! con  releases list > /dev/null 2>/dev/null; then
     echo "ERROR: 'con' execution failed; test inconclusive."
 fi
 test_output 'con checkout task-foo' 'usage: con' "Unknown resource: 'checkout'." 1
+con -s > /dev/null

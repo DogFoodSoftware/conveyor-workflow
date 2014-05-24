@@ -24,3 +24,4 @@ cd "$WORKING_REPO_PATH"
 con -s topics >/dev/null
 con status > /dev/null
 test_output 'con start --checkout 1-test-topic' "Created topic '1-test-topic'" '' 0
+con -s > /dev/null

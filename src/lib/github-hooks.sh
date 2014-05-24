@@ -178,14 +178,45 @@ function clear_assignee() {
 function create_issue() {
     local GITHUB_REPO="$1"; shift
     local TITLE="$1"; shift
-    local API_RESULT
+    local LABELS NUMBER API_RESULT
 
-    NUMBER=`github_query '["number"]' POST /repos/$GITHUB_REPO/issues "{\"title\": \"$TITLE\"}"`
+    ARGS=$(getopt -o l: -l "labels:" -n "github-hooks.sh:create_issue" -- "$@");
+    if [ $? -ne 0 ]; then #Bad arguments
+	return 1
+    fi
+    eval set -- "$ARGS";
+    while [ "$1" != '--' ]; do
+	case "$1" in
+	    --labels|-l)
+		LABELS="$2"
+		shift;;
+	esac
+	shift
+    done
+    shift # remove the '--'
+
+    if [ x"$LABELS" == x"" ]; then
+	NUMBER=`github_query '["number"]' POST /repos/$GITHUB_REPO/issues "{\"title\": \"$TITLE\"}"`
+    else
+	NUMBER=`github_query '["number"]' POST /repos/$GITHUB_REPO/issues "{\"title\": \"$TITLE\", \"labels\": [$LABELS]}"`
+    fi
     API_RESULT=$?
     if [ $API_RESULT -ne 0 ]; then
 	return $API_RESULT
     fi
     echo $NUMBER
+}
+
+function close_issue() {
+    local GITHUB_REPO="$1"; shift
+    local ISSUE_NUMBER="$1"; shift
+
+    github_api PATCH /repos/$GITHUB_REPO/issues/$ISSUE_NUMBER '{"state": "closed"}' > /dev/null
+    API_RESULT=$?
+    if [ $API_RESULT -ne 0 ]; then
+	return $API_RESULT
+    fi
+    return 0
 }
 
 function set_github_origin_data() {
@@ -304,7 +335,7 @@ function get_next_issues() {
     local ISSUES PHP_BIN
 
     set_github_origin_data
-    ISSUES=`github_api GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues -q 'labels=when%20:%20now' 2> /dev/null`
+    ISSUES=`github_api GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues -q 'labels=when%20:%20now&direction=asc' 2> /dev/null`
     RESULT=$?
     if [ `last_rest_status` -eq 404 ]; then
 	echo "GitHub reports bad URL." >&2

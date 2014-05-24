@@ -131,7 +131,7 @@ if [ -f $HOME/.conveyor-workflow/implied-resource ]; then
 	elif con --verifyresource "$1" >/dev/null; then
 	    RESOURCE="$1"; shift
 	    echo "RESOURCE: $RESOURCE"
-	    if [ "$RESOURCE" != "init" ] && [ "$RESOURCE" != "status" ]; then
+	    if [ "$RESOURCE" != "status" ]; then
 		rm -f $HOME/.conveyor-workflow/implied-resource
 		echo "WARNING: understood '$RESOURCE' as resource; implied resource reset." >&2
 	    fi
@@ -150,7 +150,7 @@ if [ ! -f "$CON_HOME/git-conveyor-$RESOURCE" ] && [ ! -f "$CON_HOME/conveyor-$RE
 fi
 
 case "$RESOURCE" in
-    topics|releases|sync|init|status)
+    topics|releases|sync|status)
 	git conveyor "$RESOURCE" "$@"
 	;;
     *)

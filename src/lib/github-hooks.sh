@@ -176,9 +176,7 @@ function clear_assignee() {
 }
 
 function create_issue() {
-    local GITHUB_REPO="$1"; shift
-    local TITLE="$1"; shift
-    local LABELS NUMBER API_RESULT
+    local ARGS LABELS NUMBER API_RESULT
 
     ARGS=$(getopt -o l: -l "labels:" -n "github-hooks.sh:create_issue" -- "$@");
     if [ $? -ne 0 ]; then #Bad arguments
@@ -194,6 +192,9 @@ function create_issue() {
 	shift
     done
     shift # remove the '--'
+
+    local GITHUB_REPO="$1"; shift
+    local TITLE="$1"; shift
 
     if [ x"$LABELS" == x"" ]; then
 	NUMBER=`github_query '["number"]' POST /repos/$GITHUB_REPO/issues "{\"title\": \"$TITLE\"}"`

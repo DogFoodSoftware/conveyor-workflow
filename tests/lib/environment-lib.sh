@@ -28,7 +28,7 @@ function init_test_environment() {
     # TODO: we should support '-q/--quiet' for the following two commands.
     # Notice we use the 'working repo', without the '.git' extension because
     # init adds the extension. Users do not generally deal with the '.git'.
-    con init $WORKING_REPO > /dev/null
+    con repos init $WORKING_REPO > /dev/null
     con sync "file://$ORIGIN_REPO_PATH" "$WORKING_REPO_PATH" > /dev/null
 }
 
@@ -55,7 +55,7 @@ function init_github_test_environment() {
 
     if ! does_repo_exist "$TEST_REPO"; then
 	create_repo "$TEST_REPO"
-	con init --github "$TEST_REPO" > /dev/null
+	con repos init --github "$TEST_REPO" > /dev/null
     fi
     rm -rf $WORKING_REPO_PATH
 

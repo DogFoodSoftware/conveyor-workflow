@@ -39,7 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION_2) do |config|
   setup_keys config
 
   $INSTALL_WORKSTATION_DISTRO_PACKAGES = <<SCRIPT
-zypper --non-interactive in --auto-agree-with-licenses man MozillaFirefox ImageMagick exiftool gimp gimp-help gimp-help-browser gimp-plugins-python graphviz graphviz-gd graphviz-gnome icoutils inkscape autoconf make emacs git git-web gitk git-email git-daemon -patterns-openSUSE-minimal_base-conflicts
+zypper --non-interactive in --auto-agree-with-licenses man MozillaFirefox ImageMagick exiftool gimp gimp-help gimp-help-browser gimp-plugins-python graphviz graphviz-gd graphviz-gnome icoutils inkscape autoconf make emacs git git-web gitk git-email git-daemon -patterns-openSUSE-minimal_base-conflicts chromium
 SCRIPT
   config.vm.provision "shell", :inline => $INSTALL_WORKSTATION_DISTRO_PACKAGES
   

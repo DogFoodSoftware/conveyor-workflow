@@ -22,7 +22,7 @@
 TEST_BASE=`dirname $0`/../../..
 TEST_BASE=`realpath $TEST_BASE`
 source $TEST_BASE/lib/cli-lib.sh
-setup_path $TEST_BASE/../runnable
+check_path
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 init_github_test_environment `basename $0`

@@ -15,6 +15,6 @@
 
 TEST_BASE=`dirname $0`/../..
 source $TEST_BASE/lib/cli-lib.sh
-setup_path $TEST_BASE/../runnable
+check_path
 
 test_output "con topics foo" "usage: con topics" "Unknown action: 'foo'." 1

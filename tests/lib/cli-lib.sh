@@ -3,18 +3,28 @@
 FLAGS_TRUE=0
 FLAGS_FALSE=1
 
-setup_path() {
-    local RUNNABLE_PATH="$1"
-    local RESULT
-
-    # Git expects to find 'conveyor-workflow' on the PATH. So we check to see if it
-    # is, and if not, we add it.
+check_path() {
+    local RESULT ERROR
+    ERROR=1 # bash false
+    # We expect to find 'con' and 'git-coveyor' on the PATH. If not, the tests
+    # cannot run.
+    which con > /dev/null 2> /dev/null
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+	ERROR=0 # bash true
+	echo "ERROR: Did not find 'con' on PATH."
+    fi
     which git-conveyor > /dev/null 2> /dev/null
     RESULT=$?
     if [ $RESULT -ne 0 ]; then
-	cd $RUNNABLE_PATH
-	RUNNABLE_PATH=`realpath $RUNNABLE_PATH`
-	export PATH=$PATH:$RUNNABLE_PATH
+	ERROR=0 # bash true
+	echo "ERROR: Did not find 'git-conveyor' on PATH." >&2
+    fi
+    if [ $ERROR -eq 0 ]; then
+	echo "Please add:" >&2
+	echo "'\$HOME/playground/dogfoodsoftware.com/conveyor/core/bin' or custom install" >&2
+	echo "location to PATH." >&2
+	exit 1
     fi
 }
 
@@ -73,12 +83,10 @@ test_output() {
 	[ "$NO_EXPECTED_STDOUT" != "${FLAGS_TRUE}" ]; then
 	# Tested this detects failure by exiting immediately from help mode.
 	echo "ERROR: '$COMMAND' did not produce any text on stdout as expected."
-	echo "ERROR: STDERR - $ERROUT"
 	IN_ERR=0
     elif [ x"$OUTPUT" != x"" ] &&
 	[ "$NO_EXPECTED_STDOUT" == "${FLAGS_TRUE}" ]; then
 	echo -e "ERROR: '$COMMAND' was not expected to produce output, but got:\n$OUTPUT"
-	echo "ERROR: STDERR - $ERROUT"
 	IN_ERR=0
     elif [[ "$OUTPUT" != "$EXPECTED_STDOUT_START"* ]]; then
 	# Tested this detects failure by modifying the output of usage,

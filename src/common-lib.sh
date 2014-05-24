@@ -382,7 +382,7 @@ function submit_branch() {
 	    if ! is_github_configured; then exit 1; fi
 	    # Okay, now ready to do this thing.
 	    ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
-	    source $GIT_CONVEY_DIR/lib/github-hooks.sh
+	    source $CONVEYOR_WORKFLOW_RUNNABLE/lib/github-hooks.sh
 	    PR_NUMBER=`create_pull_request $ISSUE_NUMBER "$BRANCH_NAME"`
 	    RESULT=$?
 	    if [ $RESULT -ne 0 ]; then

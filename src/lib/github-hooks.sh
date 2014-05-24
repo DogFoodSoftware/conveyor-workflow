@@ -298,6 +298,29 @@ function create_pull_request() {
     done
 }
 
+function get_next_issues() {
+    source $HOME/.conveyor/config
+    source $HOME/.conveyor-workflow/github
+    local ISSUES PHP_BIN
+
+    set_github_origin_data
+    ISSUES=`github_api GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues -q 'labels=when%20:%20now' 2> /dev/null`
+    RESULT=$?
+    if [ `last_rest_status` -eq 404 ]; then
+	echo "GitHub reports bad URL." >&2
+	exit 0
+    elif [ $RESULT -ne 0 ]; then
+	echo "ERROR: failed to retrive issues. ($GITHUB_URL / $RESULT)" >&2
+	exit 2
+    fi
+
+    # Now process the issues.
+    PHP_BIN=$DFS_HOME/third-party/php5/runnable/bin/php
+    echo "$ISSUES" | $PHP_BIN -r '$handle = fopen ("php://stdin","r"); $json = stream_get_contents($handle); $data = json_decode($json, true); foreach ($data as $issue) { print "$issue[''number''] : $issue[''title'']\n"; }'
+
+    return 0
+}
+
 # /**
 # * </div><!-- #Implementation -->
 # */

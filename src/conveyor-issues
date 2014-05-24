@@ -1,0 +1,12 @@
+function process() {
+    local VERB="$1"; shift
+    load_hooks
+
+    case "$VERB" in
+	next)
+	    get_next_issues;;
+	*)
+	    echo "Unknown verb '$VERB'." >&2
+	    return 1;;
+    esac
+}

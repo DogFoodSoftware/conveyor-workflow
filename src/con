@@ -27,7 +27,7 @@ if [ x"$1" == x"-s" ] || [ x"$1" == x"--setresource" ]; then
 		echo "$1" > $HOME/.conveyor-workflow/implied-resource
 		echo "Resource set as '$1'.";;
 	    *)
-		echo "Unknown resource '$1'." >&2
+		echo "ERROR: Unknown resource '$1'." >&2
 		exit 1;;
 	esac
     else
@@ -50,7 +50,7 @@ elif [ x"$1" == x"--verify" ] || [ x"$1" == x"--verifyresource" ] || [ x"$1" == 
 		echo "'$1' is not a valid global action."
 		exit 1
 	    fi;;
-	status|sync|init)
+	status|sync|launch-web-dashboard)
 	    if [ "$OPTION" == "--verify" ] || [ "$OPTION" == "--verifyglobal" ]; then
 		echo "Global action '$1' is valid."
 		exit 0
@@ -117,7 +117,6 @@ if [ x"$1" == x"help" ]; then
     exit 0
 fi
 
-
 if [ -f $HOME/.conveyor-workflow/implied-resource ]; then
     RESOURCE=`cat $HOME/.conveyor-workflow/implied-resource`
     source "$CON_HOME/git-conveyor-$RESOURCE"
@@ -144,12 +143,17 @@ else
     RESOURCE="$1"; shift
 fi
 
-if [ ! -f "$CON_HOME/git-conveyor-$RESOURCE" ] && [ ! -f "$CON_HOME/conveyor-$RESOURCE" ]; then
-    usage "Unknown resource: '$RESOURCE'."
-    exit 1
-fi
+function launch_web_dashboard() {
+    if [ x"$CONVEYOR_DEFAULT_BROWSER_BIN" == x"" ]; then
+	CONVEYOR_DEFAULT_BROWSER_BIN=chromium
+    fi
+    $CONVEYOR_DEFAULT_BROWSER_BIN 127.0.0.1:42069 2> chromium-log &
+}
 
 case "$RESOURCE" in
+    launch-web-dashboard) # global action
+	launch_web_dashboard
+	;;
     topics|releases|sync|status)
 	git conveyor "$RESOURCE" "$@"
 	;;

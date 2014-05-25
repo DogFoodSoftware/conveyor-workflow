@@ -18,7 +18,7 @@ export GIT_CONVEY_TEST_MODE=0 # that's bash for true
 
 TEST_BASE=`dirname $0`/../..
 source $TEST_BASE/lib/cli-lib.sh
-setup_path $TEST_BASE/../runnable
+check_path
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 init_test_environment `basename $0`

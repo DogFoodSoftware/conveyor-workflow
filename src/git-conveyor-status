@@ -25,7 +25,7 @@ resource_do() {
     if is_github_clone; then
 	if is_github_configured; then
 	    # We are good for connection check.
-	    source $GIT_CONVEY_DIR/lib/github-hooks.sh
+	    source $CONVEYOR_WORKFLOW_RUNNABLE/lib/github-hooks.sh
 	    get_login
 	    if [ x"$GITHUB_LOGIN" != x"" ]; then
 		echo "Connected to GitHub as: $GITHUB_LOGIN"

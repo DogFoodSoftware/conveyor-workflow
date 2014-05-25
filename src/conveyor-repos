@@ -91,7 +91,7 @@ function setup_github_repo() {
     REPO_NAME="$1"; shift
 
     source $HOME/.conveyor-workflow/github
-    source $GIT_CONVEY_DIR/lib/github-hooks.sh
+    source $CONVEYOR_WORKFLOW_RUNNABLE/lib/github-hooks.sh
 
     # First, we check if the repo exists or not.
     if ! does_repo_exist "$REPO_NAME"; then
@@ -100,7 +100,7 @@ function setup_github_repo() {
     fi
     # There is an existing repository, let's configure it.
     local LABELS
-    source $GIT_CONVEY_DIR/lib/standard-issue-labels.sh
+    source $CONVEYOR_WORKFLOW_RUNNABLE/lib/standard-issue-labels.sh
     local LABEL
     for LABEL in "${LABELS[@]}"; do
 	local NAME=`echo $LABEL | cut -d# -f1`

@@ -30,7 +30,7 @@ TEST_BASE=`realpath $TEST_BASE`
 source $TEST_BASE/../runnable/common-lib.sh
 source $TEST_BASE/lib/cli-lib.sh
 automate_github_https
-setup_path $TEST_BASE/../runnable
+check_path
 source $TEST_BASE/lib/environment-lib.sh
 source $TEST_BASE/lib/start-lib.sh
 source $TEST_BASE/../runnable/lib/github-hooks.sh

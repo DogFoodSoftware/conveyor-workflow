@@ -20,6 +20,7 @@ function github_api {
     local HEADER_OUT="headerout-$RANDOM"
     local STDOUT="stdout-$RANDOM"
     local STDERR="stderr-$RANDOM"
+    rm $HOME/.conveyor-workflow/last-rest-data
     source $HOME/.conveyor-workflow/github
     resty https://api.github.com* 2> /dev/null
     if [ $# -eq 1 ]; then

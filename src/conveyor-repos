@@ -131,7 +131,7 @@ function setup_github_repo() {
 	local COLOR=`echo $LABEL | cut -d# -f2`
 	github_api GET "/repos/$REPO_NAME/labels/$NAME" > /dev/null 2> /dev/null
 	local RESULT=$?
-	if [ x`last_rest_status` == x"404" ]; then
+	if [ $RESULT -ne 0 ] || [ x`last_rest_status` == x"404" ]; then
 	    github_api POST "/repos/$REPO_NAME/labels" "{\"name\": \"$NAME\", \"color\": \"$COLOR\" }" > /dev/null
 	fi
     done

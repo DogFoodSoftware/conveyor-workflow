@@ -39,11 +39,10 @@ if ! create_repo "DogFoodSoftware/temp-test"; then
     exit 0
 fi
 
-# TODO: should be 'con repo init'; issue already created.
 con repos init --github DogFoodSoftware/temp-test > /dev/null
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
-    echo "ERROR: 'con repo init --github temp-test' exitted with status '$RESULT'."
+    echo "ERROR: 'con repos init --github DogFoodSoftware/temp-test' exitted with status '$RESULT'."
 else
     LABELS_JSON=`curl -s -u $GITHUB_AUTH_TOKEN:x-oauth-basic https://api.github.com/repos/DogFoodSoftware/temp-test/labels`
     source $TEST_BASE/../src/lib/standard-issue-labels.sh

@@ -32,6 +32,7 @@ usage() {
     echo "Available resources:"
     echo "   topics    Manage topics / topic branches."
     echo "   releases  Manage releases."
+    echo "   repos     Manages Conveyor and git repositories."
     echo
     echo "Available global actions:"
     echo "   sync      Clones and synchronizes local repo with origin."

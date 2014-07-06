@@ -1,4 +1,4 @@
-resource_usage() {
+function resource_usage() {
     if [ x"$1" != x"" ]; then
 	echo $1 >&2
 	echo >&2
@@ -10,17 +10,40 @@ resource_usage() {
     echo "   init        Initializes a new repository."
     echo "   create-test Creates a test repository."
     echo "   delete-test Deletes the current test repository."
-    echo
-    echo "init"
-    echo "----"
-    echo "Used to initialize a new origin repository for conveyor-workflow. This is a"
-    echo "standard git repository with the 'master' branch pre-populated with"
-    echo "a README.repo file."
-    echo
-    echo "The '--github' variant will set up the named repo on github under the"
-    echo "configured account."
-    echo
-    echo "Use 'con sync' to checkout a local working directory."
+}
+
+function resource_help() {
+    if [ $# -lt 1 ]; then
+	resource_usage
+    else
+	local ACTION="$1"; shift
+	case "$ACTION" in
+	    init)
+		echo "Usage: con repos init [--github]"
+		echo
+		echo "Used to initialize a new origin repository for conveyor-workflow. This is a"
+		echo "standard git repository with the 'master' branch pre-populated with"
+		echo "a README.repo file."
+		echo
+		echo "The '--github' variant will set up the named repo on github under the"
+		echo "configured account."
+		;;
+	    create-test)
+		echo "Usage: con repos create-test"
+		echo
+		echo "Creates a bare local reposiotry 'manual-test-repo' and ties it to a github"
+		echo "repository."
+		;;
+	    delete-test)
+		echo "Usage: con repos delete-test"
+		echo
+		echo "Removes the local and github test repositories created by 'con repos create-test'."
+		;;
+	    *)
+		resource_usage "Unknown action: '$ACTION'."
+		exit 1;;
+	esac
+    fi
 }
 
 function process() {
@@ -95,7 +118,8 @@ function setup_github_repo() {
 
     # First, we check if the repo exists or not.
     if ! does_repo_exist "$REPO_NAME"; then
-	echo "No such repo exists; we currently only support configuration of existing repos. Bailing out." >&2
+	echo "No such repo '$REPO_NAME' exists on github. We currently " >&2
+	echo "only support configuration of existing repos. Bailing out." >&2
 	exit 1
     fi
     # There is an existing repository, let's configure it.
@@ -105,8 +129,11 @@ function setup_github_repo() {
     for LABEL in "${LABELS[@]}"; do
 	local NAME=`echo $LABEL | cut -d# -f1`
 	local COLOR=`echo $LABEL | cut -d# -f2`
-
-	github_api POST "/repos/$REPO_NAME/labels" "{\"name\": \"$NAME\", \"color\": \"$COLOR\" }" > /dev/null
+	github_api GET "/repos/$REPO_NAME/labels/$NAME" > /dev/null 2> /dev/null
+	local RESULT=$?
+	if [ x`last_rest_status` == x"404" ]; then
+	    github_api POST "/repos/$REPO_NAME/labels" "{\"name\": \"$NAME\", \"color\": \"$COLOR\" }" > /dev/null
+	fi
     done
     # We now clear out the (at the time of writing) default GitHub issue
     # labels. Notice we DO NOT clear all labels. See
@@ -120,7 +147,11 @@ function setup_github_repo() {
 	'question'
 	'wontfix');
     for LABEL in "${GITHUB_DEFAULT_LABELS[@]}"; do
-	github_api DELETE "/repos/$REPO_NAME/labels/$LABEL"
+	github_api GET "/repos/$REPO_NAME/labels/$NAME" > /dev/null 2> /dev/null
+	local RESULT=$?
+	if [ $RESULT == 0 ] && [ x`last_rest_status` == x"200" ]; then
+	    github_api DELETE "/repos/$REPO_NAME/labels/$LABEL"
+	fi
     done
 
     cd $CONVEYOR_HOME/workflow/data/

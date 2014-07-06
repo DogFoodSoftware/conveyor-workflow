@@ -28,7 +28,19 @@ function github_api {
 	$VERB "$@" -H 'Content-Type: application/json' -D $HEADER_OUT -A 'DogFoodSoftware/conveyor-workflow' -u $GITHUB_AUTH_TOKEN:x-oauth-basic > $STDOUT 2> $STDERR
     fi
     RESTY_STATUS=$?
-    
+
+    if [ -f $HEADER_OUT ]; then
+	# Extract common data element:
+	# - numerical status
+	REST_LIB_STATUS=`cat $HEADER_OUT | grep '^Status:' | cut -d' ' -f 2`
+	# - remaning calls
+	REST_LIB_RATE_LEFT=`cat $HEADER_OUT | grep '^X-RateLimit-Remaining:' | cut -d' ' -f 2`
+	echo -e "REST_LIB_STATUS=$REST_LIB_STATUS\nREST_LIB_RATE_LEFT=$REST_LIB_RATE_LEFT" > $HOME/.conveyor-workflow/last-rest-data
+	rm $HEADER_OUT
+    else
+	echo "ERROR: No headers found." >&2
+    fi
+
     if [ $RESTY_STATUS -ne 0 ]; then
 	echo "ERROR: REST call failed for '$VERB $@'. ("`last_rest_status`")" >&2
 	JSON=`cat $STDERR`
@@ -46,18 +58,6 @@ function github_api {
 	echo "---------------" >> $LOG_FILE
     else
 	cat $STDOUT
-    fi
-
-    if [ -f $HEADER_OUT ]; then
-	# Extract common data element:
-	# - numerical status
-	REST_LIB_STATUS=`cat $HEADER_OUT | grep '^Status:' | cut -d' ' -f 2`
-	# - remaning calls
-	REST_LIB_RATE_LEFT=`cat $HEADER_OUT | grep '^X-RateLimit-Remaining:' | cut -d' ' -f 2`
-	echo -e "REST_LIB_STATUS=$REST_LIB_STATUS\nREST_LIB_RATE_LEFT=$REST_LIB_RATE_LEFT" > $HOME/.conveyor-workflow/last-rest-data
-	rm $HEADER_OUT
-    else
-	echo "ERROR: No headers found." >&2
     fi
 
     if [ -f $STDOUT ]; then

@@ -1,0 +1,9 @@
+<div id="Overview" class="blurbSummary">
+<div class="p">
+  Requests to "do something" are created by creating
+  a <code>/requests</code> item. All requests are tied to a
+  primary <code>/repositories</code> item, and always involve the
+  primory <code>/repositories</code> item. They may involve
+  additional <code>/repositories</code> as well, both initially and at
+  any point in the <code>/requests</code> item lifecycle.
+</div>

@@ -26,17 +26,19 @@ resource_do() {
     # First, let's determine whether we're in clone or update mode.
     if [ $# -eq 1 ] || [ $# -eq 2 ]; then # Clone it is.
 	local REMOTE_URL="$1"; shift
-	local LOCAL_DIR GIT_DIR EXIT ORIGINAL_BRANCH BRANCH_LIST BRANCH_PREFIXES
+	local LOCAL_DIR GIT_DIR EXIT ORIGINAL_BRANCH BRANCH_LIST BRANCH_PREFIXES RESULT
 	if [ $# -eq 1 ]; then
 	    LOCAL_DIR="$1"; shift
 	fi
 
 	# We don't support clones within repos, so let's make sure we're not
 	# already in a repo.
-	GIT_DIR=`git rev-parse --git-dir`
-	# There is one exception: if we're running tests, then we will be
-	# working under the conveyor-workflow repo, and that's okay.
-	if [ x"$GIT_CONVEY_TEST_MODE" != x"0" ] || [[ x"$GIT_DIR" != x*conveyor/workflow/.git ]]; then
+	GIT_DIR=`git rev-parse --git-dir 2> /dev/null`
+	# Test exits with code '128' if not a git directory. Otherwise, we
+	# look for exceptional cases. Specifically, if we're running tests,
+	# then we will be working under the conveyor-workflow repo, and that's
+	# okay.
+	if [[ $? -ne 128 && ( x"$GIT_CONVEY_TEST_MODE" != x"0" || x"$GIT_DIR" != x*conveyor/workflow/.git ) ]]; then
 	    echo "Cannot clone a conveyor-workflow repo within an existing repo: '$GIT_DIR'." >&2
 	    exit 1
 	fi

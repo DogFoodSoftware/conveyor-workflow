@@ -40,10 +40,7 @@ resource_help() {
 		echo "Lists the topic branches active in the current repository."
 		;;
 	    start)
-		echo "Creates a new topic branch and checks it out. The current branch must be"
-		echo "'master', which will be updated and used as the source of the new branch."
-		echo "The branch must not already exist and the branch name must start with"
-		echo "'task-', 'bugfix-', or 'hotfix-' as appropriate."
+		echo "The branch name must start with the issue number for github cloned repos."
 		;;
 	    checkout)
 		echo "Checks and and updates an existing topic branch."

@@ -24,6 +24,7 @@ function check_issue_exists_for() {
     ISSUE_NUMBER=${RESOURCE_NAME:0:$((`expr index "$RESOURCE_NAME" '-'` - 1))}
     set_github_origin_data
 
+    echo "github_query '[\"state\"]' GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER 2> /dev/null" > $HOME/log.tmp
     STATE=`github_query '["state"]' GET /repos/$GITHUB_OWNER/$GITHUB_REPO/issues/$ISSUE_NUMBER 2> /dev/null`
     RESULT=$?
     if [ `last_rest_status` -eq 404 ]; then
@@ -227,9 +228,11 @@ function set_github_origin_data() {
     GITHUB_URL=`git config --get remote.origin.url`
     GITHUB_OWNER=`echo $GITHUB_URL | cut -d/ -f4`
     GITHUB_REPO=`echo $GITHUB_URL | cut -d/ -f5`
-    # The URL includes the '.git', which isn't part of the name but an
-    # underlying git convention. We want to drop it for the API calls.
-    GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
+    # The URL sometimes includes the '.git', which isn't part of the name but
+    # an underlying git convention. We want to drop it for the API calls.
+    if [[ $GUTHUB_REPO == *.git ]]; then
+	GITHUB_REPO=${GITHUB_REPO:0:$((${#GITHUB_REPO} - 4))}
+    fi
 }
 
 function add_team {

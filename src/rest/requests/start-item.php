@@ -44,9 +44,35 @@
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/conveyor-request-lib.php');
 
 extract_request_parameters();
+if (PHP_SAPI == "cli") {
+    // We will use this in a few places.
+    $repo_url = system('git config --get remote.origin.url', $retval);
+    // If the user is working in a cloned repository and the item ID
+    // is just a number, we'll assume they mean the issue associated
+    // with the origin repository.
+    if (preg_match('/^\d+$/', $item_id)) {
+        if ($retval == 0 && $repo_url != null && trim($repo_url) != "") {
+            if (preg_match('|\w+://[\w\.-]*github.com|', $repo_url)) { # The home URL is GitHub.
+                $issue_path = preg_replace('|\w+://[\w\.-]*github.com(:\d+)?/|', '', $repo_url);
+                $issue_path = preg_replace('|(.\.git$|', '', $issue_path);
+                $item_id = "github/{$issue_path}/{$item_id}";
+            }
+            else {
+                final_result_bad_request("Could not identify current working repository origin as a type we can construct the /requests URL. Please change working directory provide full /requests item ID.");
+            }
+        }
+        else {
+            final_result_bad_request("Could not determine working repository to associate with /requests item. Please change working direcotry or provide full /requests item ID.");
+        }
+    } # if (preg_match('/^\d+$/', $item_id))
+    # else assume it's a full /requests ID
+}
+
+require_once('/home/user/playground/dogfoodsoftware.com/conveyor/workflow/runnable/lib/requests-lib.php');
 
 # Verify issue exists.
-bar();
+$repo_url = requests_extract_url_repository_from_item_id($item_id);
+foo();
 
 $branch_name = 'requests-'.$item_id;
 if (isset($parameters['branch-label'])) {
@@ -65,9 +91,11 @@ if (!isset($parameters['assignee'])) {
 
 if (!isset($parameters['primary-repo'])) {
     if (PHP_SAPI == "cli") {
-        $repo_url = system('git config --get remote.origin.url', $retval);
-        if ($retval == 0 && $repo_url != null && trim($repo_url) != "") {
+        if ($repo_url != null && trim($repo_url) != "") {
             $parameters['primary-repo'] = $repo_url;
+        }
+        else {
+            final_result_bad_request("Parameter 'primary-repo' was not specified and cannot be automatically determined.");
         }
     }
     else {

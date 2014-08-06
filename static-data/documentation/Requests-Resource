@@ -10,4 +10,16 @@
 </div><!-- #Overview -->
 <div id="Requests-and-Repos" class="blurbSummary">
   <div class="blurbTitle">Requests and Repos</div>
+  <div class="p">
+    All requests are associated with a repository. In some cases,
+    there may not be much for the repository to do, but even so, the
+    associatiation is still there. Although our requests are
+    ultimately independent of a repository, this key association
+    simplifies compatibility with third party repository services,
+    allowing us to manage issues on GitHub and Jira, for instance. In
+    particular, every <code>/requests</code> item ID must embed the
+    path to the primary repository.<span data-perspective="detailed">
+    Future versions will likely explicit support for
+    unaffiliated <code>/requests</code>.</span>
+  </div>
 </div>

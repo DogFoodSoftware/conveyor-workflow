@@ -1,8 +1,43 @@
 <?php
 /**
- * <div id="Request-Spec" class="blurbSummary">
- * <div class="
+ * <div id="Start-a-Request-Item" class="blurbSummary">
+ * <div class="blurbTitle">Start a Request Item</div>
+ * <pre><code>
+ * START /requests/:item-id<br />
+ * POST  /requests/:item-id?action=START[&amp;...]<br />
+ * con requests start :item-id
+ * </code></pre>
+ * <div class="p">
+ *   'Starting' a request prepares the staging repo (typically, the
+ *   current working director in the CLI context) to begin work on the
+ *   request, along with any associated repositories specified in the
+ *   <code>/request</code> item data or by the <code>START</code> API
+ *   request. The caller must have privileges to create a branch on
+ *   the <a
+ *   href="/documentation/conveyor/workflow/Requests-Resource#Requests-and-Repos">primary
+ *   repository associated with the issue</a>. The issue may
+ *   optionally be assigned to a user in the same step.
  * </div>
+ * <div class="subHeader"><span>Input</span></div>
+ * <table>
+ *   <thead><tr><td>Name</td><td>Type</td><td>Description</td></tr></head>
+ *   <tbody>
+ *     <tr>
+ *       <td>branch-qualifier</td>
+ *       <td>string</td>
+ *       <td>Qualifier text providing human readable description of
+ *         work to be done and distinguishing from parallel work
+ *         branches.</td>
+ *     </tr><!-- branch-qualifier -->
+ *     <tr>
+ *       <td>assignee</td>
+ *       <td><code>/users<code> item reference</td>
+ *       <td>User to be assiged to the issue. Defaults to the special
+ *         <code>/users/self</code>.</td>
+ *     </tr><!-- assignee -->
+ *   </tbody>
+ * </table>
+ * </div><!-- #Start-a-Request-Item -->
  * <div id="Implementation" class="blurbSummary">
  * <div class="blurbTitle">Implementation</div>
  */

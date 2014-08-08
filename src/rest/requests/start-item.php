@@ -56,7 +56,7 @@ if (PHP_SAPI == "cli") {
             if (preg_match('|\w+://[\w\.-]*github.com|', $repo_url)) { # The home URL is GitHub.
                 $issue_path = preg_replace('|\w+://[\w\.-]*github.com(:\d+)?/|', '', $repo_url);
                 $issue_path = preg_replace('|(.\.git$|', '', $issue_path);
-                $item_id = "github/{$issue_path}/{$item_id}";
+                $item_id = "github.com/{$issue_path}/{$item_id}";
             }
             else {
                 final_result_bad_request("Could not identify current working repository origin as a type we can construct the /requests URL. Please change working directory provide full /requests item ID.");
@@ -72,7 +72,7 @@ if (PHP_SAPI == "cli") {
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/workflow/runnable/lib/requests-lib.php');
 
 # Verify issue exists.
-$repo_url = requests_extract_repository_url_from_item_id($item_id);
+verify_repo_issue_from_requests_item_id($item_id);
 foo();
 
 $branch_name = 'requests-'.$item_id;

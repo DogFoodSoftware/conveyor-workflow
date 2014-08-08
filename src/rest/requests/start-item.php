@@ -47,7 +47,7 @@ $item_id = get_item_id();
 $parameters = get_parameters();
 if (PHP_SAPI == "cli") {
     // We will use this in a few places.
-    $repo_url = exec('git config --get remote.origin.url', $retval);
+    $repo_url = exec('git config --get remote.origin.url', $output = array(), $retval);
     // If the user is working in a cloned repository and the item ID
     // is just a number, we'll assume they mean the issue associated
     // with the origin repository.
@@ -109,7 +109,7 @@ if (!isset($parameters['additional-repos']) && PHP_SAPI == "cli") {
     # which requires one parameter so is incompatible with our
     # command here. Thus, we have to redirect expected error (if we
     # are not in a git repo) to /dev/null.
-    $repo_path = system('git rev-parse --show-toplevel 2>/dev/null', $retval);
+    $repo_path = exec('git rev-parse --show-toplevel 2>/dev/null', $output = array(), $retval);
     if ($retval == 0 && $repo_path != null && trim($repo_path) != "") {
         $parameters['additional-repos'] = array($repo_path);
     }

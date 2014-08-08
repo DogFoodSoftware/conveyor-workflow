@@ -72,7 +72,7 @@ if (PHP_SAPI == "cli") {
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/workflow/runnable/lib/requests-lib.php');
 
 # Verify issue exists.
-$repo_url = requests_extract_url_repository_from_item_id($item_id);
+$repo_url = requests_extract_repository_url_from_item_id($item_id);
 foo();
 
 $branch_name = 'requests-'.$item_id;

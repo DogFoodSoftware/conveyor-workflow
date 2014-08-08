@@ -47,7 +47,7 @@ $item_id = get_item_id();
 $parameters = get_parameters();
 if (PHP_SAPI == "cli") {
     // We will use this in a few places.
-    $repo_url = system('git config --get remote.origin.url', $retval);
+    $repo_url = exec('git config --get remote.origin.url', $retval);
     // If the user is working in a cloned repository and the item ID
     // is just a number, we'll assume they mean the issue associated
     // with the origin repository.

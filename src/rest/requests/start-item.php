@@ -73,14 +73,40 @@ require_once('/home/user/playground/dogfoodsoftware.com/conveyor/workflow/runnab
 
 # Verify issue exists.
 verify_repo_issue_from_requests_item_id($item_id);
-foo();
 
-$branch_name = 'requests-'.$item_id;
+$branch_name = 'requests/'.$item_id;
 if (isset($parameters['branch-label'])) {
-    $branch_name .= '-'.$parameters['branch-label'];
+    $branch_name .= '/'.$parameters['branch-label'];
     unset($parameters['branch-label']);
 }
+# The branch name must conform to the work branch spec so that it
+# can be tied to the request.
+$bits = explode('/', $branch_name);
+$bits_problem = "";
+if ('requests' != $bits[0]) {
+    $bits_problem = "is missing request qualifier";
+}
+if (empty($bits_problem) && $bits[1] == 'github.com') { # Github issue ID check
+    if (empty($bits[2]) || empty($bits[3]) || empty($bits[4])) {
+        $bits_problem = 
+            "is missing expected GitHub issue ID: '<owner>/<repo>/<number>'";
+    }
+    elseif (!preg_match('/^\d+$/', $bits[4])) {
+        $bits_problem = "fifth element should be an integer number (got: '".$bits[4]."')";
+    }
+    if (count($bits) > 6) {
+        $bits_problem .= (empty($bits_problem)?"": " and ").
+            "has too many path segments; expect five or six for github.com based issues";
+    }
+}
+else {
+    $bits_problem = "indicates unsupported issue domain '".$bits[1]."'";
+}
+if (!empty($bits_problem)) {
+    final_result_bad_request("Branch '$branch_name' {$bits_problem}. Should match '/requests/<repo domain>/<repo issue ID segment(s)>[/<optional descriptor>]");
+}
 
+/* TODO
 if (!isset($parameters['assignee'])) {
     if (PHP_SAPI == "cli") {
         $parameters['assignee'] = 'zanerock';
@@ -89,6 +115,7 @@ if (!isset($parameters['assignee'])) {
         final_result_bad_request("Must specify assignee.");
     }
 }
+*/
 
 if (!isset($parameters['primary-repo'])) {
     if (PHP_SAPI == "cli") {
@@ -104,21 +131,13 @@ if (!isset($parameters['primary-repo'])) {
     }
 }
 
-if (!isset($parameters['additional-repos']) && PHP_SAPI == "cli") {
-    # At time of writing, the '-q' only works with '--verify'
-    # which requires one parameter so is incompatible with our
-    # command here. Thus, we have to redirect expected error (if we
-    # are not in a git repo) to /dev/null.
-    $repo_path = exec('git rev-parse --show-toplevel 2>/dev/null', $output = array(), $retval);
-    if ($retval == 0 && $repo_path != null && trim($repo_path) != "") {
-        $parameters['additional-repos'] = array($repo_path);
-    }
+/* TODO
+if (!isset($parameters['involved-repos'])) {
+    // check issue text for involved repos
 }
+*/
 
-# The branch name must conform to the work branch spec so that it
-# can be tied to the request.
 foo();
-
 branch_create($parameters['primary-repo'], $branch_name);
 foreach ($parameters['additional-repos'] as $repo) {
     branch_create($repo, $branch_name);

@@ -131,16 +131,27 @@ if (!isset($parameters['primary-repo'])) {
     }
 }
 
+if (isset($parameters['involved-repos']) && 
+        !is_array($parameters['involved-repos'])) {
+    final_result_bad_request('Involved repos found, but not expected array.');
+}
 /* TODO
 if (!isset($parameters['involved-repos'])) {
     // check issue text for involved repos
 }
 */
+require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/git-lib.php');
+if (branch_exists_local("heads/$branch")) {
+    final_result_bad_request("Branch '$branch' exists in local repository; bailing out to be safe.");
+}
+// The remote branch will be checked by the branch create.
 
-foo();
+print("creating $branch_name on ".$parameters['primary-repo']);
 branch_create($parameters['primary-repo'], $branch_name);
-foreach ($parameters['additional-repos'] as $repo) {
-    branch_create($repo, $branch_name);
+if (isset($parameters['involved-repos'])) {
+    foreach ($parameters['involved-repos'] as $repo) {
+        branch_create($repo, $branch_name);
+    }
 }
 ?>
 <?php /**

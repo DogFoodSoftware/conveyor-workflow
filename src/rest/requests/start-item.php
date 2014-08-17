@@ -72,7 +72,7 @@
  * <div class="p">
  *   The local environment may not be in a production context. It
  *   would be inappropriate to prosecute a request in a production
- *   environment.
+ *   environment. (Not currently enforced.)
  * </div>
  * <div class="p">
  *   In the current implementation, the primary Conveyor and all

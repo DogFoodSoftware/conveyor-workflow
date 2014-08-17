@@ -2,41 +2,87 @@
 /**
  * <div id="Start-a-Request-Item" class="blurbSummary">
  * <div class="blurbTitle">Start a Request Item</div>
+ * <div class="p">
+ *   To 'start' a <code>/resources</code> item means to set up to
+ *   begin work on the item. By default, the authenticated user will
+ *   also register that they are working on the issue.
+ * </div>
  * <pre><code>
  * START /requests/:item-id<br />
  * POST  /requests/:item-id?action=START[&amp;...]<br />
  * con requests start :item-id
  * </code></pre>
- * <div class="p">
- *   'Starting' a request prepares the staging repo (typically, the
- *   current working director in the CLI context) to begin work on the
- *   request, along with any associated repositories specified in the
- *   <code>/request</code> item data or by the <code>START</code> API
- *   request. The caller must have privileges to create a branch on
- *   the <a
- *   href="/documentation/conveyor/workflow/Requests-Resource#Requests-and-Repos">primary
- *   repository associated with the issue</a>. The issue may
- *   optionally be assigned to a user in the same step.
- * </div>
  * <div class="subHeader"><span>Input</span></div>
  * <table>
  *   <thead><tr><td>Name</td><td>Type</td><td>Description</td></tr></head>
  *   <tbody>
  *     <tr>
- *       <td>branch-qualifier</td>
- *       <td>string</td>
- *       <td>Qualifier text providing human readable description of
- *         work to be done and distinguishing from parallel work
- *         branches.</td>
- *     </tr><!-- branch-qualifier -->
+ *       <td id="param-advertise"><code>advertise</code></td>
+ *       <td>boolean</td>
+ *       <td>If true, will attempt to push the local working branch to
+ *         the origin repository. Conveyor does not advertise the user
+ *         directly, but the information may be accessible through the
+ *         origin repository or associated systems. Defaults to
+ *         true.</td>
+ *     </tr><!-- advertise -->
  *     <tr>
- *       <td>assignee</td>
- *       <td><code>/users<code> item reference</td>
+ *       <td id="param-assignee"><code>assignee</code></td>
+ *       <td>string (of <code>/users<code> item reference)</td>
  *       <td>User to be assiged to the issue. Defaults to the special
  *         <code>/users/self</code>.</td>
  *     </tr><!-- assignee -->
+ *     <tr>
+ *       <td id="param-branch-qualifier"><code>branch-qualifier</code></td>
+ *       <td>string</td>
+ *       <td>Qualifier text providing human readable description of
+ *         work to be done and distinguishing from parallel work
+ *         branches. Defaults to null.</td>
+ *     </tr><!-- branch-qualifier -->
+ *     <tr>
+ *       <td id="param-involved-repos"><code>involved-repos</code></td>
+ *       <td>string[] (of repo URLs)</td>
+ *       <td>User to be assiged to the issue. Defaults to the special
+ *         <code>/users/self</code>.</td>
+ *     </tr><!-- involved-repos -->
  *   </tbody>
  * </table>
+ * <div class="subHeader"><span>Local Setup</span></div>
+ * <div class="p">
+ *   Local setup always involves setting up a local branch for all
+ *   'involved repositories'. The <a
+ *   href="/documentation/conveyor/workflow/Requests-Resource#Requests-and-Repos">primary
+ *   repository associated with the issue</a> is always considered to
+ *   be involved. Additional involved repositories are usually defined
+ *   in the issue, if known before hand. An operator may specify
+ *   additional involved repositories in the start request. In the
+ *   latter case, a local branch is set up, but the issue definition
+ *   itself is unchanged. These branches may not ultimately be
+ *   committed, but are used by the local system to determine the
+ *   requests being <a href="show-active.php">actively prosecuted</a>.
+ * </div>
+ * <div class="p">
+ *   Additional setup may be specified in the issue definition. The
+ *   current implementation does not go beyond branch management.
+ * </div>
+ * <div class="subHeader"><span>Advertising Work</span></div>
+ * <div class="p">
+ *   In order to advertise the work, the
+ *   authenticated caller must have privileges to create a branch on
+ *   the <a
+ *   href="/documentation/conveyor/workflow/Requests-Resource#Requests-and-Repos">primary
+ *   repository associated with the issue</a>. Unless 
+ * </div>
+ * <div class="subHeader"><span>Assigning / Reserving the Issue</span></div>
+ * <div class="p">
+
+ *   A caller with appropriate priviledges may assign an issue to
+ *   themself. Assigned issues should generally be understood as being
+ *   reserved by the assignee. An issue may be assigned for many
+ *   reasons: exclusive development work, or because there is a
+ *   problem with the issue. By default, requests are not assigned and
+ *   this parameter is null.
+
+ * </div>
  * </div><!-- #Start-a-Request-Item -->
  * <div id="Implementation" class="blurbSummary">
  * <div class="blurbTitle">Implementation</div>

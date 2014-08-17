@@ -3,16 +3,27 @@
  * <div id="Start-a-Request-Item" class="blurbSummary">
  * <div class="blurbTitle">Start a Request Item</div>
  * <div class="p">
- *   To 'start' a <code>/resources</code> item means to set up to
- *   begin work on the item. By default, the authenticated user will
- *   also register that they are working on the request.
+ *   To 'start' a <code>/resources</code> item means to set up the
+ *   local environment to begin work on the item. By default, the work
+ *   will be advertised and appropriately authorized users may
+ *   self-assign the issue as well.
  * </div>
+ * <div class="subHeader"><span>Request Spec</span></div>
+ * <div class="p">
  * <pre><code>
  * START /requests/:item-id<br />
  * POST  /requests/:item-id?action=START[&amp;...]<br />
  * con requests start :item-id
  * </code></pre>
- * <div class="subHeader"><span>Input</span></div>
+ *   The <code>:item-id</code> consists of the Conveyor
+ *   <code>/projects</code> id followed by an issue identifier (which
+ *   is dependent on the <a
+ *   href="/documentation/conveyor/workflow/Requests-Resource#Requests-and-Repos">origin
+ *   repository associated with the request</a>. E.g.:
+ * <pre><code>
+ * /dogfoodsoftware.com/conveyor/core/144
+ * </code></pre>
+ * </div>
  * <table>
  *   <thead><tr><td>Name</td><td>Type</td><td>Description</td></tr></head>
  *   <tbody>
@@ -44,8 +55,30 @@
  *       <td>User to be assiged to the request. Defaults to the special
  *         <code>/users/self</code>.</td>
  *     </tr><!-- involved-repos -->
+ *     <tr>
+ *       <td id="param-source-branch"><code>involved-repos</code></td>
+ *       <td>string</td>
+ *       <td>Names the source branch to begin work from. The source
+ *         branch is assumed to be <code>master</code> if left
+ *         unspecified and is generally set in the request definition
+ *         if otherwise. The local operator may override, though this
+ *         will generate a warning in the merge process and the
+ *         changes will be rejected if explanation is not
+ *         provided.</td>
+ *     </tr><!-- source-branch -->
  *   </tbody>
  * </table>
+ * <div class="subHeader"><span>Preconditions</span></div>
+ * <div class="p">
+ *   In the current implementation, the primary Conveyor and all
+ *   involved repositories must be locally cloned before starting an
+ *   action. In future versions, the request itself will attempt to
+ *   clone any necessary repositories.
+ * </div>
+ * <div class="p">
+ *   The request reference must be resolvable to an issue in the
+ *   canonical project repository.
+ * </div>
  * <div class="subHeader"><span>Local Setup</span></div>
  * <div class="p">
  *   Local setup always involves setting up a local branch for all
@@ -84,6 +117,15 @@
  * </div><!-- #Start-a-Request-Item -->
  * <div id="Implementation" class="blurbSummary">
  * <div class="blurbTitle">Implementation</div>
+ * <div class="p">
+ *   In the current implemntation, which requires that the primary Conveyor 
+ *   project repository be locally cloned, we begin by verifying that we 
+ *   can locate the repository, along with any secondarily involved 
+ *   repositories. Once this is confirmed, we obtain the ultimate origin / 
+ *   canonical project repository by following the local origin chain 
+ *   (currently, we only support one step) and confirm the existence of the 
+ *   issue.
+ * </div>
  */
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/conveyor-request-lib.php');
 

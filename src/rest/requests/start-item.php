@@ -141,12 +141,12 @@ if (!isset($parameters['involved-repos'])) {
 }
 */
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/git-lib.php');
+require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/git/git-local.php');
 if (branch_exists_local("heads/$branch")) {
     final_result_bad_request("Branch '$branch' exists in local repository; bailing out to be safe.");
 }
 // The remote branch will be checked by the branch create.
 
-print("creating $branch_name on ".$parameters['primary-repo']);
 branch_create($parameters['primary-repo'], $branch_name);
 if (isset($parameters['involved-repos'])) {
     foreach ($parameters['involved-repos'] as $repo) {

@@ -134,8 +134,56 @@
  */
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/conveyor-request-lib.php');
 
+# TODO: Check 'not production context' precondition
+
+# Check that all the involved repositories are locally cloned.
+$config_path = $_SERVER['HOME'].'/.conveyor/config';
+if (is_file($config_path)) {
+    $matches = array();
+    if (preg_match('/CONVEYOR_PLAYGROUND=["\']?([^"\'\s]+)/s',
+                   file_get_contents($config_path),
+                   $matches)) {
+        $conveyor_base = trim($matches[1]);
+        if (empty($conveyor_base)) {
+            final_result_internal_error("Could not determine Conveyor install; no value for 'CONVEYOR_PLAYGROUND' found in '$config_path'.");
+        }
+    }
+    else {
+        final_result_internal_error("Could not determine Conveyor install; '$config_path' does not seem to define 'CONVEYOR_PLAYGROUND'.");
+    }
+}
+else {
+    final_result_internal_error("Could not determine Conveyor install location; no '$config_path'.");
+}
+
 $item_id = get_item_id();
 $parameters = get_parameters();
+
+# 1) Check the primary repository has been locally cloned.
+# 2) Retrieve the issue from the canonical project reposiotry.
+# 3) Determine any involved repos.
+# 4) Check that all involved repos have been cloned.
+
+# 1) Check the primary repository has been locally cloned.
+$path_bits = explode('/', $item_id);
+$primary_clone_path = $conveyor_base;
+# Note the second condition protects us from a something like 
+# '/git/repo/144' being a valid directory under the repo and
+# '144' being the issue ID.
+for ($i = 0; is_dir($primary_clone_path.'/'.$path_bits[$i]) && $i < count($path_bits); $i += 1) {
+    # Eat empty bits; i.e., deal with 'foo//bar' and treat as 'foo/bar'
+    if (!empty($path_bits[$i])) {
+        $primary_clone_path .= '/'. $path_bits[$i]; 
+    }
+}
+
+if (!is_dir($primary_clone_path.'/'.'.git')) {
+    final_result_bad_request("Local repo clone path '$primary_clone_path' does not terminate in a (non-bare) git repository.");
+}
+if (!is_dir($primary_clone_path.'/'.'.git')) {
+    final_result_bad_request("Could not find local repository clone associated to '$item_id'.");
+}
+
 if (PHP_SAPI == "cli") {
     // We will use this in a few places.
     $repo_url = exec('git config --get remote.origin.url', $output = array(), $retval);

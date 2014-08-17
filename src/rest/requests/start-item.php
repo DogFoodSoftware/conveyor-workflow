@@ -5,7 +5,7 @@
  * <div class="p">
  *   To 'start' a <code>/resources</code> item means to set up to
  *   begin work on the item. By default, the authenticated user will
- *   also register that they are working on the issue.
+ *   also register that they are working on the request.
  * </div>
  * <pre><code>
  * START /requests/:item-id<br />
@@ -28,7 +28,7 @@
  *     <tr>
  *       <td id="param-assignee"><code>assignee</code></td>
  *       <td>string (of <code>/users<code> item reference)</td>
- *       <td>User to be assiged to the issue. Defaults to the special
+ *       <td>User to be assiged to the request. Defaults to the special
  *         <code>/users/self</code>.</td>
  *     </tr><!-- assignee -->
  *     <tr>
@@ -41,7 +41,7 @@
  *     <tr>
  *       <td id="param-involved-repos"><code>involved-repos</code></td>
  *       <td>string[] (of repo URLs)</td>
- *       <td>User to be assiged to the issue. Defaults to the special
+ *       <td>User to be assiged to the request. Defaults to the special
  *         <code>/users/self</code>.</td>
  *     </tr><!-- involved-repos -->
  *   </tbody>
@@ -51,17 +51,17 @@
  *   Local setup always involves setting up a local branch for all
  *   'involved repositories'. The <a
  *   href="/documentation/conveyor/workflow/Requests-Resource#Requests-and-Repos">primary
- *   repository associated with the issue</a> is always considered to
+ *   repository associated with the request</a> is always considered to
  *   be involved. Additional involved repositories are usually defined
- *   in the issue, if known before hand. An operator may specify
+ *   in the request, if known before hand. An operator may specify
  *   additional involved repositories in the start request. In the
- *   latter case, a local branch is set up, but the issue definition
+ *   latter case, a local branch is set up, but the request definition
  *   itself is unchanged. These branches may not ultimately be
  *   committed, but are used by the local system to determine the
  *   requests being <a href="show-active.php">actively prosecuted</a>.
  * </div>
  * <div class="p">
- *   Additional setup may be specified in the issue definition. The
+ *   Additional setup may be specified in the request definition. The
  *   current implementation does not go beyond branch management.
  * </div>
  * <div class="subHeader"><span>Advertising Work</span></div>
@@ -70,18 +70,16 @@
  *   authenticated caller must have privileges to create a branch on
  *   the <a
  *   href="/documentation/conveyor/workflow/Requests-Resource#Requests-and-Repos">primary
- *   repository associated with the issue</a>. Unless 
+ *   repository associated with the request</a>. Unless 
  * </div>
- * <div class="subHeader"><span>Assigning / Reserving the Issue</span></div>
+ * <div class="subHeader"><span>Assigning / Reserving the Request</span></div>
  * <div class="p">
-
- *   A caller with appropriate priviledges may assign an issue to
- *   themself. Assigned issues should generally be understood as being
- *   reserved by the assignee. An issue may be assigned for many
+ *   A caller with appropriate priviledges may assign an request to
+ *   themself. Assigned requests should generally be understood as being
+ *   reserved by the assignee. An request may be assigned for many
  *   reasons: exclusive development work, or because there is a
- *   problem with the issue. By default, requests are not assigned and
+ *   problem with the request. By default, requests are not assigned and
  *   this parameter is null.
-
  * </div>
  * </div><!-- #Start-a-Request-Item -->
  * <div id="Implementation" class="blurbSummary">
@@ -95,14 +93,14 @@ if (PHP_SAPI == "cli") {
     // We will use this in a few places.
     $repo_url = exec('git config --get remote.origin.url', $output = array(), $retval);
     // If the user is working in a cloned repository and the item ID
-    // is just a number, we'll assume they mean the issue associated
+    // is just a number, we'll assume they mean the request associated
     // with the origin repository.
     if (preg_match('/^\d+$/', $item_id)) {
         if ($retval == 0 && $repo_url != null && trim($repo_url) != "") {
             if (preg_match('|\w+://[\w\.-]*github.com|', $repo_url)) { # The home URL is GitHub.
-                $issue_path = preg_replace('|\w+://[\w\.-]*github.com(:\d+)?/|', '', $repo_url);
-                $issue_path = preg_replace('|(.\.git$|', '', $issue_path);
-                $item_id = "github.com/{$issue_path}/{$item_id}";
+                $request_path = preg_replace('|\w+://[\w\.-]*github.com(:\d+)?/|', '', $repo_url);
+                $request_path = preg_replace('|(.\.git$|', '', $request_path);
+                $item_id = "github.com/{$request_path}/{$item_id}";
             }
             else {
                 final_result_bad_request("Could not identify current working repository origin as a type we can construct the /requests URL. Please change working directory provide full /requests item ID.");
@@ -117,8 +115,10 @@ if (PHP_SAPI == "cli") {
 
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/workflow/runnable/lib/requests-lib.php');
 
-# Verify issue exists.
-verify_repo_issue_from_requests_item_id($item_id);
+# Verify issue exists. Note: Conveyor deals with 'requests' but most
+# project systems deal with 'issues'; our initial targets of GitHub and
+# Jira both talk of issues, so we talk of 'repository issues' in the
+# backend.  verify_repo_issue_from_requests_item_id($item_id);
 
 $branch_name = 'requests/'.$item_id;
 if (isset($parameters['branch-label'])) {
@@ -183,7 +183,7 @@ if (isset($parameters['involved-repos']) &&
 }
 /* TODO
 if (!isset($parameters['involved-repos'])) {
-    // check issue text for involved repos
+    // check request text for involved repos
 }
 */
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/git-lib.php');

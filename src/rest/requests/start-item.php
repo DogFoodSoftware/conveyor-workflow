@@ -70,6 +70,11 @@
  * </table>
  * <div class="subHeader"><span>Preconditions</span></div>
  * <div class="p">
+ *   The local environment may not be in a production context. It
+ *   would be inappropriate to prosecute a request in a production
+ *   environment.
+ * </div>
+ * <div class="p">
  *   In the current implementation, the primary Conveyor and all
  *   involved repositories must be locally cloned before starting an
  *   action. In future versions, the request itself will attempt to

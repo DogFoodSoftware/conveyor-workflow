@@ -1,16 +1,11 @@
 <?php
-function verify_repo_issue_from_requests_item_id($item_id) {
-    // For now, we only accept GitHub, and the request ID follows the
-    // GitHub issue URL: :owner/:repo/issues/:issue-num
-    // To this, we simply prepend 'github/'
-    $github_preg = '|^/?github.com/(.+)/(\d+)$|';
-    if (preg_match($github_preg, $item_id)) {
-        $github_issue_path = preg_replace($github_preg, '/repos/$1/issues/$2', $item_id);
-        
+function verify_repo_issue_from_requests_item_id($issue_domain, $issue_path) {
+    # At the moment, we only support github for the issue domain.
+    if ('api.github.com' == $issue_domain) {
         require_once('/home/user/playground/dogfoodsoftware.com/third-party/pest/runnable/PestJSON.php');
-        $pest = new PestJSON("https://api.github.com");
+        $pest = new PestJSON("https://".$issue_domain);
         try {
-            $issue = $pest->get($github_issue_path, null, array('User-Agent' => 'DogFoodSoftware/conveyor-core'));
+            $issue = $pest->get($issue_path, null, array('User-Agent' => 'DogFoodSoftware/conveyor-core'));
             if (!isset($issue['url'])) {
                 ob_start();
                 var_dump($issue);
@@ -19,7 +14,7 @@ function verify_repo_issue_from_requests_item_id($item_id) {
             }
         }
         catch (Pest_Exception $e) {
-            final_result_bad_request("Cannot complete request; problem contacting gigtub: ".$e->getMessage());
+            final_result_bad_request("Cannot complete request; problem contacting gigtub at {$issue_domain}/{$issue_path}: ".$e->getMessage());
         }
     }
     else {

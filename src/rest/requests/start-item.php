@@ -159,6 +159,23 @@ else {
 $item_id = get_item_id();
 $parameters = get_parameters();
 
+if (PHP_SAPI == "cli") { 
+
+# If the user is working in a Conveyor project dir and provides an
+# item ID with a single path element, we will assume that's the issue 
+# ID with the backing store for the current repo. We currently only
+# support github, which is easy to check, as it's always just a number.
+    if (preg_match('/^\d+$/', $item_id)) {
+        final_result_internal_error("Contextual request ID reference not currently supported.");
+        # - Need library function to give us the 'current project
+        #   base', similar to running 'git config --get
+        #   remote.origin.url'.
+        # - We'll then appen that project ID to the item ID and pass
+        #   along for further processing.
+        # - Output message if running in verbose mode.
+    } # if (preg_match('/^\d+$/', $item_id))
+}
+
 # 1) Check the primary repository has been locally cloned.
 # 2) Retrieve the issue from the canonical project reposiotry.
 # 3) Determine any involved repos.
@@ -167,10 +184,15 @@ $parameters = get_parameters();
 # 1) Check the primary repository has been locally cloned.
 $path_bits = explode('/', $item_id);
 $primary_clone_path = $conveyor_base;
-# Note the second condition protects us from a something like 
-# '/git/repo/144' being a valid directory under the repo and
-# '144' being the issue ID.
-for ($i = 0; is_dir($primary_clone_path.'/'.$path_bits[$i]) && $i < count($path_bits); $i += 1) {
+# Note, to avoid confusing directories with the item name, we assume
+# the last path element is the 'issue ID' with the backing store. This
+# means that issue IDs cannot currently contain '/'. This may or may
+# not be acceptable. If we don't know how many path bits are for the
+# issue ID, though, we run into problems with identifying where the
+# directory processing should end and a directory named '144' could be
+# confused with an issue starting with '144'.
+$issue_id = $path_bits[count($path_bits) - 1];
+for ($i = 0; is_dir($primary_clone_path.'/'.$path_bits[$i]) && $i < count($path_bits) - 1; $i += 1) {
     # Eat empty bits; i.e., deal with 'foo//bar' and treat as 'foo/bar'
     if (!empty($path_bits[$i])) {
         $primary_clone_path .= '/'. $path_bits[$i]; 
@@ -184,36 +206,36 @@ if (!is_dir($primary_clone_path.'/'.'.git')) {
     final_result_bad_request("Could not find local repository clone associated to '$item_id'.");
 }
 
-if (PHP_SAPI == "cli") {
-    // We will use this in a few places.
-    $repo_url = exec('git config --get remote.origin.url', $output = array(), $retval);
-    // If the user is working in a cloned repository and the item ID
-    // is just a number, we'll assume they mean the request associated
-    // with the origin repository.
-    if (preg_match('/^\d+$/', $item_id)) {
-        if ($retval == 0 && $repo_url != null && trim($repo_url) != "") {
-            if (preg_match('|\w+://[\w\.-]*github.com|', $repo_url)) { # The home URL is GitHub.
-                $request_path = preg_replace('|\w+://[\w\.-]*github.com(:\d+)?/|', '', $repo_url);
-                $request_path = preg_replace('|(.\.git$|', '', $request_path);
-                $item_id = "github.com/{$request_path}/{$item_id}";
-            }
-            else {
-                final_result_bad_request("Could not identify current working repository origin as a type we can construct the /requests URL. Please change working directory provide full /requests item ID.");
-            }
-        }
-        else {
-            final_result_bad_request("Could not determine working repository to associate with /requests item. Please change working direcotry or provide full /requests item ID.");
-        }
-    } # if (preg_match('/^\d+$/', $item_id))
-    # else assume it's a full /requests ID
+# 2) Retrieve the issue from the canonical project reposiotry. For
+#    this, we must verify that we know how to contact the canonical
+#    backing store, which is currently limited to GitHub repos. To do
+#    this, we get the canonical project URL and verify a matching
+#    issue exists.
+
+$request_store_url = exec("cd $primary_clone_path && git config --get remote.origin.url", $output = array(), $retval);
+
+if ($retval == 0 && !empty($request_store_url)) {
+    # Backing store at github?
+    if (preg_match('|\w+://[\w\.-]*github.com|', $request_store_url)) {
+        $issue_path = preg_replace('|\w+://[\w\.-]*github.com(:\d+)?/|', '', $request_store_url);
+        $issue_path = preg_replace('|\.git$|', '', $issue_path);
+        // GitHub repo issues URL: :owner/:repo/issues/:issue-num
+        $issue_path = "/repos/{$issue_path}/issues/{$issue_id}";
+        $issue_domain = 'api.github.com';
+    }
+    else {
+        final_result_bad_request("Origin repository not a supported type.");
+    }
+}
+else {
+    final_result_bad_request("Could not determine backing store URL.");
 }
 
+# Now we're ready to do the issue verification.
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/workflow/runnable/lib/requests-lib.php');
+verify_repo_issue_from_requests_item_id($issue_domain, $issue_path);
 
-# Verify issue exists. Note: Conveyor deals with 'requests' but most
-# project systems deal with 'issues'; our initial targets of GitHub and
-# Jira both talk of issues, so we talk of 'repository issues' in the
-# backend.  verify_repo_issue_from_requests_item_id($item_id);
+exit();
 
 $branch_name = 'requests/'.$item_id;
 if (isset($parameters['branch-label'])) {

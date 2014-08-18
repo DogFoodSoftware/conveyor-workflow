@@ -26,15 +26,17 @@ function verify_repo_issue_from_requests_item_id($issue_domain, $issue_path) {
 }
 
 function build_requests_item_from_github_issue($issue) {
-    $issue_data = array();
+    $request_data = array();
 
-    $issue_data['involved-repos'] = array();
+    $request_data['involved-repos'] = array();
     $spec_lines = array();
     preg_match_all('/^\s*involved projects\s*:\s*(.+)$/si',
                    $issue['body'], $spec_lines);
     foreach ($spec_lines[1] as $spec_line) {
         $spec_line = preg_replace('^\s*involved projects\s*:\s*', '', $spec_line);
-        array_push($issue_data['involved-repos'], preg_split('/\s*,\s*/', $spec_line));
+        array_push($request_data['involved-repos'], preg_split('/\s*,\s*/', $spec_line));
     }
+
+    return $request_data;
 }
 ?>

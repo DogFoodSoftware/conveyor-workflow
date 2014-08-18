@@ -37,10 +37,10 @@
  *         true.</td>
  *     </tr><!-- advertise -->
  *     <tr>
- *       <td id="param-assignee"><code>assignee</code></td>
- *       <td>string (of <code>/users<code> item reference)</td>
- *       <td>User to be assiged to the request. Defaults to the special
- *         <code>/users/self</code>.</td>
+ *       <td id="param-assign"><code>assign</code></td>
+ *       <td>boolean</td>
+ *       <td>Indicates whether to attempt to assign the issue to the
+ *         current user. Defaults to false.</td>
  *     </tr><!-- assignee -->
  *     <tr>
  *       <td id="param-branch-qualifier"><code>branch-qualifier</code></td>
@@ -246,82 +246,43 @@ if (isset($parameters['involved-repos'])) {
         final_result_bad_request('Involved repos found, but not expected array.');
     }
 }
+
+# 4) Check that all involved repos have been cloned.
 if (count($involved_repos) > 0) {
     final_result_internal_error("We do not yet support involved repos.");
 }
 
-exit();
+# Okay, now we're ready to do the actual setup, which for now just
+# means adding a branch to all involved repos.
 
 $branch_name = 'requests/'.$item_id;
-if (isset($parameters['branch-label'])) {
-    $branch_name .= '/'.$parameters['branch-label'];
-    unset($parameters['branch-label']);
-}
-# The branch name must conform to the work branch spec so that it
-# can be tied to the request.
-$bits = explode('/', $branch_name);
-$bits_problem = "";
-if ('requests' != $bits[0]) {
-    $bits_problem = "is missing request qualifier";
-}
-if (empty($bits_problem) && $bits[1] == 'github.com') { # Github issue ID check
-    if (empty($bits[2]) || empty($bits[3]) || empty($bits[4])) {
-        $bits_problem = 
-            "is missing expected GitHub issue ID: '<owner>/<repo>/<number>'";
-    }
-    elseif (!preg_match('/^\d+$/', $bits[4])) {
-        $bits_problem = "fifth element should be an integer number (got: '".$bits[4]."')";
-    }
-    if (count($bits) > 6) {
-        $bits_problem .= (empty($bits_problem)?"": " and ").
-            "has too many path segments; expect five or six for github.com based issues";
-    }
+if (!empty($parameters['branch-qualifier'])) {
+    $branch_qualifier = $parameters['branch-qualifier'];
 }
 else {
-    $bits_problem = "indicates unsupported issue domain '".$bits[1]."'";
+    final_result_internal_error("We do not currently support implicit branch qualification; add 'branch-qualifier' parameter to request.");
+    # Generate small UUID?
 }
-if (!empty($bits_problem)) {
-    final_result_bad_request("Branch '$branch_name' {$bits_problem}. Should match '/requests/<repo domain>/<repo issue ID segment(s)>[/<optional descriptor>]");
+# The qualifier must not contain 'path elements'.
+if (preg_match('|[/\s]|', $branch_qualifier)) {
+    final_result_bad_request("Branch qualifier '$branch_qualifier' contains contains illegal '/' or spaces.");
 }
+$branch_name .= '/'.$branch_qualifier;
 
-/* TODO
-if (!isset($parameters['assignee'])) {
-    if (PHP_SAPI == "cli") {
-        $parameters['assignee'] = 'zanerock';
-    }
-    else {
-        final_result_bad_request("Must specify assignee.");
-    }
+if (isset($parameters['assign'])) {
+    final_result_intenal_error("We do not yet support setting the assignee.");
 }
-*/
-
-if (!isset($parameters['primary-repo'])) {
-    if (PHP_SAPI == "cli") {
-        if ($repo_url != null && trim($repo_url) != "") {
-            $parameters['primary-repo'] = $repo_url;
-        }
-        else {
-            final_result_bad_request("Parameter 'primary-repo' was not specified and cannot be automatically determined.");
-        }
-    }
-    else {
-        final_result_bad_request("Must specify 'primary-repo'.");
-    }
-}
-
 
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/git-lib.php');
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/git/git-local.php');
-if (branch_exists_local("heads/$branch")) {
-    final_result_bad_request("Branch '$branch' exists in local repository; bailing out to be safe.");
+if (branch_exists_local("heads/$branch_name")) {
+    final_result_bad_request("Branch '$branch_name' exists in local repository; bailing out to be safe.");
 }
 // The remote branch will be checked by the branch create.
 
-branch_create($parameters['primary-repo'], $branch_name);
-if (isset($parameters['involved-repos'])) {
-    foreach ($parameters['involved-repos'] as $repo) {
-        branch_create($repo, $branch_name);
-    }
+branch_create($primary_clone_path, $branch_name);
+foreach ($involved_repos as $repo) {
+    branch_create($repo, $branch_name);
 }
 ?>
 <?php /**

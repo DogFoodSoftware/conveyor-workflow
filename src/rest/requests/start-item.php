@@ -157,7 +157,10 @@ else {
 }
 
 $item_id = get_item_id();
-$parameters = get_parameters();
+$parameters = get_parameters(array('advertise' => 'boolean'));
+if (!isset($parameters['advertise'])) {
+    $parameters['advertise'] = TRUE;
+}
 
 if (PHP_SAPI == "cli") { 
 
@@ -212,7 +215,8 @@ if (!is_dir($primary_clone_path.'/'.'.git')) {
 #    this, we get the canonical project URL and verify a matching
 #    issue exists.
 
-$request_store_url = exec("cd $primary_clone_path && git config --get remote.origin.url", $output = array(), $retval);
+$output = array();
+$request_store_url = exec("cd $primary_clone_path && git config --get remote.origin.url", $output, $retval);
 
 if ($retval == 0 && !empty($request_store_url)) {
     # Backing store at github?
@@ -278,11 +282,21 @@ require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/l
 if (branch_exists_local("heads/$branch_name")) {
     final_result_bad_request("Branch '$branch_name' exists in local repository; bailing out to be safe.");
 }
-// The remote branch will be checked by the branch create.
+if (branch_exists_local("remotes/origin/$branch_name")) {
+    final_result_bad_request("Branch '$branch_name' exists on origin; bailing out to be safe.");
+}
 
 branch_create($primary_clone_path, $branch_name);
 foreach ($involved_repos as $repo) {
     branch_create($repo, $branch_name);
+}
+
+if ($parameters['advertise'] === TRUE ) {
+    exec("cd '$primary_clone_path' && git push -q origin '$branch_name'", $output, $retval);
+    if ($retval != 0) {
+        # TODO: Actually, more of a warning, yeah?
+        final_result_internal_error("Could not push branch '$branch_name' to origin repository.");
+    }
 }
 ?>
 <?php /**

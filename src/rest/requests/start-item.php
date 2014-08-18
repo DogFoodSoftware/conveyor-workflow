@@ -233,7 +233,22 @@ else {
 
 # Now we're ready to do the issue verification.
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/workflow/runnable/lib/requests-lib.php');
-verify_repo_issue_from_requests_item_id($issue_domain, $issue_path);
+$request_data = verify_repo_issue_from_requests_item_id($issue_domain, $issue_path);
+
+# 3) Determine any involved repos.
+$involved_repos = $request_data['involved-repos'];
+if (isset($parameters['involved-repos'])) {
+    if (is_array($parameters['involved-repos'])) {
+        push_array($involved_repos, $parameters['involved-repos']);
+        $involved_repos = array_unique($involved_repos);
+    }
+    else {
+        final_result_bad_request('Involved repos found, but not expected array.');
+    }
+}
+if (count($involved_repos) > 0) {
+    final_result_internal_error("We do not yet support involved repos.");
+}
 
 exit();
 
@@ -294,15 +309,7 @@ if (!isset($parameters['primary-repo'])) {
     }
 }
 
-if (isset($parameters['involved-repos']) && 
-        !is_array($parameters['involved-repos'])) {
-    final_result_bad_request('Involved repos found, but not expected array.');
-}
-/* TODO
-if (!isset($parameters['involved-repos'])) {
-    // check request text for involved repos
-}
-*/
+
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/git-lib.php');
 require_once('/home/user/playground/dogfoodsoftware.com/conveyor/core/runnable/lib/git/git-local.php');
 if (branch_exists_local("heads/$branch")) {

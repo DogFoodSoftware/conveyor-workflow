@@ -157,7 +157,12 @@ else {
 }
 
 $item_id = get_item_id();
-$parameters = get_parameters(array('advertise' => 'boolean'));
+$parameters = get_parameters(array('advertise' => 'boolean',
+                                   'involved_repos[]' => 'url',
+                                   'branch_qualifier' => 'string',
+                                   'assign' => 'conveyor-rest-id',
+                                   'checkout' => 'boolean'));
+
 if (!isset($parameters['advertise'])) {
     $parameters['advertise'] = TRUE;
 }
@@ -204,9 +209,6 @@ for ($i = 0; is_dir($primary_clone_path.'/'.$path_bits[$i]) && $i < count($path_
 
 if (!is_dir($primary_clone_path.'/'.'.git')) {
     final_result_bad_request("Local repo clone path '$primary_clone_path' does not terminate in a (non-bare) git repository.");
-}
-if (!is_dir($primary_clone_path.'/'.'.git')) {
-    final_result_bad_request("Could not find local repository clone associated to '$item_id'.");
 }
 
 # 2) Retrieve the issue from the canonical project reposiotry. For
@@ -297,6 +299,11 @@ if ($parameters['advertise'] === TRUE ) {
         # TODO: Actually, more of a warning, yeah?
         final_result_internal_error("Could not push branch '$branch_name' to origin repository.");
     }
+}
+
+if (!isset($parameters['checkout']) || $parameter['checkout']) {
+    echo "start-item.php:305: $primary_clone_path\n";
+    branch_checkout($primary_clone_path, $branch_name);
 }
 ?>
 <?php /**

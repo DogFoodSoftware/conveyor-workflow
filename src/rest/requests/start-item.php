@@ -302,7 +302,6 @@ if ($parameters['advertise'] === TRUE ) {
 }
 
 if (!isset($parameters['checkout']) || $parameter['checkout']) {
-    echo "start-item.php:305: $primary_clone_path\n";
     branch_checkout($primary_clone_path, $branch_name);
 }
 ?>

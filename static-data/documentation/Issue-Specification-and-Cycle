@@ -33,10 +33,15 @@
   <div class="blurbTitle">Issue Specification</div>
   <div class="p">
     In order to be considered fully specified, an issue must
-    define <em>when</em> the issue needs to be tackled, <code>why</code> it
-    needs to be done, and <em>what</em> needs to be
-    done. Issues <em>should</em> when possible further specify the general
-    work category, as defined by the particular project.
+    define:
+    <ul>
+      <li><em>who</em>, meaning what role/talent set is needed,</li>
+      <li><em>what</em> needs to be done; which should include specific tests
+        to be created or passed, and</li>
+      <li><em>when</em> the issue needs to be tackled; which may be
+        indefinite, but still needs to be specified, and</li>
+      <li><em>why</em> it needs to be done.</li>
+    </ul>
   </div>
   <div class="p">
     You may notice that the 'what' and 'how' are not specified by the
